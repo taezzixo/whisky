@@ -64,13 +64,16 @@ export function BtiResult({ profile, whiskies, wishlist, onWish, onOpen, onRetry
   const share = async () => {
     const text = `나의 위스키BTI는 ${profile.emoji} ${profile.name} (${profile.code})!\n추천: ${picks.map((p) => p.whisky.nameKo ?? p.whisky.name).join(', ')}\n${location.origin}`;
     try {
-      if (navigator.share) await navigator.share({ title: '나의 위스키BTI', text });
-      else {
-        await navigator.clipboard.writeText(text);
+      if (!navigator.share) throw new Error('no share');
+      await navigator.share({ title: '나의 위스키BTI', text });
+    } catch (e) {
+      if ((e as Error)?.name === 'AbortError') return; // 사용자가 공유 창을 닫음
+      try {
+        await navigator.clipboard.writeText(text); // 공유가 막힌 환경에서는 복사로 대신
         setCopied(true);
+      } catch {
+        /* 복사도 막힌 환경 */
       }
-    } catch {
-      /* 공유 취소 */
     }
   };
 

@@ -34,6 +34,7 @@ export default function App() {
   const [user, setUser] = useState<UserData>(() => loadUserData());
   const [query, setQuery] = useState('');
   const [retry, setRetry] = useState(false);
+  const [notice, setNotice] = useState('');
 
   useEffect(() => {
     Promise.all([getJson<WhiskiesFile>('whiskies.json'), getJson<Overrides>('overrides.json')]).then(([f, o]) => {
@@ -63,7 +64,11 @@ export default function App() {
     const p = new URLSearchParams();
     if (r.tab !== 'bti') p.set('tab', r.tab);
     if (r.id) p.set('w', r.id);
-    history.pushState(null, '', `${location.pathname}${p.size ? `?${p}` : ''}`);
+    try {
+      history.pushState(null, '', `${location.pathname}${p.size ? `?${p}` : ''}`);
+    } catch {
+      /* 샌드박스 프레임 등 주소 변경이 막힌 곳에서도 화면 전환은 동작 */
+    }
     setRoute(r);
     scrollTo({ top: 0 });
   };
@@ -83,9 +88,9 @@ export default function App() {
     try {
       const parsed = parseUserData(JSON.parse(await f.text()));
       setUser((u) => mergeUserData(u, parsed));
-      alert('가져오기 완료: 기존 기록과 합쳤어요.');
+      setNotice('가져오기 완료: 기존 기록과 합쳤어요.');
     } catch {
-      alert('파일을 읽지 못했어요. 이 사이트에서 내보낸 JSON 파일인지 확인해 주세요.');
+      setNotice('파일을 읽지 못했어요. 이 사이트에서 내보낸 JSON 파일인지 확인해 주세요.');
     }
   };
 
@@ -214,9 +219,14 @@ export default function App() {
                 </button>
                 <label className="btn ghost">
                   가져오기
-                  <input type="file" accept="application/json,.json" hidden onChange={(e) => e.target.files?.[0] && importData(e.target.files[0])} />
+                  <input id="import-file" type="file" accept="application/json,.json" hidden onChange={(e) => e.target.files?.[0] && importData(e.target.files[0])} />
                 </label>
               </div>
+              {notice && (
+                <p className="notice" role="status">
+                  {notice}
+                </p>
+              )}
             </div>
           </section>
         )}

@@ -35,8 +35,25 @@
     color-scheme: dark;
   }
 }
+:root[data-theme='dark'] {
+  --bg: #141210;
+  --surface: #1a1a19;
+  --surface-2: #24221f;
+  --line: #34312c;
+  --text: #f0efec;
+  --text-2: #c3c2b7;
+  --muted: #9a958a;
+  --accent: #e0a24a;
+  --accent-ink: #1a1208;
+  --accent-soft: #3a2a14;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --grid: #3a3833;
+  color-scheme: dark;
+}
 
 * { box-sizing: border-box; }
+body::before { content: ''; position: fixed; inset: 0 0 auto; height: env(safe-area-inset-top, 0px); z-index: 10; background: var(--bg); }
 body {
   margin: 0;
   background: var(--bg);
@@ -54,9 +71,9 @@ p { margin: 0 0 8px; }
 .small { font-size: 0.85rem; }
 .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
 
-.app { max-width: 1080px; margin: 0 auto; padding: 0 16px 40px; }
+.app { max-width: 1080px; margin: 0 auto; padding-block: 0 40px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px)); }
 .top {
-  position: sticky; top: 0; z-index: 5;
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 5;
   display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
   padding: 12px 0; background: color-mix(in srgb, var(--bg) 92%, transparent); backdrop-filter: blur(8px);
   border-bottom: 1px solid var(--line);
@@ -97,6 +114,7 @@ main { padding-top: 20px; min-height: 60vh; }
 
 .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
 .wcard { display: flex; flex-direction: column; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); overflow: hidden; }
+.wcard-body, .detail-head > div { min-width: 0; }
 .wcard-main { display: flex; gap: 14px; text-align: left; background: none; border: 0; padding: 16px 16px 8px; flex: 1; }
 .wcard-main:hover h4 { text-decoration: underline; text-underline-offset: 3px; }
 .wcard-body { min-width: 0; }
@@ -163,3 +181,5 @@ main { padding-top: 20px; min-height: 60vh; }
   .nav button { padding: 6px 10px; }
 }
 .grid + p { margin-top: 12px; }
+.notice { font-size: 0.85rem; color: var(--text-2); }
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
