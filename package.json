@@ -1,0 +1,26 @@
+{
+  "name": "whisky-dex",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "위스키 도감 대시보드 — 취향 테스트(위스키BTI)와 비슷한 위스키 추천",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc --noEmit && vite build && node scripts/prerender.mjs",
+    "preview": "vite preview",
+    "sample": "node scripts/make-sample.mjs",
+    "fetch:data": "node scripts/fetch-whiskies.mjs",
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts scripts/lib/*.test.mjs"
+  },
+  "dependencies": {
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  },
+  "devDependencies": {
+    "@types/react": "18.3.31",
+    "@types/react-dom": "18.3.7",
+    "@vitejs/plugin-react": "4.7.0",
+    "typescript": "5.9.3",
+    "vite": "5.4.21"
+  }
+}

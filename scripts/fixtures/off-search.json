@@ -1,0 +1,6 @@
+{"count":3,"page":1,"products":[
+ {"code":"5010327325125","product_name":"Glenfiddich 12 Year Old","brands":"Glenfiddich","alcohol_value":40,"countries_tags":["en:united-kingdom"],"categories_tags":["en:whiskies","en:scotch-whisky","en:single-malt-whisky"]},
+ {"code":"0080686001409","product_name":"Jack Daniel's Old No. 7 Tennessee Whiskey","brands":"Jack Daniel's","nutriments":{"alcohol_100g":40},"countries_tags":["en:united-states"],"categories_tags":["en:whiskies"]},
+ {"code":"","product_name":"No barcode"},
+ {"code":"4005","product_name":"Too short code"}
+]}

@@ -1,0 +1,57 @@
+name: 위스키 데이터 수집
+
+# 배포는 Cloudflare Workers(정적 자산) 프로젝트가 main 푸시를 감지해 빌드·배포한다 (wrangler.jsonc).
+# 이 워크플로는 (1) 주 1회 위스키 데이터를 수집해 data 파일을 커밋하고 (2) 푸시·PR마다 테스트·빌드를 검사한다.
+# v0.1 출처(Wikidata, Open Food Facts, Iowa)는 키가 필요 없어 Secrets 없이 돈다.
+
+on:
+  schedule:
+    - cron: '17 21 * * 0' # 매주 월요일 06:17 KST (일요일 21:17 UTC). 정각은 지연이 잦아 피함
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: collect-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  check:
+    if: github.event_name == 'push' || github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm test
+      - run: npm run build
+
+  collect:
+    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - name: 위스키 데이터 수집
+        run: npm run fetch:data
+      - run: npm test
+      - name: 수집 데이터 커밋 (Cloudflare가 자동 배포)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A public/data
+          git diff --cached --quiet && echo "변경 없음" && exit 0
+          git commit -m "data: 위스키 데이터 갱신 $(TZ=Asia/Seoul date +%F)"
+          git push
