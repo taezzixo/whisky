@@ -1,4 +1,86 @@
 {
- "last": null,
- "history": []
+ "last": {
+  "runAt": "2026-11-14T05:41:19.499Z",
+  "durationSec": 7,
+  "sources": [
+   {
+    "id": "wikidata",
+    "ok": true,
+    "count": 327,
+    "sec": 1
+   },
+   {
+    "id": "off",
+    "ok": true,
+    "count": 0,
+    "sec": 1
+   },
+   {
+    "id": "iowa",
+    "ok": false,
+    "count": 0,
+    "error": "HTTP 404 https://data.iowa.gov/resource/gckp-fe7r.json?$limit=10000&$offset=0",
+    "sec": 5
+   }
+  ],
+  "quality": {
+   "dex": {
+    "total": 84,
+    "noFlavor": 0,
+    "noAbv": 0,
+    "noCountry": 0,
+    "gradeC": 84
+   },
+   "catalog": {
+    "total": 0,
+    "noFlavor": 0,
+    "noAbv": 0,
+    "noCountry": 0,
+    "gradeC": 0
+   }
+  }
+ },
+ "history": [
+  {
+   "runAt": "2026-11-14T05:41:19.499Z",
+   "durationSec": 7,
+   "sources": [
+    {
+     "id": "wikidata",
+     "ok": true,
+     "count": 327,
+     "sec": 1
+    },
+    {
+     "id": "off",
+     "ok": true,
+     "count": 0,
+     "sec": 1
+    },
+    {
+     "id": "iowa",
+     "ok": false,
+     "count": 0,
+     "error": "HTTP 404 https://data.iowa.gov/resource/gckp-fe7r.json?$limit=10000&$offset=0",
+     "sec": 5
+    }
+   ],
+   "quality": {
+    "dex": {
+     "total": 84,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 84
+    },
+    "catalog": {
+     "total": 0,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 0
+    }
+   }
+  }
+ ]
 }
