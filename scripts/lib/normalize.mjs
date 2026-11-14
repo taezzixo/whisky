@@ -56,9 +56,9 @@ export function parseOff(products = []) {
   const out = [];
   for (const p of products) {
     const code = String(p.code ?? '').replace(/\D/g, '');
-    const name = (p.product_name_en || p.product_name || '').trim();
+    const name = String(p.product_name_en || p.product_name || '').trim();
     if (!code || code.length < 8 || !name) continue;
-    const abv = num(p.alcohol_value) ?? num(p.nutriments?.alcohol_100g) ?? num(p.nutriments?.alcohol);
+    const abv = num(p.alcohol_value) ?? num(p.nutriments?.alcohol_100g) ?? num(p.nutriments?.alcohol) ?? num(String(name).match(/(\d{2}(?:[.,]\d{1,2})?)\s*%/)?.[1]);
     const brand = String(p.brands ?? '').split(',')[0].trim() || undefined;
     const country = countryKo(String(p.countries_tags?.[0] ?? p.origins ?? ''));
     out.push({
@@ -85,12 +85,14 @@ export function parseIowa(rows = []) {
   const seen = new Map();
   for (const r of rows) {
     const cat = String(pick(r, ['category_name', 'categoryname', 'category']) ?? '');
-    if (!/whisk|bourbon|scotch|\brye\b/i.test(cat)) continue;
-    const item = String(pick(r, ['itemno', 'item_number', 'item_no']) ?? '').trim();
+    if (!/whisk|bourbon|scotch|\brye\b/i.test(cat) || /liqueur|cordial/i.test(cat)) continue; // 위스키 리큐어는 위스키가 아님
+    const item = String(pick(r, ['item_no', 'itemno', 'item_number']) ?? '').trim();
     const desc = String(pick(r, ['im_desc', 'item_description', 'description']) ?? '').trim();
     if (!item || !desc) continue;
-    const key = normName(desc);
     const vol = num(pick(r, ['bottle_volume_ml', 'bottle_size']));
+    // 미니어처(375ml 미만)·선물세트(잔·미니 동봉)는 도감 단위가 아니라 뺀다
+    if ((vol && vol < 375) || /\bw\/|\bmini\b|gift|\bvap\b|glass(es)?\b/i.test(desc)) continue;
+    const key = normName(cleanIowaName(desc));
     const prev = seen.get(key);
     if (prev && prev.vol === 750) continue; // 같은 제품은 750ml 우선
     const proof = num(pick(r, ['proof']));
@@ -100,19 +102,24 @@ export function parseIowa(rows = []) {
       w: {
         id: `ia-${item}`,
         source: 'iowa',
-        name: titleCase(desc),
+        name: titleCase(cleanIowaName(desc)),
         brand: undefined,
-        country: /scotch/i.test(cat) ? '스코틀랜드' : /irish/i.test(cat) ? '아일랜드' : /canadian/i.test(cat) ? '캐나다' : /japan/i.test(cat) ? '일본' : '미국',
+        country: /scotch/i.test(cat) ? '스코틀랜드' : /irish/i.test(cat) ? '아일랜드' : /canadian/i.test(cat) ? '캐나다' : /japan/i.test(cat) ? '일본' : /imported|world/i.test(cat) ? '' : '미국',
         type: guessType(`${desc} ${cat}`),
         age: parseAge(desc),
         abv: proof ? Math.round((proof / 2) * 10) / 10 : undefined,
         barcode: upc.length >= 8 ? [upc] : undefined,
         grade: 'C',
-        refs: [{ source: 'iowa', url: 'https://data.iowa.gov/' }],
+        refs: [{ source: 'iowa', url: 'https://data.iowa.gov/catalog/dataset/1029' }],
       },
     });
   }
   return [...seen.values()].map((x) => x.w);
+}
+
+/** 판매처 내부 표기 제거: "Use Code 963327" 등 */
+export function cleanIowaName(s) {
+  return String(s).replace(/\s*use code \d+/gi, '').replace(/\s{2,}/g, ' ').trim();
 }
 
 function titleCase(s) {

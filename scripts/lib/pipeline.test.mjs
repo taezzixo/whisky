@@ -1,6 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { isZip, parseJsonRows, readFirstZipEntry } from './zip.mjs';
+import { cleanIowaName } from './normalize.mjs';
 import { attachDistilleries, guessType, isSuspiciousEmpty, mergeCatalog, normName, parseAge, parseIowa, parseOff, parseWikidata } from './normalize.mjs';
 
 const fx = (f) => JSON.parse(readFileSync(new URL(`../fixtures/${f}`, import.meta.url), 'utf8'));
@@ -30,9 +32,10 @@ test('parseOff: 바코드 없는 항목 제외, 고정 id', () => {
   assert.equal(r[0].abv, 40);
   assert.equal(r[0].country, '스코틀랜드');
   assert.equal(r[1].abv, 40); // nutriments 에서 읽음
+  assert.equal(parseOff([{ code: '12345678', product_name: 'Test Whisky 43% vol' }])[0].abv, 43); // 이름 표기에서 읽음
 });
 
-test('parseIowa: 위스키만, 같은 제품은 750ml 하나', () => {
+test('parseIowa: 위스키만(리큐어 제외), 같은 제품은 750ml 하나', () => {
   const r = parseIowa(fx('iowa-products.json'));
   assert.equal(r.length, 2);
   const bt = r.find((w) => w.name === 'Buffalo Trace');
@@ -77,4 +80,26 @@ test('시드: id 고정 형식, 맛 벡터 10축 0~5', () => {
     assert.equal(w.flavor.length, 10);
     assert.ok(w.flavor.every((v) => v >= 0 && v <= 5), w.id);
   }
+});
+
+test('zip: 저장·deflate 방식 모두 풀고 줄 단위 JSON을 읽는다', () => {
+  for (const f of ['iowa-stored.zip', 'iowa-deflate.zip']) {
+    const buf = readFileSync(new URL(`../fixtures/${f}`, import.meta.url));
+    assert.ok(isZip(buf), f);
+    const rows = parseJsonRows(readFirstZipEntry(buf).toString('utf8'));
+    assert.equal(rows.length, 5, f);
+    assert.equal(parseIowa(rows).length, 2, f);
+  }
+  assert.equal(parseJsonRows('[{"a":1}]')[0].a, 1);
+  assert.equal(isZip(Buffer.from('[]')), false);
+});
+
+test('Iowa 이름 정리: 판매처 코드 제거, 미니어처·선물세트 제외', () => {
+  assert.equal(cleanIowaName('Tomintoul 16 Year Single Malt Scotch Use Code 963327'), 'Tomintoul 16 Year Single Malt Scotch');
+  const r = parseIowa([
+    { item_no: '1', category_name: 'Straight Bourbon Whiskies', im_desc: 'Bulleit Bourbon W/Mini Flask', bottle_volume_ml: 750, proof: 80 },
+    { item_no: '2', category_name: 'Tennessee Whiskies', im_desc: 'Jack Daniels Honey Mini', bottle_volume_ml: 50, proof: 70 },
+    { item_no: '3', category_name: 'Single Malt Scotch', im_desc: 'Tomintoul 16 Year Use Code 963327', bottle_volume_ml: 750, proof: 80 },
+  ]);
+  assert.deepEqual(r.map((w) => w.name), ['Tomintoul 16 Year']);
 });

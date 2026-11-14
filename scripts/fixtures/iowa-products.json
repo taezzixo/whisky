@@ -1,6 +1,7 @@
 [
- {"itemno":"26827","category_name":"STRAIGHT BOURBON WHISKIES","im_desc":"BUFFALO TRACE","bottle_volume_ml":"750","proof":"90","upc":"080244009236"},
- {"itemno":"26826","category_name":"STRAIGHT BOURBON WHISKIES","im_desc":"BUFFALO TRACE","bottle_volume_ml":"1750","proof":"90"},
- {"itemno":"5099","category_name":"SINGLE MALT SCOTCH","im_desc":"LAPHROAIG 10YR","bottle_volume_ml":"750","proof":"86"},
- {"itemno":"35918","category_name":"AMERICAN VODKAS","im_desc":"TITOS HANDMADE VODKA","bottle_volume_ml":"750","proof":"80"}
+ {"item_no":"26827","category_name":"Straight Bourbon Whiskies","im_desc":"Buffalo Trace","bottle_volume_ml":750,"proof":90,"upc":"080244009236","age":"0"},
+ {"item_no":"26826","category_name":"Straight Bourbon Whiskies","im_desc":"Buffalo Trace","bottle_volume_ml":1750,"proof":90},
+ {"item_no":"5099","category_name":"Single Malt Scotch","im_desc":"Laphroaig 10YR","bottle_volume_ml":750,"proof":86},
+ {"item_no":"100015","category_name":"Whiskey Liqueur","im_desc":"Fireball Cinnamon Whiskey","bottle_volume_ml":750,"proof":66},
+ {"item_no":"35918","category_name":"American Vodkas","im_desc":"Titos Handmade Vodka","bottle_volume_ml":750,"proof":80}
 ]

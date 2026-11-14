@@ -1,26 +1,25 @@
 {
  "last": {
-  "runAt": "2026-11-14T05:41:19.499Z",
-  "durationSec": 7,
+  "runAt": "2026-11-14T06:08:56.720Z",
+  "durationSec": 413,
   "sources": [
    {
     "id": "wikidata",
     "ok": true,
     "count": 327,
-    "sec": 1
+    "sec": 2
    },
    {
     "id": "off",
     "ok": true,
-    "count": 0,
-    "sec": 1
+    "count": 683,
+    "sec": 410
    },
    {
     "id": "iowa",
-    "ok": false,
-    "count": 0,
-    "error": "HTTP 404 https://data.iowa.gov/resource/gckp-fe7r.json?$limit=10000&$offset=0",
-    "sec": 5
+    "ok": true,
+    "count": 3285,
+    "sec": 1
    }
   ],
   "quality": {
@@ -32,15 +31,177 @@
     "gradeC": 84
    },
    "catalog": {
-    "total": 0,
-    "noFlavor": 0,
-    "noAbv": 0,
-    "noCountry": 0,
-    "gradeC": 0
+    "total": 3195,
+    "noFlavor": 3195,
+    "noAbv": 373,
+    "noCountry": 1,
+    "gradeC": 3195
    }
   }
  },
  "history": [
+  {
+   "runAt": "2026-11-14T06:08:56.720Z",
+   "durationSec": 413,
+   "sources": [
+    {
+     "id": "wikidata",
+     "ok": true,
+     "count": 327,
+     "sec": 2
+    },
+    {
+     "id": "off",
+     "ok": true,
+     "count": 683,
+     "sec": 410
+    },
+    {
+     "id": "iowa",
+     "ok": true,
+     "count": 3285,
+     "sec": 1
+    }
+   ],
+   "quality": {
+    "dex": {
+     "total": 84,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 84
+    },
+    "catalog": {
+     "total": 3195,
+     "noFlavor": 3195,
+     "noAbv": 373,
+     "noCountry": 1,
+     "gradeC": 3195
+    }
+   }
+  },
+  {
+   "runAt": "2026-11-14T06:01:16.530Z",
+   "durationSec": 353,
+   "sources": [
+    {
+     "id": "wikidata",
+     "ok": true,
+     "count": 327,
+     "sec": 1
+    },
+    {
+     "id": "off",
+     "ok": true,
+     "count": 683,
+     "sec": 347
+    },
+    {
+     "id": "iowa",
+     "ok": true,
+     "count": 3712,
+     "sec": 5
+    }
+   ],
+   "quality": {
+    "dex": {
+     "total": 84,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 84
+    },
+    "catalog": {
+     "total": 3530,
+     "noFlavor": 3530,
+     "noAbv": 373,
+     "noCountry": 1,
+     "gradeC": 3530
+    }
+   }
+  },
+  {
+   "runAt": "2026-11-14T05:53:56.939Z",
+   "durationSec": 434,
+   "sources": [
+    {
+     "id": "wikidata",
+     "ok": true,
+     "count": 327,
+     "sec": 1
+    },
+    {
+     "id": "off",
+     "ok": false,
+     "count": 0,
+     "error": "HTTP 503 https://world.openfoodfacts.org/api/v2/search?categories_tags_en=whisky&fields=code,product_name,product_name_en,brands,",
+     "sec": 431
+    },
+    {
+     "id": "iowa",
+     "ok": true,
+     "count": 3712,
+     "sec": 1
+    }
+   ],
+   "quality": {
+    "dex": {
+     "total": 84,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 84
+    },
+    "catalog": {
+     "total": 3141,
+     "noFlavor": 3141,
+     "noAbv": 3,
+     "noCountry": 0,
+     "gradeC": 3141
+    }
+   }
+  },
+  {
+   "runAt": "2026-11-14T05:45:31.789Z",
+   "durationSec": 48,
+   "sources": [
+    {
+     "id": "wikidata",
+     "ok": true,
+     "count": 327,
+     "sec": 1
+    },
+    {
+     "id": "off",
+     "ok": false,
+     "count": 0,
+     "error": "HTTP 503 https://world.openfoodfacts.org/api/v2/search?categories_tags_en=whisky&fields=code,product_name,product_name_en,brands,",
+     "sec": 47
+    },
+    {
+     "id": "iowa",
+     "ok": true,
+     "count": 3712,
+     "sec": 1
+    }
+   ],
+   "quality": {
+    "dex": {
+     "total": 84,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 84
+    },
+    "catalog": {
+     "total": 3141,
+     "noFlavor": 3141,
+     "noAbv": 3,
+     "noCountry": 0,
+     "gradeC": 3141
+    }
+   }
+  },
   {
    "runAt": "2026-11-14T05:41:19.499Z",
    "durationSec": 7,

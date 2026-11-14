@@ -1,14 +1,17 @@
 # 위스키 도감 인계 문서 (새 대화 시작용)
 
 > Notion 「대시보드 v1.0 / [위스키 도감] (whisky) / [위스키 도감] 인계 문서 (새 대화 시작용)」의 저장소 사본입니다. 이후에는 Notion을 기준으로 갱신하고, 바뀌면 이 파일도 맞춥니다.
-> 마지막 갱신: 2026-11-14
+> 마지막 갱신: 2026-11-14 (첫 수집·배포 확인 후)
 
 ## 현재 상태 — v0.1 (작업 브랜치 `claude/fervent-newton-pyyp12`)
 - 기획: `docs/PLAN_ORIGINAL.md`(최초 기획서), `docs/PRD.md`(PRD v1.0)
 - 구성: 청약맵 기본 구성도 v1 적용. 달라진 점은 `docs/ARCHITECTURE.md` §0 (2026-11-13 사용자 확인)
 - 화면: 위스키BTI(8문항 → 16유형 → Top 3 + 한 단계 위), 찾아보기, 위스키 상세 + 비슷한 위스키 4가지 모드, 내 목록(위시·마셔본, JSON 내보내기·가져오기)
-- 데이터: 큐레이션 시드 84종(맛 벡터 추정, 등급 C). 수집 스크립트(Wikidata·OFF·Iowa)는 작성·테스트 완료, **실제 수집은 아직 안 돌았음**
-- 테스트 30개 통과, 빌드 성공, 라이트·다크·모바일 화면 확인
+- 데이터: 큐레이션 시드 84종(맛 벡터 추정, 등급 C) + 수집 카탈로그 3,195건(맛 정보 없음, 검색 전용) + 증류소 327곳
+  - 2026-11-14 수집: Wikidata 327 · Open Food Facts 683 · Iowa 3,285 — 모두 성공. 시드 중 56종에 증류소 좌표, 30종에 바코드 연결
+  - 첫 Actions 실행에서 OFF 0건·Iowa 404 → 수정함: OFF 카테고리 태그는 `whisky`(단수), `nutriments` 필드는 503 유발이라 제외 / Iowa는 새 API `idh-be.iowa.gov` 데이터셋 1029(zip 안 줄 단위 JSON)
+- 배포: Cloudflare Workers 연결 완료 — https://whisky-dex.kth95280.workers.dev (작업 브랜치 `claude/fervent-newton-pyyp12`가 저장소 기본 브랜치이며 배포 기준. `main` 브랜치는 없음)
+- 테스트 32개 통과, 빌드 성공, 라이트·다크·모바일 화면 확인
 - MVP 미리보기(비공개): https://claude.ai/artifact/PgGBdwZvZWRZ9MG5Ps9VkW — 정식 배포 전 확인용. 이 미리보기에서는 JSON 내보내기가 동작하지 않음
 
 ## 결정된 사항
@@ -21,14 +24,14 @@
 | 수집 주기 | 주 1회 (월 06:17 KST) |
 
 ## 다음 할 일 (사람)
-1. 작업 브랜치를 `main`에 병합 (PR 또는 직접)
-2. Cloudflare → Workers 및 Pages → `taezzixo/whisky` 연결 (프로젝트 `whisky-dex`, 빌드 `npm run build`, 배포 `npx wrangler deploy`, 빌드 변수 `SITE_URL`)
-3. GitHub → Actions → "위스키 데이터 수집" → Run workflow 로 첫 수집
+1. (선택) 기본 브랜치 정리: 지금은 작업 브랜치가 기본·배포 브랜치. `main`을 만들어 옮길지 결정
+2. Cloudflare 빌드 변수 `SITE_URL=https://whisky-dex.kth95280.workers.dev` 확인 (SEO canonical·sitemap 절대 주소용)
 
 ## 다음 할 일 (Claude)
-1. 첫 수집 결과(`run-log.json`) 확인: 출처별 건수·실패 원인, Wikidata 분류·Iowa 열 이름 검증
-2. 시드 확대: 국내 유통 인기 위스키 84 → 300종, 맛 벡터 검수 기준 정하기
-3. v0.2: 맛 지도(산점도), 도감 그리드·수집률, 관리자 페이지(수집 현황·품질)
+1. 다음 주간 수집(월 06:17 KST) 결과 확인 — OFF는 요청 제한(503)이 잦아 재시도 대기가 길어질 수 있음
+2. Iowa 이름의 판매처 약어(예: "Bp", "Ha", "Rclr") 정리 규칙 추가
+3. 시드 확대: 국내 유통 인기 위스키 84 → 300종, 맛 벡터 검수 기준 정하기
+4. v0.2: 맛 지도(산점도), 도감 그리드·수집률, 관리자 페이지(수집 현황·품질)
 
 ## 결정 대기
 - LLM(Claude API)으로 카탈로그 항목 맛 벡터 자동 생성할지 — 비용·정확도 검토 필요

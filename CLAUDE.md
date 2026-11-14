@@ -24,7 +24,7 @@
 npm install            # 의존성 설치
 npm run sample         # 시드만으로 public/data 샘플 생성 (네트워크 불필요)
 npm run dev            # 개발 서버
-npm test               # 단위 테스트 (현재 30개, 모두 통과해야 함)
+npm test               # 단위 테스트 (현재 32개, 모두 통과해야 함)
 npm run build          # 타입 검사 + 빌드 + 위스키별 SEO 페이지 생성
 npm run fetch:data     # 수집 (키 불필요. 이 클라우드 세션은 출처 호스트가 막혀 있어 Actions에서 실행)
 ```
