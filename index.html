@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <meta name="description" content="몇 가지 질문으로 내 위스키 취향을 찾고, 좋아하는 위스키와 비슷한 위스키를 추천받으세요." />
+    <script>
+      // 고른 화면 테마를 첫 화면 전에 적용 (src/lib/theme.ts 와 같은 키)
+      try { var t = localStorage.getItem('whisky-dex:theme'); if (t === 'light' || t === 'dark') document.documentElement.dataset.theme = t; } catch (e) {}
+    </script>
     <meta name="theme-color" content="#f7f9fb" media="(prefers-color-scheme: light)" />
     <meta name="theme-color" content="#050816" media="(prefers-color-scheme: dark)" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />

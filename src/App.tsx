@@ -11,6 +11,8 @@ import { tasteFromTastings, triedIds } from './lib/collection.ts';
 import { applyOverrides } from './lib/overrides.ts';
 import { loadUserData, mergeUserData, parseUserData, removeBottle, removeTasting, saveUserData, toggle, toggleCompare, upsertBottle, upsertTasting, type UserData } from './lib/store.ts';
 import type { Overrides, Whisky, WhiskiesFile } from './types.ts';
+import { ThemeSwitch } from './components/ui.tsx';
+import { applyTheme, loadTheme, resolveTheme, saveTheme, systemPrefersDark, watchSystemTheme, type Theme } from './lib/theme.ts';
 
 type Tab = 'dex' | 'bti' | 'map' | 'dist' | 'mine' | 'compare';
 const TABS: [Tab, string][] = [
@@ -48,6 +50,16 @@ export default function App() {
   const [error, setError] = useState(false);
   const [{ tab, id, d }, setRoute] = useState(readUrl);
   const [user, setUser] = useState<UserData>(() => loadUserData());
+  // 화면 테마: 고른 값(이 기기에만 저장)이 없으면 기기 설정을 따라간다
+  const [pickedTheme, setPickedTheme] = useState<Theme | null>(() => loadTheme());
+  const [systemTheme, setSystemTheme] = useState<Theme>(() => resolveTheme(null, systemPrefersDark()));
+  const theme = resolveTheme(pickedTheme, systemTheme === 'dark');
+  useEffect(() => watchSystemTheme(setSystemTheme), []);
+  useEffect(() => applyTheme(theme), [theme]);
+  const pickTheme = (t: Theme) => {
+    setPickedTheme(t);
+    saveTheme(t);
+  };
   const [retry, setRetry] = useState(false);
   const [notice, setNotice] = useState('');
 
@@ -132,6 +144,9 @@ export default function App() {
             </button>
           ))}
         </nav>
+        <div className="end">
+          <ThemeSwitch value={theme} onChange={pickTheme} />
+        </div>
       </header>
 
       <main>

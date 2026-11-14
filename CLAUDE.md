@@ -27,7 +27,7 @@
 npm install            # 의존성 설치
 npm run sample         # 시드만으로 public/data 샘플 생성 (네트워크 불필요)
 npm run dev            # 개발 서버
-npm test               # 단위 테스트 (현재 54개, 모두 통과해야 함 — 테일윈드 임의값·클래스 충돌 검사 포함)
+npm test               # 단위 테스트 (현재 55개, 모두 통과해야 함 — 테일윈드 임의값·클래스 충돌 검사 포함)
 npm run build          # 타입 검사 + 빌드 + 위스키별 SEO 페이지 생성
 npm run fetch:data     # 데이터 수집 (키 불필요)
 npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 공용, 자유 라이선스만)
@@ -36,8 +36,8 @@ npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 
 
 ## 디렉터리
 - `src/App.tsx` — 탭(도감, 위스키BTI, 맛 지도, 증류소, 내 기록, 비교), 주소(`?tab=`, `?w=<id>` 상세, `?tab=dist&d=<증류소>`), 데이터 불러오기
-- `src/components/` — `Dex.tsx`(액체 색 띠·배지·나라별 수집·선반), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록), `HomeBar.tsx`(내 바: 보유 병·남은 양·산화 안내), `Compare.tsx`(최대 4종 비교), `BarcodeScan.tsx`(카메라 바코드), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `WhiskyArt.tsx`(볼록한 병·사진·잔 + 3D 기울기), `Distilleries.tsx`(증류소 색인·페이지), `ValueRanking.tsx`(체감 가성비 표), `TastingCard.tsx`(테이스팅 카드 이미지 1:1·9:16), `ui.tsx`(테일윈드 공통 조각: Button·Chip·Section·AppLink), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
-- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록), `insights.ts`(증류소 묶음·가성비·노트 도우미)
+- `src/components/` — `Dex.tsx`(액체 색 띠·배지·나라별 수집·선반), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록), `HomeBar.tsx`(내 바: 보유 병·남은 양·산화 안내), `Compare.tsx`(최대 4종 비교), `BarcodeScan.tsx`(카메라 바코드), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `WhiskyArt.tsx`(볼록한 병·사진·잔 + 3D 기울기), `Distilleries.tsx`(증류소 색인·페이지), `ValueRanking.tsx`(체감 가성비 표), `TastingCard.tsx`(테이스팅 카드 이미지 1:1·9:16), `ui.tsx`(테일윈드 공통 조각: Button·Chip·Section·AppLink·ThemeSwitch), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
+- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록), `theme.ts`(라이트·다크 고르기, 이 기기에만 저장), `insights.ts`(증류소 묶음·가성비·노트 도우미)
 - `src/config/` — `flavor.ts`(맛 10축·가중치 버전), `bti.ts`(문항·유형 이름)
 - `src/admin/main.tsx` + `admin.html` — 관리 페이지 `/admin.html`(읽기 전용: 출처별 수집 결과·품질·이력)
 - `data/flavor-seed.json` — **큐레이션 시드**(맛 벡터가 있는 도감의 원본, 376종). 추가·수정 기준은 `docs/SEED_GUIDE.md`

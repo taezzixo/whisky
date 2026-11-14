@@ -9,7 +9,7 @@
 
 ## 1. 토큰 정의
 
-**위치:** `src/styles.css` 맨 위 `:root` 블록 한 곳(페이퍼 = 라이트, 기본). 미드나이트(다크)는 `@media (prefers-color-scheme: dark) :root:not([data-theme='light'])`와 `:root[data-theme='dark'], [data-theme='midnight']` 두 곳에 같은 값을 다시 정의합니다. 한 구역만 어둡게 하려면 그 요소에 `data-theme="midnight"`를 답니다(숫자 띠).
+**위치:** `src/styles.css` 맨 위 `:root` 블록 한 곳(페이퍼 = 라이트, 기본). 미드나이트(다크)는 `@media (prefers-color-scheme: dark) :root:not([data-theme='light'])`와 `:root[data-theme='dark'], [data-theme='midnight']` 두 곳에 같은 값을 다시 정의합니다. 한 구역만 어둡게 하려면 그 요소에 `data-theme="midnight"`를 답니다(숫자 띠). 머리 띠 오른쪽 `ThemeSwitch`(해·달 알약 두 칸)로 고르면 `<html data-theme>`에 `light`/`dark`가 달리고 이 기기의 localStorage(`whisky-dex:theme`)에만 남습니다. 고르지 않았으면 기기 설정을 따릅니다. `index.html`·`admin.html` 머리의 짧은 스크립트가 첫 화면 전에 적용해 깜빡이지 않습니다.
 
 | 그룹 | 토큰 (페이퍼 / 미드나이트) | 쓰임 | 쓰지 말 곳 |
 |---|---|---|---|
@@ -34,7 +34,7 @@
 
 | 컴포넌트 | 역할 | 주요 CSS 클래스 |
 |---|---|---|
-| `App.tsx` 머리 띠 | 세리프 워드마크 + 코발트 점, 가운데 알약 탭 묶음 | `.top` `.wordmark` `.nav` |
+| `App.tsx` 머리 띠 | 세리프 워드마크 + 코발트 점, 가운데 알약 탭 묶음, 오른쪽 라이트·다크 고르기(`ThemeSwitch`) | `.top` `.wordmark` `.nav` `.end` `.theme-switch` |
 | `Dex.tsx` | 도감: 히어로 판의 색 띠, 배지, 나라별 수집, 진열장 | `.hero` `.band` `.seals.panel` `.coin` `.countries` `.cabinet` `.slot` |
 | `WhiskyArt.tsx` | 실제 사진·배경 지운 병·잔 일러스트 + 3D 기울기(최대 6°) | `.bottle` `.photo` / `Glass` |
 | `Glass.tsx` | 사진이 없을 때의 잔 일러스트(추정 액체 색) | `.glass` `.liquid` |

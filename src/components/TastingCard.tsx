@@ -220,7 +220,14 @@ export function TastingCard({ w, tasting }: { w: Whisky; tasting: Tasting }) {
   const canShare = typeof navigator !== 'undefined' && 'canShare' in navigator;
 
   useEffect(() => {
-    if (ref.current) drawTastingCard(ref.current, w, tasting, format).catch(() => setMsg('카드를 그리지 못했습니다. 새로고침 뒤 다시 시도해 주세요.'));
+    const draw = () => {
+      if (ref.current) drawTastingCard(ref.current, w, tasting, format).catch(() => setMsg('카드를 그리지 못했습니다. 새로고침 뒤 다시 시도해 주세요.'));
+    };
+    draw();
+    // 화면 테마를 바꾸면 카드 색도 다시 읽어 그린다
+    const mo = new MutationObserver(draw);
+    mo.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+    return () => mo.disconnect();
   }, [w, tasting, format]);
 
   const toBlob = () => new Promise<Blob | null>((res) => ref.current?.toBlob(res, 'image/png') ?? res(null));
