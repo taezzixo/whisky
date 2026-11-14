@@ -14,17 +14,17 @@
 |---|---|---|---|
 | 1 | 저장소 | `dash_housing` 공개 | `taezzixo/whisky` **비공개** (Actions 무료 시간 안에서 충분) |
 | 2 | 수집 주기 | 매일 06:17 KST | **매주 월요일 06:17 KST** — 제품 DB는 천천히 바뀜 |
-| 3 | 출처 | 공공데이터포털 API (키 필요) | Wikidata · Open Food Facts · Iowa 주류 제품 목록 — **키 없음, Secrets 불필요** |
+| 3 | 출처 | 공공데이터포털 API (키 필요) | Wikidata · Open Food Facts(카테고리 `whisky`) · Iowa 주류 제품 목록(새 API `idh-be.iowa.gov` 데이터셋 1029, zip) — **키 없음, Secrets 불필요** |
 | 4 | 핵심 데이터 원본 | 수집 결과 | **큐레이션 시드**(`data/flavor-seed.json`)가 원본, 수집은 바코드·좌표·카탈로그 보강 |
 | 5 | 핵심 항목 | `Notice` | `Whisky` — 고정 id · 출처 · 위치(증류소 좌표) · 원문 링크(refs) · 품질(등급 A/B/C) 유지, "날짜 묶음" 대신 "맛 벡터 10축" |
-| 6 | 메인 화면 | 카카오 지도 | 위스키BTI + 비슷한 위스키 추천 (차트는 SVG 직접 구현, 지도 SDK 없음) |
+| 6 | 메인 화면 | 카카오 지도 | 도감(액체 색 띠·선반)·위스키BTI·맛 지도(산점도)·내 기록. 차트는 SVG 직접 구현, 지도 SDK 없음 |
 | 7 | 브라우저 계산 | 자격 판정·가점 | BTI 취향 벡터·유형, 유사도·추천 모드 |
 | 8 | 기준값 버전 관리 | `criteria.ts` | `config/flavor.ts`(가중치 `SIMILARITY_VERSIONS`), `config/bti.ts`(`BTI_VERSION`) |
-| 9 | 사용자 입력 | 소득·자산 → localStorage | BTI 답·위시·마셔본 목록 → localStorage + JSON 내보내기 |
+| 9 | 사용자 입력 | 소득·자산 → localStorage | BTI 답·시음 기록(별점·메모)·위시·마셔본 목록 → localStorage + JSON 내보내기 |
 | 10 | 계정 | Supabase (선택) | **없음** — 커뮤니티(피드·제보)는 Phase 3에서 Supabase 검토 |
 | 11 | 데이터 크기 대응 | 단일 파일 | `whiskies.json`(도감, 첫 화면) + `catalog.json`(검색 탭에서만 늦게 불러옴) 분리 |
 | 12 | SEO 페이지 | `/n/<id>` | `/w/<id>` (맛 정보 있는 도감만) |
-| 13 | 관리자 페이지 | `/admin.html` | v0.1 없음 — `run-log.json`과 `overrides.json`으로 운영, v0.2에서 추가 |
+| 13 | 관리자 페이지 | `/admin.html` | `/admin.html` 읽기 전용(출처별 결과·품질·이력). 회원 집계는 계정이 없어 없음 |
 
 ---
 
@@ -153,6 +153,5 @@ v0.1은 비밀 키가 없습니다. `SITE_URL`만 Cloudflare 빌드 변수에 �
 
 ## 7. 알려진 제약
 
-- 이 클라우드 작업 세션의 네트워크 정책은 세 출처 호스트를 막고 있습니다. 파서는 고정 응답으로 테스트했고, **실제 수집은 GitHub Actions 첫 실행에서 확인**해야 합니다.
-- Wikidata의 "위스키 증류소" 분류(Q10373548)와 Iowa 데이터셋 열 이름은 첫 실행 결과로 검증이 필요합니다. 실패해도 그 출처만 비고 사이트는 정상 동작합니다.
-- 맛 벡터는 시드 84종만 있습니다. 카탈로그 항목은 검색만 되고 추천에는 쓰이지 않습니다.
+- 2026-11-14 세 출처 모두 실제 수집을 확인했습니다. Open Food Facts는 `nutriments` 필드를 요청하면 503을 돌려주고 요청 제한도 잦아 재시도 대기를 길게 둡니다.
+- 맛 벡터는 시드 345종만 있습니다(모두 등급 C 추정). 카탈로그 항목은 검색만 되고 추천에는 쓰이지 않습니다.

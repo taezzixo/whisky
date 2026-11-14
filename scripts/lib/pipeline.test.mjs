@@ -96,10 +96,30 @@ test('zip: 저장·deflate 방식 모두 풀고 줄 단위 JSON을 읽는다', (
 
 test('Iowa 이름 정리: 판매처 코드 제거, 미니어처·선물세트 제외', () => {
   assert.equal(cleanIowaName('Tomintoul 16 Year Single Malt Scotch Use Code 963327'), 'Tomintoul 16 Year Single Malt Scotch');
+  assert.equal(cleanIowaName('Bp 1792 Bib Bourbon Ksbw'), '1792 Bottled in Bond Bourbon Kentucky Straight Bourbon Whiskey');
+  assert.equal(cleanIowaName('Sooh Cm Knappogue Castle 12yr'), 'Knappogue Castle 12 Year');
+  assert.equal(cleanIowaName('Habit Rye'), 'Habit Rye'); // 단어 일부는 건드리지 않음
+  assert.equal(cleanIowaName('Rclr Straight Rye Whiskey'), 'Rclr Straight Rye Whiskey');
   const r = parseIowa([
     { item_no: '1', category_name: 'Straight Bourbon Whiskies', im_desc: 'Bulleit Bourbon W/Mini Flask', bottle_volume_ml: 750, proof: 80 },
     { item_no: '2', category_name: 'Tennessee Whiskies', im_desc: 'Jack Daniels Honey Mini', bottle_volume_ml: 50, proof: 70 },
     { item_no: '3', category_name: 'Single Malt Scotch', im_desc: 'Tomintoul 16 Year Use Code 963327', bottle_volume_ml: 750, proof: 80 },
+    { item_no: '4', category_name: 'Straight Bourbon Whiskies', im_desc: 'Makers Mark Generations Tri-Pack', bottle_volume_ml: 750, proof: 90 },
+    { item_no: '5', category_name: 'Straight Bourbon Whiskies', im_desc: 'Clyde Mays Dualpack', bottle_volume_ml: 750, proof: 90 },
   ]);
   assert.deepEqual(r.map((w) => w.name), ['Tomintoul 16 Year']);
+});
+
+test('시드 점검 규칙 (docs/SEED_GUIDE.md §2)', () => {
+  const bad = [];
+  for (const w of seed) {
+    const [, smoky, , spicy, , , , oaky, , winey] = w.flavor;
+    const wineCask = w.casks?.some((c) => ['sherry', 'wine', 'port'].includes(c));
+    if (!wineCask && winey > 1) bad.push(`${w.id}: 셰리·와인 통 없는데 셰리 축 ${winey}`);
+    if (w.peated === false && smoky > 1) bad.push(`${w.id}: 피트 없는데 스모키 ${smoky}`);
+    if (w.peated === true && smoky < 1) bad.push(`${w.id}: 피트인데 스모키 ${smoky}`);
+    if (w.country === '미국' && ['bourbon', 'rye', 'tennessee'].includes(w.type) && oaky < 3) bad.push(`${w.id}: 버번·라이인데 오크 ${oaky}`);
+    if (w.type === 'rye' && spicy < 4) bad.push(`${w.id}: 라이인데 스파이시 ${spicy}`);
+  }
+  assert.deepEqual(bad, []);
 });

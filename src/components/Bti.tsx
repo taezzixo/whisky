@@ -5,7 +5,7 @@ import { QUESTIONS } from '../config/bti.ts';
 import { buildProfile, recommend, type Answers, type BtiProfile } from '../lib/bti.ts';
 import type { Whisky } from '../types.ts';
 import { Radar } from './Charts.tsx';
-import { WhiskyCard } from './WhiskyCard.tsx';
+import { WhiskyRow } from './WhiskyRow.tsx';
 
 export function BtiQuiz({ onDone }: { onDone: (p: BtiProfile) => void }) {
   const [step, setStep] = useState(0);
@@ -20,31 +20,41 @@ export function BtiQuiz({ onDone }: { onDone: (p: BtiProfile) => void }) {
   };
 
   return (
-    <section className="quiz card">
-      <div className="progress" role="progressbar" aria-valuemin={0} aria-valuemax={QUESTIONS.length} aria-valuenow={step + 1}>
-        <span style={{ width: `${((step + 1) / QUESTIONS.length) * 100}%` }} />
-      </div>
-      <p className="eyebrow">
-        질문 {step + 1} / {QUESTIONS.length}
-      </p>
-      <h2>{q.title}</h2>
-      {q.hint && <p className="muted">{q.hint}</p>}
-      <div className="choices">
-        {q.choices.map((c, i) => (
-          <button key={c.label} className={`choice${answers[q.id] === i ? ' on' : ''}`} onClick={() => choose(i)}>
-            <span className="emoji" aria-hidden="true">
-              {c.emoji}
-            </span>
-            {c.label}
-          </button>
-        ))}
-      </div>
-      {step > 0 && (
-        <button className="link" onClick={() => setStep(step - 1)}>
-          ← 이전 질문
-        </button>
-      )}
-    </section>
+    <div className="stack">
+      <section className="hero">
+        <h1>나에게 맞는 위스키는</h1>
+        <p className="lede">커피, 디저트, 향신료 취향 같은 질문 {QUESTIONS.length}개로 위스키 취향 유형과 첫 세 병을 골라 드립니다.</p>
+      </section>
+      <section className="quiz" aria-labelledby="q-title">
+        <div className="quiz-progress" role="progressbar" aria-valuemin={1} aria-valuemax={QUESTIONS.length} aria-valuenow={step + 1} aria-label={`질문 ${step + 1} / ${QUESTIONS.length}`}>
+          {QUESTIONS.map((x, i) => (
+            <i key={x.id} className={i <= step ? 'on' : undefined} />
+          ))}
+        </div>
+        <p className="muted small num">
+          {step + 1} / {QUESTIONS.length}
+        </p>
+        <h2 id="q-title">{q.title}</h2>
+        {q.hint && <p className="muted">{q.hint}</p>}
+        <div className="choices">
+          {q.choices.map((c, i) => (
+            <button key={c.label} className="choice" aria-pressed={answers[q.id] === i} onClick={() => choose(i)}>
+              <span className="emoji" aria-hidden="true">
+                {c.emoji}
+              </span>
+              {c.label}
+            </button>
+          ))}
+        </div>
+        {step > 0 && (
+          <div>
+            <button className="link" onClick={() => setStep(step - 1)}>
+              이전 질문
+            </button>
+          </div>
+        )}
+      </section>
+    </div>
   );
 }
 
@@ -52,84 +62,104 @@ interface ResultProps {
   profile: BtiProfile;
   whiskies: Whisky[];
   wishlist: string[];
+  tried: Set<string>;
   onWish: (id: string) => void;
   onOpen: (id: string) => void;
   onRetry: () => void;
 }
 
-export function BtiResult({ profile, whiskies, wishlist, onWish, onOpen, onRetry }: ResultProps) {
+export function BtiResult({ profile, whiskies, wishlist, tried, onWish, onOpen, onRetry }: ResultProps) {
   const { picks, stepUp } = useMemo(() => recommend(profile, whiskies), [profile, whiskies]);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState('');
 
   const share = async () => {
-    const text = `나의 위스키BTI는 ${profile.emoji} ${profile.name} (${profile.code})!\n추천: ${picks.map((p) => p.whisky.nameKo ?? p.whisky.name).join(', ')}\n${location.origin}`;
+    const text = `나의 위스키BTI는 ${profile.name}(${profile.code})\n추천: ${picks.map((p) => p.whisky.nameKo ?? p.whisky.name).join(', ')}\n${location.origin}`;
     try {
       if (!navigator.share) throw new Error('no share');
       await navigator.share({ title: '나의 위스키BTI', text });
     } catch (e) {
-      if ((e as Error)?.name === 'AbortError') return; // 사용자가 공유 창을 닫음
+      if ((e as Error)?.name === 'AbortError') return;
       try {
-        await navigator.clipboard.writeText(text); // 공유가 막힌 환경에서는 복사로 대신
-        setCopied(true);
+        await navigator.clipboard.writeText(text);
+        setCopied('결과를 복사했습니다. 붙여 넣어 공유하세요.');
       } catch {
-        /* 복사도 막힌 환경 */
+        setCopied('이 환경에서는 공유와 복사가 막혀 있습니다.');
       }
     }
   };
 
   return (
-    <section className="result">
-      <div className="card type-card">
-        <p className="eyebrow">나의 위스키BTI · {profile.code}</p>
-        <h2>
-          <span aria-hidden="true">{profile.emoji}</span> {profile.name}
-        </h2>
-        <p>{profile.desc}</p>
-        <Radar series={[{ label: '내 취향', values: profile.taste }]} />
-        <p className="muted small">
-          예산 {profile.budget >= 999 ? '제한 없음' : `${profile.budget}만 원 이하`}
-          {profile.highball ? ' · 하이볼 선호' : ''}
-        </p>
-        <div className="row">
-          <button className="btn" onClick={share}>
-            {copied ? '복사했어요' : '결과 공유하기'}
-          </button>
-          <button className="btn ghost" onClick={onRetry}>
-            다시 하기
-          </button>
+    <div className="stack">
+      <section className="type-head">
+        <div>
+          <p className="code">위스키BTI 결과, 유형 코드 {profile.code}</p>
+          <h1>
+            <span aria-hidden="true">{profile.emoji}</span> {profile.name}
+          </h1>
+          <p className="lede" style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--step-1)', color: 'var(--text-2)' }}>
+            {profile.desc}
+          </p>
+          <p className="muted small" style={{ marginTop: 10 }}>
+            예산 {profile.budget >= 999 ? '제한 없음' : `${profile.budget}만 원 이하`}
+            {profile.highball ? ', 하이볼 선호' : ''}
+          </p>
+          <div className="row" style={{ marginTop: 18 }}>
+            <button className="btn" onClick={share}>
+              결과 공유하기
+            </button>
+            <button className="btn ghost" onClick={onRetry}>
+              테스트 다시 하기
+            </button>
+          </div>
+          {copied && (
+            <p className="notice" role="status">
+              {copied}
+            </p>
+          )}
         </div>
-      </div>
+        <Radar series={[{ label: '내 취향', values: profile.taste }]} />
+      </section>
 
-      <h3>내 취향에 맞는 위스키 Top {picks.length}</h3>
-      <div className="grid">
-        {picks.map((p, i) => (
-          <WhiskyCard
-            key={p.whisky.id}
-            w={p.whisky}
-            badge={`${i + 1}위 · 적합도 ${Math.round(p.fit * 100)}%`}
-            note={p.reason}
-            wished={wishlist.includes(p.whisky.id)}
-            onWish={() => onWish(p.whisky.id)}
-            onOpen={() => onOpen(p.whisky.id)}
-          />
-        ))}
-      </div>
+      <section aria-labelledby="picks-title">
+        <div className="sec-head">
+          <h2 id="picks-title">처음 마셔 볼 세 병</h2>
+          <p>예산 안에서 취향에 가장 가까운 순서</p>
+        </div>
+        <div className="rows">
+          {picks.map((p) => (
+            <WhiskyRow
+              key={p.whisky.id}
+              w={p.whisky}
+              tried={tried.has(p.whisky.id)}
+              score={`적합도 ${Math.round(p.fit * 100)}%`}
+              why={p.reason}
+              wished={wishlist.includes(p.whisky.id)}
+              onWish={() => onWish(p.whisky.id)}
+              onOpen={() => onOpen(p.whisky.id)}
+            />
+          ))}
+        </div>
+      </section>
+
       {stepUp && (
-        <>
-          <h3>예산을 조금 넘기면 · 한 단계 위</h3>
-          <div className="grid">
-            <WhiskyCard
+        <section aria-labelledby="stepup-title">
+          <div className="sec-head">
+            <h2 id="stepup-title">예산을 조금 넘긴다면</h2>
+          </div>
+          <div className="rows">
+            <WhiskyRow
               w={stepUp.whisky}
-              badge={`적합도 ${Math.round(Math.min(1, stepUp.fit) * 100)}%`}
-              note={stepUp.reason}
+              tried={tried.has(stepUp.whisky.id)}
+              score={`적합도 ${Math.round(Math.min(1, stepUp.fit) * 100)}%`}
+              why={stepUp.reason}
               wished={wishlist.includes(stepUp.whisky.id)}
               onWish={() => onWish(stepUp.whisky.id)}
               onOpen={() => onOpen(stepUp.whisky.id)}
             />
           </div>
-        </>
+        </section>
       )}
       <p className="muted small">맛 수치와 가격은 추정치이며 참고용입니다. 결과는 이 브라우저에만 저장됩니다.</p>
-    </section>
+    </div>
   );
 }

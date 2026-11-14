@@ -1,0 +1,233 @@
+// 도감 첫 화면: 액체 색 띠(수집 현황) → 배지 → 나라별 진행 → 선반(전체 도감)
+
+import { useMemo, useState } from 'react';
+import type { Whisky } from '../types.ts';
+import { TYPE_LABEL } from '../config/flavor.ts';
+import { badgeStates, byCountry, collectionRate } from '../lib/collection.ts';
+import { liquidColor, liquidScore } from '../lib/liquid.ts';
+import { searchWhiskies } from '../lib/overrides.ts';
+import { Glass } from './Glass.tsx';
+import { WhiskyRow } from './WhiskyRow.tsx';
+
+interface Props {
+  dex: Whisky[];
+  catalog: Whisky[] | null;
+  tried: Set<string>;
+  wishlist: string[];
+  onOpen: (id: string) => void;
+  onWish: (id: string) => void;
+  onNeedCatalog: () => void;
+  onStartBti: () => void;
+  hasBti: boolean;
+}
+
+type Show = 'all' | 'tried' | 'untried' | 'wish';
+const PAGE = 72;
+
+export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatalog, onStartBti, hasBti }: Props) {
+  const [q, setQ] = useState('');
+  const [show, setShow] = useState<Show>('all');
+  const [country, setCountry] = useState('');
+  const [type, setType] = useState('');
+  const [limit, setLimit] = useState(PAGE);
+  const [withCatalog, setWithCatalog] = useState(false);
+
+  const rate = collectionRate(dex, tried);
+  const triedList = useMemo(() => dex.filter((w) => tried.has(w.id)), [dex, tried]);
+  const seals = useMemo(() => badgeStates(triedList), [triedList]);
+  const countries = useMemo(() => byCountry(dex, tried), [dex, tried]);
+  const band = useMemo(() => [...dex].sort((a, b) => liquidScore(a) - liquidScore(b) || a.id.localeCompare(b.id)), [dex]);
+
+  const filtered = useMemo(() => {
+    let list = q ? searchWhiskies(dex, q, 1000) : [...dex].sort((a, b) => (a.nameKo ?? a.name).localeCompare(b.nameKo ?? b.name, 'ko'));
+    if (show === 'tried') list = list.filter((w) => tried.has(w.id));
+    if (show === 'untried') list = list.filter((w) => !tried.has(w.id));
+    if (show === 'wish') list = list.filter((w) => wishlist.includes(w.id));
+    if (country) list = list.filter((w) => w.country === country);
+    if (type) list = list.filter((w) => w.type === type);
+    return list;
+  }, [dex, q, show, country, type, tried, wishlist]);
+  const catalogHits = useMemo(() => (withCatalog && q && catalog ? searchWhiskies(catalog, q, 40) : []), [withCatalog, q, catalog]);
+
+  return (
+    <div className="stack">
+      <section className="hero" aria-labelledby="dex-title">
+        <h1 id="dex-title">마신 위스키는 제 색으로 남습니다</h1>
+        <p className="lede">위스키 {rate.total}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.</p>
+        <div
+          className="band"
+          role="img"
+          aria-label={`도감 ${rate.total}종 중 ${rate.done}종 기록. 옅은 색부터 짙은 색 순서.`}
+          onClick={(e) => {
+            const id = (e.target as HTMLElement).dataset.id;
+            if (id) onOpen(id);
+          }}
+        >
+          {band.map((w, i) => (
+            <span
+              key={w.id}
+              data-id={w.id}
+              className={tried.has(w.id) ? 'on' : undefined}
+              style={{ background: liquidColor(w), animationDelay: `${Math.min(i * 3, 900)}ms` }}
+              title={`${w.nameKo ?? w.name}${tried.has(w.id) ? ' (기록함)' : ''}`}
+            />
+          ))}
+        </div>
+        <div className="band-legend">
+          <span>볏짚색, 버번 캐스크</span>
+          <span>마호가니, 셰리 캐스크·장기 숙성</span>
+        </div>
+        <div className="progress-line">
+          <p>
+            <strong className="num">{rate.done}</strong> / {rate.total}종 기록, 수집률 {rate.pct.toFixed(1)}%
+          </p>
+          {!hasBti && (
+            <button className="link" onClick={onStartBti}>
+              어디서 시작할지 모르겠다면 위스키BTI부터
+            </button>
+          )}
+        </div>
+      </section>
+
+      <section aria-labelledby="seal-title">
+        <div className="sec-head">
+          <h2 id="seal-title">배지</h2>
+          <p>{seals.filter((s) => s.earned).length}개 획득</p>
+        </div>
+        <div className="seals">
+          {seals.map(({ badge, count, earned }) => (
+            <div key={badge.id} className={`seal${earned ? ' earned' : ''}`}>
+              <svg viewBox="0 0 40 40" aria-hidden="true">
+                <path className="disc" d="M20 2 l4 3.2 5-.6 2.2 4.6 4.6 2.2-.6 5 3.2 4-3.2 4 .6 5-4.6 2.2-2.2 4.6-5-.6-4 3.2-4-3.2-5 .6-2.2-4.6-4.6-2.2.6-5L2 20l3.2-4-.6-5 4.6-2.2L11.4 4.2l5 .6Z" />
+                <text className="mark" x="20" y="25.5" textAnchor="middle">
+                  {badge.name.slice(0, 1)}
+                </text>
+              </svg>
+              <div>
+                <b>{badge.name}</b>
+                <span>
+                  {earned ? badge.rule : `${badge.rule}, ${count}/${badge.target}`}
+                </span>
+              </div>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="country-title">
+        <div className="sec-head">
+          <h2 id="country-title">나라별 수집</h2>
+        </div>
+        <div className="countries">
+          {countries.slice(0, 8).map((c) => (
+            <div key={c.country} className="country">
+              <span>{c.country}</span>
+              <span className="num muted">
+                {c.done}/{c.total}
+              </span>
+              <span className="bar" role="img" aria-label={`${c.country} ${c.done}/${c.total}`}>
+                <i style={{ width: `${(c.done / c.total) * 100}%` }} />
+              </span>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      <section aria-labelledby="shelf-title">
+        <div className="sec-head">
+          <h2 id="shelf-title">전체 도감</h2>
+          <p>{filtered.length}종</p>
+        </div>
+        <div className="toolbar">
+          <input
+            id="dex-search"
+            type="search"
+            value={q}
+            onChange={(e) => {
+              setQ(e.target.value);
+              setLimit(PAGE);
+            }}
+            placeholder="이름, 증류소, 향으로 찾기 (예: 맥캘란, 아일라, 바닐라)"
+            aria-label="도감 검색"
+          />
+          <select id="dex-country" value={country} onChange={(e) => setCountry(e.target.value)} aria-label="나라">
+            <option value="">모든 나라</option>
+            {countries.map((c) => (
+              <option key={c.country} value={c.country}>
+                {c.country}
+              </option>
+            ))}
+          </select>
+          <select id="dex-type" value={type} onChange={(e) => setType(e.target.value)} aria-label="종류">
+            <option value="">모든 종류</option>
+            {Object.entries(TYPE_LABEL).map(([k, v]) => (
+              <option key={k} value={k}>
+                {v}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="chips" style={{ marginTop: 10 }}>
+          {(
+            [
+              ['all', '전체'],
+              ['tried', '마신 위스키'],
+              ['untried', '아직 못 마신 위스키'],
+              ['wish', '위시리스트'],
+            ] as const
+          ).map(([k, label]) => (
+            <button key={k} className="chip" aria-pressed={show === k} onClick={() => setShow(k)}>
+              {label}
+            </button>
+          ))}
+        </div>
+
+        {filtered.length === 0 ? (
+          <p className="muted" style={{ marginTop: 20 }}>
+            조건에 맞는 위스키가 도감에 없습니다. 검색어를 줄이거나 아래 수집 카탈로그를 함께 찾아보세요.
+          </p>
+        ) : (
+          <div className="shelf" style={{ marginTop: 8 }}>
+            {filtered.slice(0, limit).map((w) => (
+              <button key={w.id} className={`bottle-slot${tried.has(w.id) ? '' : ' untried'}`} onClick={() => onOpen(w.id)}>
+                <Glass w={w} size={72} filled={tried.has(w.id)} />
+                <span className="nm">{w.nameKo ?? w.name}</span>
+                <span className="sub">{w.country}</span>
+              </button>
+            ))}
+          </div>
+        )}
+        {filtered.length > limit && (
+          <button className="btn ghost more" onClick={() => setLimit(limit + PAGE * 2)}>
+            {Math.min(PAGE * 2, filtered.length - limit)}종 더 보기
+          </button>
+        )}
+
+        {q && (
+          <div style={{ marginTop: 28 }}>
+            <label className="small">
+              <input
+                type="checkbox"
+                checked={withCatalog}
+                onChange={(e) => {
+                  setWithCatalog(e.target.checked);
+                  if (e.target.checked) onNeedCatalog();
+                }}
+              />{' '}
+              수집 카탈로그({catalog ? `${catalog.length.toLocaleString()}건` : '불러오기'})에서도 찾기, 맛 정보가 아직 없는 제품입니다
+            </label>
+            {withCatalog && (
+              <div className="rows" style={{ marginTop: 8 }}>
+                {catalog === null && <p className="muted small">불러오는 중</p>}
+                {catalogHits.map((w) => (
+                  <WhiskyRow key={w.id} w={w} tried={tried.has(w.id)} wished={wishlist.includes(w.id)} onWish={() => onWish(w.id)} onOpen={() => onOpen(w.id)} />
+                ))}
+                {catalog && catalogHits.length === 0 && <p className="muted small">카탈로그에도 없습니다.</p>}
+              </div>
+            )}
+          </div>
+        )}
+      </section>
+    </div>
+  );
+}

@@ -5,7 +5,7 @@
 //   · distilleries.json · run-log.json
 // 출처 하나가 실패하거나 갑자기 0건이면 그 출처는 직전 데이터를 유지한다.
 
-import { readFile, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 import { attachDistilleries, isSuspiciousEmpty, mergeCatalog, quality } from './lib/normalize.mjs';
 import { fetchWikidata } from './sources/wikidata.mjs';
@@ -13,6 +13,7 @@ import { fetchOff } from './sources/openfoodfacts.mjs';
 import { fetchIowa } from './sources/iowa.mjs';
 
 const OUT = 'public/data';
+const CACHE = 'data/source-cache'; // 출처별 원본 결과(배포 안 함). 출처가 실패하면 이 값으로 대신한다
 const readJson = async (p, fallback) => (existsSync(p) ? JSON.parse(await readFile(p, 'utf8')) : fallback);
 
 async function main() {
@@ -24,17 +25,22 @@ async function main() {
   const prevCount = Object.fromEntries((prevLog.last?.sources ?? []).map((s) => [s.id, s.count]));
 
   const sources = [];
+  await mkdir(CACHE, { recursive: true });
   async function run(id, fn, prevItems) {
     const t = Date.now();
     try {
       const items = await fn();
       if (isSuspiciousEmpty(items.length, prevCount[id])) throw new Error(`0건 (직전 ${prevCount[id]}건) — 직전 데이터 유지`);
+      await writeFile(`${CACHE}/${id}.json`, JSON.stringify(items));
       sources.push({ id, ok: true, count: items.length, sec: Math.round((Date.now() - t) / 1000) });
       return items;
     } catch (e) {
-      console.error(`[${id}] 실패:`, e.message);
-      sources.push({ id, ok: false, count: prevItems.length, error: String(e.message).slice(0, 200), sec: Math.round((Date.now() - t) / 1000) });
-      return prevItems;
+      // 직전 원본 캐시가 있으면 그대로 쓰고(시드에 붙은 바코드까지 유지), 없으면 직전 카탈로그에서 그 출처 항목만 쓴다
+      const cached = await readJson(`${CACHE}/${id}.json`, null);
+      const fallback = Array.isArray(cached) ? cached : prevItems;
+      console.error(`[${id}] 실패: ${e.message} → 직전 데이터 ${fallback.length}건 유지`);
+      sources.push({ id, ok: false, count: fallback.length, error: String(e.message).slice(0, 200), sec: Math.round((Date.now() - t) / 1000) });
+      return fallback;
     }
   }
 

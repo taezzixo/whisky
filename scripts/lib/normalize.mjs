@@ -91,7 +91,7 @@ export function parseIowa(rows = []) {
     if (!item || !desc) continue;
     const vol = num(pick(r, ['bottle_volume_ml', 'bottle_size']));
     // 미니어처(375ml 미만)·선물세트(잔·미니 동봉)는 도감 단위가 아니라 뺀다
-    if ((vol && vol < 375) || /\bw\/|\bmini\b|gift|\bvap\b|glass(es)?\b/i.test(desc)) continue;
+    if ((vol && vol < 375) || /\bw\/|\bmini\b|gift|\bvap\b|glass(es)?\b|pack\b|\bset\b/i.test(desc)) continue;
     const key = normName(cleanIowaName(desc));
     const prev = seen.get(key);
     if (prev && prev.vol === 750) continue; // 같은 제품은 750ml 우선
@@ -117,9 +117,23 @@ export function parseIowa(rows = []) {
   return [...seen.values()].map((x) => x.w);
 }
 
-/** 판매처 내부 표기 제거: "Use Code 963327" 등 */
+/**
+ * Iowa 제품명 정리: 판매처 내부 표기 제거 + 흔한 약어 풀기.
+ * - 앞머리 분류 코드: Ha(한정 배정), Bp(배럴 픽), Cm, Sooh(특별 주문) — 2026-11 데이터 기준
+ * - "Use Code 963327" 같은 내부 코드
+ * - 약어: 12yr → 12 Year, Bib → Bottled in Bond, Ksbw → Kentucky Straight Bourbon Whiskey, Bbn → Bourbon, Csk → Cask
+ */
 export function cleanIowaName(s) {
-  return String(s).replace(/\s*use code \d+/gi, '').replace(/\s{2,}/g, ' ').trim();
+  return String(s)
+    .replace(/^(?:(?:ha|bp|cm|sooh)\s+)+/i, '')
+    .replace(/\s*use code \d+/gi, '')
+    .replace(/\b(\d{1,2})\s?yrs?\b/gi, '$1 Year')
+    .replace(/\bksbw\b/gi, 'Kentucky Straight Bourbon Whiskey')
+    .replace(/\bbib\b/gi, 'Bottled in Bond')
+    .replace(/\bbbn\b/gi, 'Bourbon')
+    .replace(/\bcsk\b/gi, 'Cask')
+    .replace(/\s{2,}/g, ' ')
+    .trim();
 }
 
 function titleCase(s) {

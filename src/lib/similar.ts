@@ -66,7 +66,7 @@ export function explain(base: Whisky, other: Whisky): { common: string[]; diff?:
   if (casks.includes('sherry')) common.push('셰리 캐스크');
   else if (casks.includes('bourbon') && base.type !== 'bourbon') common.push('버번 캐스크');
   const tags = (base.tags ?? []).filter((t) => other.tags?.includes(t));
-  if (tags.length) common.push(tags.map((t) => `#${t}`).join(' '));
+  if (tags.length) common.push(`${tags.join('·')} 향`);
   if (base.flavor && other.flavor) {
     // 둘 다 높은(≥3.5) 축 중 가장 비슷한 것
     const shared = AXES.map((ax, i) => ({ ax, i, lo: Math.min(base.flavor![i], other.flavor![i]) }))

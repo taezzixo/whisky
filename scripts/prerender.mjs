@@ -34,7 +34,7 @@ export function whiskyPage(w, { site, generatedAt }) {
 ${site ? `<link rel="canonical" href="${esc(url)}">` : ''}
 <meta property="og:title" content="${esc(name)} 맛 프로필">
 <meta property="og:description" content="${esc(desc)}">
-<style>body{font:15px/1.6 system-ui,sans-serif;max-width:720px;margin:0 auto;padding:24px 16px;color:#1d1813;background:#fcfcfb}table{border-collapse:collapse}th,td{padding:4px 12px 4px 0;text-align:left}.muted{color:#7a7064;font-size:.85rem}@media(prefers-color-scheme:dark){body{background:#1a1a19;color:#f0efec}a{color:#86b6ef}}</style>
+<style>body{font:15px/1.7 'IBM Plex Sans KR',system-ui,sans-serif;max-width:720px;margin:0 auto;padding:24px 16px;color:#f0e4cf;background:#2a1d15;word-break:keep-all}h1,h2{font-family:'Hahmlet',serif}a{color:#d2a65a}table{border-collapse:collapse}th,td{padding:4px 12px 4px 0;text-align:left}.muted{color:#b09a7e;font-size:.85rem}@media(prefers-color-scheme:light){body{background:#ece1cf;color:#2a1d15}a{color:#8c6420}.muted{color:#6e5a44}}</style>
 <script type="application/ld+json">${JSON.stringify(ld).replace(/</g, '\\u003c')}</script>
 </head><body><main>
 <p><a href="/w/">← 전체 위스키</a> · <a href="/">위스키BTI</a></p>

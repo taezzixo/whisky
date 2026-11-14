@@ -1,20 +1,26 @@
-// 위스키 상세 + 비슷한 위스키 추천 (모드: 비슷한 / 더 저렴한 / 한 단계 위 / 한 축만 바꾸기)
+// 위스키 상세 — 큰 잔(추정 액체 색), 정보, 시음 기록, 맛 프로필, 비슷한 위스키 4가지 모드
 
 import { useMemo, useState } from 'react';
-import { AXES, CASK_LABEL, GRADE_LABEL, type AxisKey } from '../config/flavor.ts';
+import { AXES, GRADE_LABEL, type AxisKey } from '../config/flavor.ts';
+import type { Tasting } from '../lib/collection.ts';
+import { liquidName } from '../lib/liquid.ts';
 import { findSimilar, type SimilarMode } from '../lib/similar.ts';
 import type { Whisky } from '../types.ts';
-import { Bottle } from './Bottle.tsx';
 import { FlavorBars, Radar } from './Charts.tsx';
-import { priceText, specLine, WhiskyCard } from './WhiskyCard.tsx';
+import { Glass } from './Glass.tsx';
+import { TastingForm } from './Tasting.tsx';
+import { caskLine, priceText, WhiskyRow } from './WhiskyRow.tsx';
+import { TYPE_LABEL } from '../config/flavor.ts';
 
 interface Props {
   w: Whisky;
   all: Whisky[];
   wishlist: string[];
-  tried: string[];
+  tried: Set<string>;
+  tastings: Tasting[];
   onWish: (id: string) => void;
-  onTried: (id: string) => void;
+  onToggleTried: (id: string) => void;
+  onSaveTasting: (t: Tasting) => void;
   onOpen: (id: string) => void;
   onBack: () => void;
 }
@@ -23,89 +29,130 @@ const MODES: { id: SimilarMode; label: string }[] = [
   { id: 'similar', label: '비슷한' },
   { id: 'cheaper', label: '더 저렴한 대체' },
   { id: 'upgrade', label: '한 단계 위' },
-  { id: 'shift', label: '한 축만 바꾸기' },
+  { id: 'shift', label: '한 가지 맛만 바꾸기' },
 ];
 
-const SOURCE_LABEL = { seed: '큐레이션 시드', wikidata: 'Wikidata', off: 'Open Food Facts', iowa: 'Iowa 주류청', manual: '수동 등록' } as const;
+const SOURCE_LABEL = { seed: '큐레이션 시드', wikidata: 'Wikidata', off: 'Open Food Facts', iowa: '아이오와 주류청', manual: '수동 등록' } as const;
 
-export function WhiskyDetail({ w, all, wishlist, tried, onWish, onTried, onOpen, onBack }: Props) {
+export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onToggleTried, onSaveTasting, onOpen, onBack }: Props) {
   const [mode, setMode] = useState<SimilarMode>('similar');
   const [axis, setAxis] = useState<AxisKey>('smoky');
   const [delta, setDelta] = useState(2);
   const [compare, setCompare] = useState<string | null>(null);
-  const excludeTried = useMemo(() => new Set(tried), [tried]);
   const [hideTried, setHideTried] = useState(false);
+  const [writing, setWriting] = useState(false);
 
   const results = useMemo(
-    () => findSimilar(w, all, { mode, shift: { axis, delta }, limit: 6, exclude: hideTried ? excludeTried : undefined }),
-    [w, all, mode, axis, delta, hideTried, excludeTried],
+    () => findSimilar(w, all, { mode, shift: { axis, delta }, limit: 6, exclude: hideTried ? tried : undefined }),
+    [w, all, mode, axis, delta, hideTried, tried],
   );
   const cmp = compare ? all.find((x) => x.id === compare) : undefined;
   const name = w.nameKo ?? w.name;
+  const isTried = tried.has(w.id);
+  const mine = tastings.filter((t) => t.whiskyId === w.id);
 
   return (
-    <section className="detail">
-      <button className="link" onClick={onBack}>
-        ← 목록으로
-      </button>
-      <div className="card detail-head">
-        <Bottle w={w} size={120} />
-        <div>
-          <p className="eyebrow">
-            데이터 등급 {w.grade} · {GRADE_LABEL[w.grade]}
-          </p>
-          <h2>{name}</h2>
-          {w.nameKo && <p className="sub">{w.name}</p>}
-          <p className="spec">{specLine(w)}</p>
-          {w.casks && <p className="spec">캐스크: {w.casks.map((c) => CASK_LABEL[c]).join(' · ')}{w.peated ? ' · 피트' : ''}</p>}
-          {w.tags && <p className="tags">{w.tags.map((t) => `#${t}`).join(' ')}</p>}
-          {w.summary && <p>{w.summary}</p>}
-          <p className="price">
-            {priceText(w)} {w.price && <span className="muted small">(참고 가격, 700ml)</span>}
-          </p>
-          <div className="row">
-            <button className={`btn${wishlist.includes(w.id) ? '' : ' ghost'}`} onClick={() => onWish(w.id)} aria-pressed={wishlist.includes(w.id)}>
-              {wishlist.includes(w.id) ? '♥ 위시리스트에 있음' : '♡ 위시리스트 담기'}
-            </button>
-            <button className={`btn${tried.includes(w.id) ? '' : ' ghost'}`} onClick={() => onTried(w.id)} aria-pressed={tried.includes(w.id)}>
-              {tried.includes(w.id) ? '✓ 마셔봤어요' : '마셔봤어요'}
-            </button>
-          </div>
-        </div>
+    <article className="detail">
+      <div>
+        <button className="link" onClick={onBack}>
+          목록으로 돌아가기
+        </button>
       </div>
 
+      <header className="detail-head">
+        <div>
+          <Glass w={w} size={190} filled={isTried} level={0.62} />
+          <p className="liquid-caption">{isTried ? `${liquidName(w)}색, 추정` : '아직 빈 잔'}</p>
+        </div>
+        <div>
+          <h1>{name}</h1>
+          {w.nameKo && <p className="en">{w.name}</p>}
+          {w.tags && <p className="tag-line" style={{ marginTop: 10, fontSize: 'var(--step-0)' }}>{w.tags.join(', ')}</p>}
+          {w.summary && <p className="summary">{w.summary}</p>}
+          <dl className="facts">
+            <dt>생산지</dt>
+            <dd>{[w.country, w.region].filter(Boolean).join(' ') || '정보 없음'}</dd>
+            <dt>종류</dt>
+            <dd>{TYPE_LABEL[w.type]}{w.distillery ? `, ${w.distillery} 증류소` : ''}</dd>
+            <dt>숙성</dt>
+            <dd>{w.age ? `${w.age}년` : '연수 미표기'}</dd>
+            <dt>도수</dt>
+            <dd className="num">{w.abv ? `${w.abv}%` : '정보 없음'}</dd>
+            {w.casks && (
+              <>
+                <dt>캐스크</dt>
+                <dd>{caskLine(w)}{w.peated ? ', 피트 몰트' : ''}</dd>
+              </>
+            )}
+            {w.price && (
+              <>
+                <dt>참고 가격</dt>
+                <dd>{priceText(w)} (700ml, 추정)</dd>
+              </>
+            )}
+            <dt>데이터</dt>
+            <dd>
+              {GRADE_LABEL[w.grade]} 등급, 출처 {[...new Set([w.source, ...(w.refs ?? []).map((r) => r.source)])].map((s) => SOURCE_LABEL[s]).join(', ')}
+            </dd>
+          </dl>
+          <div className="row" style={{ marginTop: 20 }}>
+            <button className="btn" onClick={() => setWriting(!writing)} aria-expanded={writing}>
+              {writing ? '기록 닫기' : '시음 기록하기'}
+            </button>
+            <button className="btn ghost" onClick={() => onWish(w.id)} aria-pressed={wishlist.includes(w.id)}>
+              {wishlist.includes(w.id) ? '위시에 담음' : '위시 담기'}
+            </button>
+            {mine.length === 0 && (
+              <button className="btn ghost" onClick={() => onToggleTried(w.id)} aria-pressed={isTried}>
+                {isTried ? '마셔봤어요 표시함' : '별점 없이 마셔봤어요'}
+              </button>
+            )}
+          </div>
+        </div>
+      </header>
+
+      {writing && <TastingForm w={w} history={mine} onSave={onSaveTasting} />}
+
       {w.flavor ? (
-        <div className="card flavor">
+        <section className="flavor" aria-labelledby="profile-title">
           <div>
-            <h3>맛 프로필</h3>
+            <h2 id="profile-title">맛 프로필</h2>
+            <p className="muted small" style={{ margin: '6px 0 10px' }}>
+              0~5 추정치입니다. 아래 비슷한 위스키를 골라 겹쳐 볼 수 있습니다.
+            </p>
             <Radar series={[{ label: name, values: w.flavor }, ...(cmp?.flavor ? [{ label: cmp.nameKo ?? cmp.name, values: cmp.flavor }] : [])]} />
             {cmp && (
-              <button className="link" onClick={() => setCompare(null)}>
+              <button className="link small" onClick={() => setCompare(null)}>
                 비교 끄기
               </button>
             )}
           </div>
           <FlavorBars values={w.flavor} />
-        </div>
+        </section>
       ) : (
-        <div className="card muted">이 위스키는 아직 맛 정보가 없어요. 수집 카탈로그에서 온 항목입니다.</div>
+        <p className="muted">이 제품은 수집 카탈로그에서 온 항목이라 아직 맛 정보가 없습니다.</p>
       )}
 
       {w.flavor && (
-        <div className="similar">
-          <h3>비슷한 위스키 추천</h3>
+        <section aria-labelledby="similar-title">
+          <div className="sec-head">
+            <h2 id="similar-title">비슷한 위스키</h2>
+            <label className="small muted">
+              <input type="checkbox" checked={hideTried} onChange={(e) => setHideTried(e.target.checked)} /> 마셔본 위스키 빼기
+            </label>
+          </div>
           <div className="tabs" role="tablist">
             {MODES.map((m) => (
-              <button key={m.id} role="tab" aria-selected={mode === m.id} className={mode === m.id ? 'on' : ''} onClick={() => setMode(m.id)}>
+              <button key={m.id} role="tab" aria-selected={mode === m.id} onClick={() => setMode(m.id)}>
                 {m.label}
               </button>
             ))}
           </div>
           {mode === 'shift' && (
-            <div className="shift row">
+            <div className="shift">
               <label>
                 바꿀 맛
-                <select value={axis} onChange={(e) => setAxis(e.target.value as AxisKey)}>
+                <select id="shift-axis" value={axis} onChange={(e) => setAxis(e.target.value as AxisKey)}>
                   {AXES.map((a) => (
                     <option key={a.key} value={a.key}>
                       {a.label}
@@ -114,26 +161,33 @@ export function WhiskyDetail({ w, all, wishlist, tried, onWish, onTried, onOpen,
                 </select>
               </label>
               <label>
-                {delta > 0 ? '더' : '덜'} ({delta > 0 ? '+' : ''}
+                {delta > 0 ? '더 강하게' : '더 약하게'} ({delta > 0 ? '+' : ''}
                 {delta})
-                <input type="range" min={-3} max={3} step={1} value={delta} onChange={(e) => setDelta(Number(e.target.value) || 1)} />
+                <input id="shift-delta" type="range" min={-3} max={3} step={1} value={delta} onChange={(e) => setDelta(Number(e.target.value) || 1)} />
               </label>
             </div>
           )}
-          <label className="small muted">
-            <input type="checkbox" checked={hideTried} onChange={(e) => setHideTried(e.target.checked)} /> 마셔본 위스키 빼기
-          </label>
           {results.length === 0 ? (
-            <p className="muted">조건에 맞는 위스키가 아직 도감에 없어요. {w.price ? '' : '(가격 정보가 없으면 가격 비교 모드는 비어 있어요)'}</p>
+            <p className="muted">조건에 맞는 위스키가 아직 도감에 없습니다.{!w.price && mode !== 'similar' ? ' 이 위스키는 참고 가격이 없어 가격 비교를 할 수 없습니다.' : ''}</p>
           ) : (
-            <div className="grid">
+            <div className="rows">
               {results.map((r) => (
-                <WhiskyCard
+                <WhiskyRow
                   key={r.whisky.id}
                   w={r.whisky}
-                  badge={`유사도 ${Math.round(r.score * 100)}%`}
-                  chips={r.common}
-                  note={r.diff ? `차이: ${r.diff}` : undefined}
+                  tried={tried.has(r.whisky.id)}
+                  score={`유사도 ${Math.round(r.score * 100)}%`}
+                  why={
+                    <>
+                      {r.common.length > 0 && <>공통점 <b>{r.common.join(', ')}</b></>}
+                      {r.diff && <>{r.common.length ? '. ' : ''}차이 {r.diff}</>}{' '}
+                      {r.whisky.flavor && (
+                        <button className="link small" onClick={() => setCompare(compare === r.whisky.id ? null : r.whisky.id)}>
+                          {compare === r.whisky.id ? '겹쳐 보기 끄기' : '맛 그래프에 겹쳐 보기'}
+                        </button>
+                      )}
+                    </>
+                  }
                   wished={wishlist.includes(r.whisky.id)}
                   onWish={() => onWish(r.whisky.id)}
                   onOpen={() => {
@@ -144,22 +198,8 @@ export function WhiskyDetail({ w, all, wishlist, tried, onWish, onTried, onOpen,
               ))}
             </div>
           )}
-          {results.length > 0 && (
-            <p className="small">
-              레이더에 겹쳐 보기:{' '}
-              {results.slice(0, 4).map((r) => (
-                <button key={r.whisky.id} className={`chip btnchip${compare === r.whisky.id ? ' on' : ''}`} onClick={() => setCompare(compare === r.whisky.id ? null : r.whisky.id)}>
-                  {r.whisky.nameKo ?? r.whisky.name}
-                </button>
-              ))}
-            </p>
-          )}
-        </div>
+        </section>
       )}
-
-      <p className="muted small">
-        출처: {[...new Set([w.source, ...(w.refs ?? []).map((r) => r.source)])].map((s) => SOURCE_LABEL[s]).join(', ')}. 맛 수치·가격은 추정치이며 참고용입니다.
-      </p>
-    </section>
+    </article>
   );
 }
