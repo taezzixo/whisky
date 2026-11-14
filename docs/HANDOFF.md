@@ -1,16 +1,17 @@
 # 위스키 도감 인계 문서 (새 대화 시작용)
 
 > Notion 「대시보드 v1.0 / [위스키 도감] (whisky) / [위스키 도감] 인계 문서 (새 대화 시작용)」의 저장소 사본입니다. 이후에는 Notion을 기준으로 갱신하고, 바뀌면 이 파일도 맞춥니다.
-> 마지막 갱신: 2026-11-14 (첫 수집·배포 확인 후)
+> 마지막 갱신: 2026-11-14 (기본 브랜치 `main` 변경 후)
 
-## 현재 상태 — v0.1 (작업 브랜치 `claude/fervent-newton-pyyp12`)
+## 현재 상태 — v0.1 (기본·배포 브랜치 `main`)
 - 기획: `docs/PLAN_ORIGINAL.md`(최초 기획서), `docs/PRD.md`(PRD v1.0)
 - 구성: 청약맵 기본 구성도 v1 적용. 달라진 점은 `docs/ARCHITECTURE.md` §0 (2026-11-13 사용자 확인)
 - 화면: 위스키BTI(8문항 → 16유형 → Top 3 + 한 단계 위), 찾아보기, 위스키 상세 + 비슷한 위스키 4가지 모드, 내 목록(위시·마셔본, JSON 내보내기·가져오기)
 - 데이터: 큐레이션 시드 84종(맛 벡터 추정, 등급 C) + 수집 카탈로그 3,195건(맛 정보 없음, 검색 전용) + 증류소 327곳
   - 2026-11-14 수집: Wikidata 327 · Open Food Facts 683 · Iowa 3,285 — 모두 성공. 시드 중 56종에 증류소 좌표, 30종에 바코드 연결
   - 첫 Actions 실행에서 OFF 0건·Iowa 404 → 수정함: OFF 카테고리 태그는 `whisky`(단수), `nutriments` 필드는 503 유발이라 제외 / Iowa는 새 API `idh-be.iowa.gov` 데이터셋 1029(zip 안 줄 단위 JSON)
-- 배포: Cloudflare Workers 연결 완료 — https://whisky-dex.kth95280.workers.dev (작업 브랜치 `claude/fervent-newton-pyyp12`가 저장소 기본 브랜치이며 배포 기준. `main` 브랜치는 없음)
+- 배포: https://whisky-dex.kth95280.workers.dev — 첫 연결 때 한 번만 배포됨(샘플 데이터). **이후 푸시가 자동 배포되지 않는 문제가 있음** (아래 "다음 할 일 (사람)" 1번)
+- 브랜치: 2026-11-14 `main`을 만들고 GitHub 기본 브랜치를 `main`으로 변경(사용자 승인). 작업 브랜치에서 작업 → 테스트·빌드 통과 → `main`에 합침. 청약맵 저장소와는 무관한 저장소별 설정
 - 테스트 32개 통과, 빌드 성공, 라이트·다크·모바일 화면 확인
 - MVP 미리보기(비공개): https://claude.ai/artifact/PgGBdwZvZWRZ9MG5Ps9VkW — 정식 배포 전 확인용. 이 미리보기에서는 JSON 내보내기가 동작하지 않음
 
@@ -24,7 +25,10 @@
 | 수집 주기 | 주 1회 (월 06:17 KST) |
 
 ## 다음 할 일 (사람)
-1. (선택) 기본 브랜치 정리: 지금은 작업 브랜치가 기본·배포 브랜치. `main`을 만들어 옮길지 결정
+1. Cloudflare 자동 배포 확인 (대시보드 → Workers 및 Pages → `whisky-dex`)
+   - 배포(Deployments) 탭에 2026-11-14 이후 빌드 기록이 있는지. 실패면 빌드 로그를 Claude에게 전달
+   - 설정 → 빌드: Git 저장소 `taezzixo/whisky` 연결 여부, 운영 브랜치 `main`, 빌드 `npm run build`, 배포 `npx wrangler deploy`
+   - 저장소가 목록에 없으면 GitHub → Settings → Applications → Cloudflare 앱에 `whisky` 저장소 접근 권한 추가
 2. Cloudflare 빌드 변수 `SITE_URL=https://whisky-dex.kth95280.workers.dev` 확인 (SEO canonical·sitemap 절대 주소용)
 
 ## 다음 할 일 (Claude)
