@@ -1,0 +1,4 @@
+/* 테일윈드 유틸리티. 토큰은 styles.css :root 에만 있고 tailwind.config.js 가 이름만 잇는다.
+   preflight 는 끔(전역 스타일은 styles.css). styles.css 보다 뒤에 불러와서 유틸리티가 이긴다. */
+@tailwind components;
+@tailwind utilities;

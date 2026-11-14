@@ -136,6 +136,9 @@ test('사진 매칭: 브랜드·숙성 연수가 맞을 때만 쓴다', () => {
   assert.equal(frontImageUrl({ selected_images: { front: { display: { fr: 'x.jpg' } } } }), 'x.jpg');
   const out = attachImages([g12], { images: { [g12.id]: { file: 'img/w/glenfiddich-12.jpg', credit: 'c', license: 'l', product: 'u' } } });
   assert.equal(out[0].image.src, 'img/w/glenfiddich-12.jpg');
+  assert.equal(out[0].image.cutout, undefined);
+  const cut = attachImages([g12], { images: { [g12.id]: { file: 'img/w/g.webp', credit: 'c', license: 'l', cutout: true, w: 200, h: 400 } } });
+  assert.deepEqual([cut[0].image.cutout, cut[0].image.w, cut[0].image.h], [true, 200, 400]);
 });
 
 test('위키미디어 공용: 제목 정리, 자유 라이선스만, 브랜드·연수 맞는 세로 사진', () => {

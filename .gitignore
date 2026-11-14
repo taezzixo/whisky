@@ -3,3 +3,6 @@ dist
 .env
 .env.local
 *.log
+
+# hallmark 스킬 sloplint 렌더 결과(스크린샷)
+.hallmark/

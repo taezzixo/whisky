@@ -41,7 +41,8 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const band = useMemo(() => [...dex].sort((a, b) => liquidScore(a) - liquidScore(b) || a.id.localeCompare(b.id)), [dex]);
 
   const filtered = useMemo(() => {
-    let list = q ? searchWhiskies(dex, q, 1000) : [...dex].sort((a, b) => (a.nameKo ?? a.name).localeCompare(b.nameKo ?? b.name, 'ko'));
+    // 기본 순서: 병 사진이 있는 위스키를 앞에(진열장이 사진으로 채워 보이게), 그다음 이름순
+    let list = q ? searchWhiskies(dex, q, 1000) : [...dex].sort((a, b) => Number(!a.image) - Number(!b.image) || (a.nameKo ?? a.name).localeCompare(b.nameKo ?? b.name, 'ko'));
     if (show === 'tried') list = list.filter((w) => tried.has(w.id));
     if (show === 'untried') list = list.filter((w) => !tried.has(w.id));
     if (show === 'wish') list = list.filter((w) => wishlist.includes(w.id));

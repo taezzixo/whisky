@@ -35,7 +35,7 @@ export function Glass({ w, size = 64, filled = true, level = 0.55 }: Props) {
         <rect className="liquid" x="0" y={top} width="40" height="40" fill={`url(#g${id})`} style={{ transform: `translateY(${drop}px)` }} />
         {filled && <ellipse cx="20" cy={top} rx="12" ry="1.1" fill={color} opacity="0.55" />}
       </g>
-      <path className="outline" d={OUTLINE} />
+      <path className="glass-outline" d={OUTLINE} />
       <path className="shine" d="M11.5 15 C10 19 9.6 24 10.4 29" />
     </svg>
   );

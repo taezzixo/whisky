@@ -3,6 +3,7 @@ import { StrictMode, useEffect, useState } from 'react';
 import { createRoot } from 'react-dom/client';
 import type { WhiskiesFile } from '../types.ts';
 import '../styles.css';
+import '../tailwind.css';
 
 interface SourceRun { id: string; ok: boolean; count: number; error?: string; sec?: number }
 interface RunEntry { runAt: string; durationSec: number; sources: SourceRun[]; quality: { dex: Record<string, number>; catalog: Record<string, number> } }

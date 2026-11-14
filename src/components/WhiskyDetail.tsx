@@ -10,6 +10,9 @@ import { FlavorBars, Radar } from './Charts.tsx';
 import { WhiskyArt } from './WhiskyArt.tsx';
 import { pairingGuide } from '../lib/pairing.ts';
 import { TastingForm } from './Tasting.tsx';
+import { TastingCard } from './TastingCard.tsx';
+import { slugify } from '../lib/insights.ts';
+import { AppLink } from './ui.tsx';
 import { caskLine, priceText, WhiskyRow } from './WhiskyRow.tsx';
 import { TYPE_LABEL } from '../config/flavor.ts';
 
@@ -29,6 +32,7 @@ interface Props {
   onSaveTasting: (t: Tasting) => void;
   onOpen: (id: string) => void;
   onBack: () => void;
+  onDistillery?: (slug: string) => void;
 }
 
 const MODES: { id: SimilarMode; label: string }[] = [
@@ -40,7 +44,7 @@ const MODES: { id: SimilarMode; label: string }[] = [
 
 const SOURCE_LABEL = { seed: '큐레이션 시드', wikidata: 'Wikidata', off: 'Open Food Facts', iowa: '아이오와 주류청', manual: '수동 등록' } as const;
 
-export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onToggleTried, inCompare, compareFull, onToggleCompare, inBar, onAddToBar, onSaveTasting, onOpen, onBack }: Props) {
+export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onToggleTried, inCompare, compareFull, onToggleCompare, inBar, onAddToBar, onSaveTasting, onOpen, onBack, onDistillery }: Props) {
   const [mode, setMode] = useState<SimilarMode>('similar');
   const [axis, setAxis] = useState<AxisKey>('smoky');
   const [delta, setDelta] = useState(2);
@@ -56,6 +60,7 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
   const name = w.nameKo ?? w.name;
   const isTried = tried.has(w.id);
   const mine = tastings.filter((t) => t.whiskyId === w.id);
+  const latest = [...mine].sort((x, y) => y.date.localeCompare(x.date) || y.id.localeCompare(x.id))[0];
 
   return (
     <article className="detail">
@@ -72,7 +77,7 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
           </div>
           {w.image ? (
             <p className="photo-credit">
-              사진: <a href={w.image.url} target="_blank" rel="noopener noreferrer">{w.image.credit}</a>, {w.image.license}
+              사진: {w.image.url ? <a href={w.image.url} target="_blank" rel="noopener noreferrer">{w.image.credit}</a> : w.image.credit}, {w.image.license}
             </p>
           ) : (
             <p className="liquid-caption">{isTried ? `${liquidName(w)}색, 캐스크·숙성으로 추정` : '아직 빈 잔. 사진은 공개 라이선스 사진이 생기면 바뀝니다'}</p>
@@ -87,7 +92,20 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
             <dt>생산지</dt>
             <dd>{[w.country, w.region].filter(Boolean).join(' ') || '정보 없음'}</dd>
             <dt>종류</dt>
-            <dd>{TYPE_LABEL[w.type]}{w.distillery ? `, ${w.distillery} 증류소` : ''}</dd>
+            <dd>
+              {TYPE_LABEL[w.type]}
+              {w.distillery &&
+                (onDistillery ? (
+                  <>
+                    {', '}
+                    <AppLink href={`?tab=dist&d=${slugify(w.distillery)}`} onNavigate={() => onDistillery(slugify(w.distillery!))} className="-my-3 inline-block py-3">
+                      {w.distillery.replace(/^The\s+/, '')} 증류소
+                    </AppLink>
+                  </>
+                ) : (
+                  `, ${w.distillery} 증류소`
+                ))}
+            </dd>
             <dt>숙성</dt>
             <dd>{w.age ? `${w.age}년` : '연수 미표기'}</dd>
             <dt>도수</dt>
@@ -136,6 +154,8 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
           <TastingForm w={w} history={mine} onSave={onSaveTasting} />
         </div>
       )}
+
+      {latest && <TastingCard w={w} tasting={latest} />}
 
       {w.flavor ? (
         <section className="flavor" aria-labelledby="profile-title">

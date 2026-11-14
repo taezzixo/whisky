@@ -62,6 +62,9 @@ export const stripHtml = (s = '') => String(s).replace(/<[^>]+>/g, '').replace(/
 export function attachImages(whiskies, db) {
   return whiskies.map((w) => {
     const im = db?.images?.[w.id];
-    return im ? { ...w, image: { src: im.file, credit: im.credit, license: im.license, url: im.product } } : w;
+    if (!im) return w;
+    const image = { src: im.file, credit: im.credit, license: im.license, url: im.product };
+    if (im.cutout) Object.assign(image, { cutout: true, w: im.w, h: im.h }); // 배경을 지운 병 사진 (볼록 효과)
+    return { ...w, image };
   });
 }

@@ -7,6 +7,426 @@
    "credit": "Open Food Facts 기여자",
    "license": "CC BY-SA 3.0",
    "at": "2026-11-14"
+  },
+  "seed-macallan-m-decanter": {
+   "file": "img/w/macallan-m-decanter.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 212,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-michters-25-bourbon": {
+   "file": "img/w/michters-25-bourbon.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 148,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-bowmore-mizunara": {
+   "file": "img/w/bowmore-mizunara.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 124,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-george-t-stagg": {
+   "file": "img/w/george-t-stagg.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 92,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-highland-park-30": {
+   "file": "img/w/highland-park-30.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 164,
+   "h": 316,
+   "at": "2026-11-14"
+  },
+  "seed-balvenie-tun-1509": {
+   "file": "img/w/balvenie-tun-1509.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 124,
+   "h": 316,
+   "at": "2026-11-14"
+  },
+  "seed-port-ellen-32-1979": {
+   "file": "img/w/port-ellen-32-1979.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 100,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-hibiki-30": {
+   "file": "img/w/hibiki-30.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 172,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-black-bowmore-42": {
+   "file": "img/w/black-bowmore-42.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 104,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-glenfiddich-26": {
+   "file": "img/w/glenfiddich-26.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 120,
+   "h": 344,
+   "at": "2026-11-14"
+  },
+  "seed-blue-spot-7": {
+   "file": "img/w/blue-spot-7.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 112,
+   "h": 344,
+   "at": "2026-11-14"
+  },
+  "seed-hibiki-21": {
+   "file": "img/w/hibiki-21.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 172,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-pappy-van-winkle-20": {
+   "file": "img/w/pappy-van-winkle-20.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 92,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-last-drop-48": {
+   "file": "img/w/last-drop-48.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 132,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-macallan-21-fine-oak": {
+   "file": "img/w/macallan-21-fine-oak.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 108,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-highland-park-18": {
+   "file": "img/w/highland-park-18.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 144,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-laphroaig-32": {
+   "file": "img/w/laphroaig-32.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 108,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-michters-20-bourbon": {
+   "file": "img/w/michters-20-bourbon.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 152,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-yoichi-20": {
+   "file": "img/w/yoichi-20.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 128,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-wild-turkey-masters-keep-voyage": {
+   "file": "img/w/wild-turkey-masters-keep-voyage.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 128,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-ardbeg-19-traigh-bhan": {
+   "file": "img/w/ardbeg-19-traigh-bhan.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 116,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-bushmills-21": {
+   "file": "img/w/bushmills-21.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 140,
+   "h": 344,
+   "at": "2026-11-14"
+  },
+  "seed-lagavulin-16": {
+   "file": "img/w/lagavulin-16.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 108,
+   "h": 344,
+   "at": "2026-11-14"
+  },
+  "seed-redbreast-21": {
+   "file": "img/w/redbreast-21.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 124,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-oban-21-cs": {
+   "file": "img/w/oban-21-cs.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 96,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-octomore": {
+   "file": "img/w/octomore.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 100,
+   "h": 344,
+   "at": "2026-11-14"
+  },
+  "seed-redbreast-27": {
+   "file": "img/w/redbreast-27.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 128,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-bruichladdich-black-art-8-1": {
+   "file": "img/w/bruichladdich-black-art-8-1.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 136,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-glenmorangie-18": {
+   "file": "img/w/glenmorangie-18.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 120,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-laphroaig-25-cs": {
+   "file": "img/w/laphroaig-25-cs.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 100,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-aberlour-abunadh": {
+   "file": "img/w/aberlour-abunadh.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 132,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-bruichladdich-black-art-6-1": {
+   "file": "img/w/bruichladdich-black-art-6-1.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 136,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-ardbeg-uigeadail": {
+   "file": "img/w/ardbeg-uigeadail.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 120,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-hakushu-25": {
+   "file": "img/w/hakushu-25.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 132,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-lagavulin-11-offerman": {
+   "file": "img/w/lagavulin-11-offerman.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 92,
+   "h": 312,
+   "at": "2026-11-14"
+  },
+  "seed-russells-reserve-single-barrel": {
+   "file": "img/w/russells-reserve-single-barrel.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 156,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-springbank-21": {
+   "file": "img/w/springbank-21.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 120,
+   "h": 308,
+   "at": "2026-11-14"
+  },
+  "seed-jack-daniels-single-barrel": {
+   "file": "img/w/jack-daniels-single-barrel.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 172,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-yamazaki-18": {
+   "file": "img/w/yamazaki-18.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 132,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-glenlivet-25": {
+   "file": "img/w/glenlivet-25.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 116,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-glendronach-18": {
+   "file": "img/w/glendronach-18.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 108,
+   "h": 340,
+   "at": "2026-11-14"
+  },
+  "seed-balvenie-15-sherry": {
+   "file": "img/w/balvenie-15-sherry.webp",
+   "source": "사용자 제공 캡처(2026-11-14)",
+   "credit": "사용자 제공 이미지",
+   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "cutout": true,
+   "w": 136,
+   "h": 312,
+   "at": "2026-11-14"
   }
  },
  "misses": {

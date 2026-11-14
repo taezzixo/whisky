@@ -4,7 +4,7 @@
 import { useMemo, useState } from 'react';
 import type { Whisky } from '../types.ts';
 import { mapPoint } from '../lib/collection.ts';
-import { liquidColor } from '../lib/liquid.ts';
+import { LIQUID_RAMP, liquidColor } from '../lib/liquid.ts';
 
 interface Props {
   dex: Whisky[];
@@ -107,7 +107,7 @@ export function FlavorMap({ dex, tried, me, onOpen }: Props) {
                   >
                     <title>{w.nameKo ?? w.name}</title>
                   </circle>
-                  {tried.has(w.id) && on && <circle className="ring" cx={x} cy={y} r={9.5} />}
+                  {tried.has(w.id) && on && <circle className="tried-ring" cx={x} cy={y} r={9.5} />}
                 </g>
               );
             })}
@@ -129,7 +129,7 @@ export function FlavorMap({ dex, tried, me, onOpen }: Props) {
         </div>
         <div className="map-legend">
           <span>
-            <i style={{ background: 'linear-gradient(90deg,#F2D58C,#D0913A,#6B2B15)' }} />점 색: 추정 액체 색(캐스크·숙성)
+            <i style={{ background: `linear-gradient(90deg,${LIQUID_RAMP[0]},${LIQUID_RAMP[2]},${LIQUID_RAMP[5]})` }} />점 색: 추정 액체 색(캐스크·숙성)
           </span>
           <span>
             <i style={{ border: '2px solid var(--brass)', background: 'transparent' }} />황동 테두리: 내가 마신 위스키

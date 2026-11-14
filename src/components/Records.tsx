@@ -10,6 +10,7 @@ import { HomeBar } from './HomeBar.tsx';
 import type { CabinetItem } from '../lib/collection.ts';
 import { Stars } from './Tasting.tsx';
 import { WhiskyRow } from './WhiskyRow.tsx';
+import { ValueRanking } from './ValueRanking.tsx';
 
 interface Props {
   user: UserData;
@@ -89,6 +90,8 @@ export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onBottle,
           </div>
         )}
       </section>
+
+      {log.length > 0 && <ValueRanking tastings={user.tastings} byId={byId} onOpen={onOpen} />}
 
       <section aria-labelledby="wish-title">
         <div className="sec-head">

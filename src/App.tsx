@@ -4,17 +4,20 @@ import { Dex } from './components/Dex.tsx';
 import { FlavorMap } from './components/FlavorMap.tsx';
 import { Records } from './components/Records.tsx';
 import { Compare } from './components/Compare.tsx';
+import { Distilleries } from './components/Distilleries.tsx';
+import { groupByDistillery } from './lib/insights.ts';
 import { WhiskyDetail } from './components/WhiskyDetail.tsx';
 import { tasteFromTastings, triedIds } from './lib/collection.ts';
 import { applyOverrides } from './lib/overrides.ts';
 import { loadUserData, mergeUserData, parseUserData, removeBottle, removeTasting, saveUserData, toggle, toggleCompare, upsertBottle, upsertTasting, type UserData } from './lib/store.ts';
 import type { Overrides, Whisky, WhiskiesFile } from './types.ts';
 
-type Tab = 'dex' | 'bti' | 'map' | 'mine' | 'compare';
+type Tab = 'dex' | 'bti' | 'map' | 'dist' | 'mine' | 'compare';
 const TABS: [Tab, string][] = [
   ['dex', '도감'],
   ['bti', '위스키BTI'],
   ['map', '맛 지도'],
+  ['dist', '증류소'],
   ['mine', '내 기록'],
   ['compare', '비교'],
 ];
@@ -29,12 +32,12 @@ async function getJson<T>(path: string): Promise<T | null> {
   }
 }
 
-function readUrl(): { tab: Tab; id: string | null } {
+function readUrl(): { tab: Tab; id: string | null; d: string | null } {
   const p = new URLSearchParams(location.search);
   const t = p.get('tab') as Tab;
   // 예전 주소(?tab=explore, ?tab=mine) 호환
   const tab: Tab = t === ('explore' as Tab) ? 'dex' : TABS.some(([k]) => k === t) ? t : 'dex';
-  return { tab, id: p.get('w') };
+  return { tab, id: p.get('w'), d: tab === 'dist' ? p.get('d') : null };
 }
 
 export default function App() {
@@ -43,7 +46,7 @@ export default function App() {
   const [catalog, setCatalog] = useState<Whisky[] | null>(null);
   const [wantCatalog, setWantCatalog] = useState(false);
   const [error, setError] = useState(false);
-  const [{ tab, id }, setRoute] = useState(readUrl);
+  const [{ tab, id, d }, setRoute] = useState(readUrl);
   const [user, setUser] = useState<UserData>(() => loadUserData());
   const [retry, setRetry] = useState(false);
   const [notice, setNotice] = useState('');
@@ -72,13 +75,16 @@ export default function App() {
   const byId = useMemo(() => new Map(everything.map((w) => [w.id, w])), [everything]);
   const tried = useMemo(() => triedIds(user.tried, user.tastings), [user.tried, user.tastings]);
   const current = id ? byId.get(id) : undefined;
+  const distilleries = useMemo(() => groupByDistillery(dex, tried), [dex, tried]);
   const recordTaste = useMemo(() => tasteFromTastings(user.tastings, byId), [user.tastings, byId]);
   const me = recordTaste ? { taste: recordTaste, label: '내 기록' } : user.bti ? { taste: user.bti.taste, label: '내 BTI' } : null;
 
-  const go = (next: { tab?: Tab; id?: string | null }) => {
-    const r = { tab: next.tab ?? tab, id: next.id === undefined ? id : next.id };
+  const go = (next: { tab?: Tab; id?: string | null; d?: string | null }) => {
+    const t = next.tab ?? tab;
+    const r = { tab: t, id: next.id === undefined ? id : next.id, d: t !== 'dist' ? null : next.d === undefined ? (next.tab ? null : d) : next.d };
     const p = new URLSearchParams();
     if (r.tab !== 'dex') p.set('tab', r.tab);
+    if (r.d) p.set('d', r.d);
     if (r.id) p.set('w', r.id);
     try {
       history.pushState(null, '', `${location.pathname}${p.size ? `?${p}` : ''}`);
@@ -156,6 +162,7 @@ export default function App() {
               onSaveTasting={(t) => setUser((u) => upsertTasting(u, t))}
               onOpen={open}
               onBack={() => (history.length > 1 ? history.back() : go({ id: null }))}
+              onDistillery={(slug) => go({ tab: 'dist', d: slug, id: null })}
             />
           ) : (
             <p className="muted">{file ? '이 위스키를 도감에서 찾지 못했습니다.' : '불러오는 중입니다.'}</p>
@@ -186,6 +193,8 @@ export default function App() {
           )
         ) : tab === 'map' ? (
           <FlavorMap dex={dex} tried={tried} me={me} onOpen={open} />
+        ) : tab === 'dist' ? (
+          <Distilleries groups={distilleries} tried={tried} wishlist={user.wishlist} slug={d} onPick={(slug) => go({ d: slug })} onOpen={open} onWish={wish} />
         ) : tab === 'compare' ? (
           <Compare
             items={user.compare.map((cid) => byId.get(cid)).filter((w): w is Whisky => !!w)}

@@ -61,6 +61,10 @@
 | `Bti.tsx` | 위스키BTI 문항·결과 | `.quiz.panel` `.choice` `.type-head` |
 | `Charts.tsx` | 레이더(최대 2계열)·10축 막대 | `.radar` `.flavor-bars` |
 | `BarcodeScan.tsx` | 카메라 바코드 스캔(지원 브라우저만) | `.panel` |
+| `Distilleries.tsx` | 증류소 색인(나라별 2열 목록)·증류소 페이지(라인업 진열장 + 대표 맛) | `.cabinet-row` + 테일윈드 |
+| `ValueRanking.tsx` | 체감 가성비 표(`<table>`, 좁은 화면은 가격 열 숨김) | 테일윈드 |
+| `TastingCard.tsx` | 테이스팅 카드 캔버스(1:1·9:16, 색은 CSS 토큰을 읽음) | `.card-canvas` + 테일윈드 |
+| `ui.tsx` | `Button`(variant·size) · `Chip`(pressed) · `Section`(합성) · `AppLink`(화면 안 이동도 `<a href>`) | `.btn` `.chip` `.panel` + 테일윈드 |
 
 **공통 패턴 — 진열 칸(입체 + 마신 위스키 금빛):**
 
@@ -90,14 +94,15 @@
 ## 3. 프레임워크·도구
 
 - React 18 + TypeScript(strict), Vite 5(빌드·개발 서버, `index.html`·`admin.html` 두 진입점)
-- 스타일: 전역 CSS 한 파일(`src/styles.css`), CSS 사용자 정의 속성. CSS-in-JS·Tailwind·CSS Modules 없음
+- 스타일: 전역 CSS(`src/styles.css`, 토큰 + 기존 화면) + **테일윈드 CSS 3.4**(2026-11-14 도입, 새 화면·새 컴포넌트). CSS-in-JS·CSS Modules 없음. 테일윈드 규칙은 §10
 - 런타임 의존성은 `react`, `react-dom`뿐. 차트는 SVG 직접 구현(라이브러리 없음). 새 의존성은 사용자 확인 후 추가
 - 테스트: `node --test`(순수 함수), 화면은 Playwright 스크린샷으로 확인
 - 배포: Cloudflare Workers 정적 자산(`wrangler.jsonc`), `prerender.mjs`가 위스키별 SEO 페이지 생성
 
 ## 4. 에셋
 
-- **위스키 사진:** `public/img/w/<id>.(jpg|png|webp)` — `scripts/fetch-images.mjs`가 수집. 출처는 **자유 라이선스만**:
+- **배경을 지운 병(누끼):** `public/img/w/<id>.webp` 42장 — 2026-11-14 사용자가 준 캡처에서 잘라 배경을 지움(출처·라이선스 미확인, 사용자 결정). `data/images.json`에 `cutout: true`, 원본 크기 `w`·`h`. 화면에서는 `.bottle`(병 모양 마스크로 원통 음영 `multiply` + 세로 반사광 `screen` + 바닥 타원 그림자, 진열 칸에서는 포인터를 따라 반사광 이동 `--gx`)으로 볼록하게 그립니다.
+- **위스키 사진(자동 수집):** `public/img/w/<id>.(jpg|png|webp)` — `scripts/fetch-images.mjs`가 수집. 출처는 **자유 라이선스만**:
   1. Open Food Facts 제품 사진(CC BY-SA 3.0) — 바코드·이름으로 찾음
   2. 위키미디어 공용(CC BY / CC BY-SA / CC0 / 퍼블릭 도메인)
   - 쇼핑몰·브랜드 사이트 이미지는 쓰지 않습니다. 사진마다 작성자·라이선스·원본 링크를 `data/images.json`에 저장하고 상세 화면에 표시합니다(CC BY·BY-SA 표시 의무).
@@ -146,7 +151,7 @@ scripts/                # 수집(fetch-whiskies, fetch-images), prerender
 
 **Design → Code**
 1. Figma 링크에서 `fileKey`·`nodeId`를 뽑고 `create_session` → `get_design_context`(figma-design-to-code 스킬 먼저 로드).
-2. 받은 코드는 **참고용**입니다. Tailwind·절대 위치·하드코딩 색을 그대로 붙이지 말고, 위 토큰·클래스·컴포넌트로 다시 씁니다.
+2. 받은 코드는 **참고용**입니다. 대괄호 임의값(`w-[13px]`)·절대 위치·하드코딩 색을 그대로 붙이지 말고, §10 테마 토큰 클래스와 위 컴포넌트로 다시 씁니다.
 3. Figma 색이 토큰에 없으면 가장 가까운 토큰을 쓰고, 정말 새 색이면 토큰을 추가한 뒤 사용자에게 알립니다.
 4. 이미지·아이콘은 §4·§5 규칙(자유 라이선스, 인라인 SVG)을 따릅니다. Figma의 사진 레이어를 그대로 내보내 커밋하지 않습니다.
 5. 만든 화면은 라이트·다크·390px에서 스크린샷으로 확인합니다.
@@ -166,3 +171,45 @@ scripts/                # 수집(fetch-whiskies, fetch-images), prerender
 - [ ] 375 / 768 / 1024 / 1440px에서 가로 스크롤 없음
 - [ ] 차트 색은 `--series-*`만, 검증 스크립트 통과
 - [ ] 사진마다 작성자·라이선스 표시
+
+## 10. 테일윈드 테마 연동 (2026-11-14)
+
+토큰의 값은 `src/styles.css` `:root`(+라이트 두 블록)에만 있고, `tailwind.config.js`는 그 CSS 변수에 **이름만** 붙입니다. 그래서 라이트·다크 전환은 CSS 변수가 알아서 하고, 테일윈드 클래스는 테마를 몰라도 됩니다. `theme`은 `extend`가 아니라 통째로 바꿔서, 토큰에 없는 색·여백·그림자는 클래스 자체가 만들어지지 않습니다. 기존 전역 스타일과 부딪히지 않게 preflight는 끕니다.
+
+| Figma 변수 (whisky-dex) | CSS 토큰 | 테일윈드 클래스 예 |
+|---|---|---|
+| color/bg, surface, raised, glass | `--bg` `--surface` `--raised` `--glass` | `bg-bg` `bg-surface` `bg-raised` `bg-glass` |
+| color/line, line/hi | `--line` `--line-hi` | `border-line` `border-line-hi` |
+| color/text, text/2, muted | `--text` `--text-2` `--muted` | `text-text` `text-text-2` `text-muted` |
+| color/gold, gold/hi, gold/lo, gold/ink | `--gold*` | `text-gold` `bg-gold` `border-gold-lo` `text-gold-ink` |
+| color/wine, wine/hi | `--wine*` | `bg-wine` `text-wine-hi` |
+| color/series/1·2 (차트 전용) | `--series-1` `--series-2` | `fill-series-1` `stroke-series-2` |
+| type/display, latin, body | `--font-display` `--font-latin` `--font-body` | `font-display` `font-latin` `font-body` |
+| type/step -1 … 5 | `--step--1` … `--step-5` | `text-sm` `text-base` `text-lg` `text-xl` `text-2xl` `text-3xl` `text-4xl` |
+| space/1 … 16 (4px 기준) | `--space-1` … `--space-16` | `p-4` `gap-2` `mt-6` (1·2·3·4·5·6·8·10·12·16만 존재) |
+| size/tap, measure, container | `--tap` `--measure` `--container` | `min-h-tap` `min-w-tap` `max-w-measure` `max-w-container` |
+| radius/sm, md, pill | `--radius-sm` `--radius` `--radius-pill` | `rounded-sm` `rounded` `rounded-pill` |
+| effect/panel, lift, tried | `--shadow-panel` `--shadow-lift` `--glow-tried` | `shadow-panel` `shadow-lift` `shadow-tried` |
+| motion/ease-out, in-out, spring | `--ease-out` `--ease-in-out` `--ease-spring` | `ease-out` `ease-in-out` `ease-spring` |
+| motion/press, ui, panel | `--dur-press`(140ms) `--dur-ui`(200ms) `--dur-panel`(280ms) | `duration-press` `duration-ui` `duration-panel` |
+
+**규칙**
+
+1. **대괄호 임의값 금지.** `p-[13px]`, `bg-[#fff]`, `[mask:…]` 같은 클래스는 쓰지 않습니다. `scripts/lib/tailwind-guard.test.mjs`가 `npm test`에서 막습니다. 필요한 값이 없으면 토큰을 먼저 추가(§1)하고 `tailwind.config.js`에 이름을 붙입니다.
+2. **오토 레이아웃 → 플렉스/그리드 1:1.**
+
+   | Figma 오토 레이아웃 | 테일윈드 |
+   |---|---|
+   | 방향 가로 / 세로 | `flex flex-row` / `flex flex-col` |
+   | 간격(item spacing) 8 | `gap-2` (토큰 단계로 반올림) |
+   | 패딩 16 / 가로 24·세로 12 | `p-4` / `px-6 py-3` |
+   | 정렬 위·가운데·아래 | `items-start` `items-center` `items-end` |
+   | 분배 Packed / Space between | `justify-start` / `justify-between` |
+   | 줄바꿈(Wrap) | `flex-wrap` |
+   | 자식 Fill container / Hug | `flex-1 min-w-0` / `shrink-0` |
+   | 고정 열 수 그리드 | `grid grid-cols-2 md:grid-cols-4` |
+   | 반응형 카드 열 | `grid` + `.auto-grid`(styles.css 의 `repeat(auto-fill, minmax(…))`) |
+
+3. **변형(variant) → 컴포넌트 속성.** Figma 컴포넌트 속성 `Variant=Primary|Ghost`, `Size=Sm|Md`, `State=Tried|Untried`는 리액트 속성 `variant: 'primary' | 'ghost'`, `size: 'sm' | 'md'`, `tried: boolean`으로 옮기고, 속성별 클래스 묶음은 컴포넌트 안의 객체 한 곳(`const VARIANT = { primary: '…', ghost: '…' }`)에 둡니다.
+4. **합성 컴포넌트가 기본.** 여러 부분이 있는 블록은 `<Section>` + `<Section.Head>` + `<Section.Body>`처럼 부모가 틀을, 자식이 부분을 맡게 만듭니다(예: `src/components/ui.tsx`).
+5. 기존 CSS 클래스(`.panel`, `.btn`, `.slot` 등 3D·유리 효과)는 그대로 쓰고, 배치·여백·글자는 테일윈드로 얹습니다. 같은 요소에 같은 속성을 두 방식으로 주지 않습니다.
