@@ -56,7 +56,7 @@ npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 
 
 ## 배포와 커밋
 - 브랜치: `main`이 기본 브랜치이자 배포 브랜치입니다(2026-11-14 변경). 작업은 대화별 작업 브랜치(`claude/…`)에서 하고, 테스트·빌드를 통과한 뒤 `main`에 합칩니다(fast-forward). 작업 브랜치가 `main`보다 뒤처지면 먼저 `main`을 받아 맞춥니다.
-- `main`에 푸시하면 Cloudflare가 자동 배포합니다(연결은 사람이 한 번 설정, `README.md` 참고). 같은 커밋을 작업 브랜치와 동시에 올리면 Cloudflare가 작업 브랜치(미리보기)만 빌드하므로 **`main`을 먼저 푸시**합니다.
+- `main`에 푸시하면 Cloudflare가 자동 배포합니다(연결은 사람이 한 번 설정, `README.md` 참고). 푸시해도 Cloudflare 배포 목록에 새 빌드가 안 생기면 깃허브의 Cloudflare Workers and Pages 앱 연결(저장소 접근)을 먼저 확인합니다(2026-11-14 이 문제로 자동 배포가 멈췄고, 앱 재연결로 해결). `main`을 먼저 푸시하고 작업 브랜치는 그다음에 푸시합니다.
 - 매주 월요일 06:17 KST에 Actions가 데이터를 커밋합니다. 봇 커밋이 "Unverified"로 보여도 정상입니다. 강제 푸시하지 않습니다.
 - 커밋 메시지에는 Claude 공동 작성 줄과 `Claude-Session` 줄을 함께 씁니다. 요청하지 않은 PR은 만들지 않습니다.
 
