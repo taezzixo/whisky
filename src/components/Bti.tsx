@@ -25,7 +25,7 @@ export function BtiQuiz({ onDone }: { onDone: (p: BtiProfile) => void }) {
         <h1>나에게 맞는 위스키는</h1>
         <p className="lede">커피, 디저트, 향신료 취향 같은 질문 {QUESTIONS.length}개로 위스키 취향 유형과 첫 세 병을 골라 드립니다.</p>
       </section>
-      <section className="quiz" aria-labelledby="q-title">
+      <section className="quiz panel" aria-labelledby="q-title">
         <div className="quiz-progress" role="progressbar" aria-valuemin={1} aria-valuemax={QUESTIONS.length} aria-valuenow={step + 1} aria-label={`질문 ${step + 1} / ${QUESTIONS.length}`}>
           {QUESTIONS.map((x, i) => (
             <i key={x.id} className={i <= step ? 'on' : undefined} />
@@ -39,9 +39,7 @@ export function BtiQuiz({ onDone }: { onDone: (p: BtiProfile) => void }) {
         <div className="choices">
           {q.choices.map((c, i) => (
             <button key={c.label} className="choice" aria-pressed={answers[q.id] === i} onClick={() => choose(i)}>
-              <span className="emoji" aria-hidden="true">
-                {c.emoji}
-              </span>
+              <span className="mark" aria-hidden="true" />
               {c.label}
             </button>
           ))}
@@ -93,9 +91,7 @@ export function BtiResult({ profile, whiskies, wishlist, tried, onWish, onOpen, 
       <section className="type-head">
         <div>
           <p className="code">위스키BTI 결과, 유형 코드 {profile.code}</p>
-          <h1>
-            <span aria-hidden="true">{profile.emoji}</span> {profile.name}
-          </h1>
+          <h1>{profile.name}</h1>
           <p className="lede" style={{ fontFamily: 'var(--font-display)', fontSize: 'var(--step-1)', color: 'var(--text-2)' }}>
             {profile.desc}
           </p>

@@ -36,7 +36,9 @@ jobs:
   collect:
     if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
+    env:
+      COLLECTOR_CONTACT: ${{ vars.COLLECTOR_CONTACT }} # 선택: 수집기 연락처(사이트 주소 등). 저장소 Variables에서 설정
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -46,12 +48,15 @@ jobs:
       - run: npm ci
       - name: 위스키 데이터 수집
         run: npm run fetch:data
+      - name: 실제 사진 수집 (Open Food Facts·위키미디어 공용, 자유 라이선스만)
+        run: npm run fetch:images
+        continue-on-error: true # 사진 실패는 데이터 갱신을 막지 않는다
       - run: npm test
       - name: 수집 데이터 커밋 (Cloudflare가 자동 배포)
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A public/data data/source-cache
+          git add -A public/data public/img data/source-cache data/images.json
           git diff --cached --quiet && echo "변경 없음" && exit 0
           git commit -m "data: 위스키 데이터 갱신 $(TZ=Asia/Seoul date +%F)"
           git push

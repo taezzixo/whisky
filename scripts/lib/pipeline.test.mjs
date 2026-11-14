@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { isZip, parseJsonRows, readFirstZipEntry } from './zip.mjs';
 import { cleanIowaName } from './normalize.mjs';
+import { attachImages, commonsTitleText, freeLicense, frontImageUrl, imageMatches, pickCommons } from './images.mjs';
 import { attachDistilleries, guessType, isSuspiciousEmpty, mergeCatalog, normName, parseAge, parseIowa, parseOff, parseWikidata } from './normalize.mjs';
 
 const fx = (f) => JSON.parse(readFileSync(new URL(`../fixtures/${f}`, import.meta.url), 'utf8'));
@@ -122,4 +123,35 @@ test('시드 점검 규칙 (docs/SEED_GUIDE.md §2)', () => {
     if (w.type === 'rye' && spicy < 4) bad.push(`${w.id}: 라이인데 스파이시 ${spicy}`);
   }
   assert.deepEqual(bad, []);
+});
+
+test('사진 매칭: 브랜드·숙성 연수가 맞을 때만 쓴다', () => {
+  const g12 = seed.find((w) => w.id === 'seed-glenfiddich-12');
+  assert.equal(imageMatches(g12, { product_name: 'Glenfiddich 12 Year Old Single Malt', brands: 'Glenfiddich' }), true);
+  assert.equal(imageMatches(g12, { product_name: '15', brands: 'Glenfiddich' }), false); // 다른 연수
+  assert.equal(imageMatches(g12, { product_name: 'Glenfiddich Single Malt', brands: '' }), false); // 연수 확인 불가
+  assert.equal(imageMatches(g12, { product_name: 'Balvenie 12', brands: 'Balvenie' }), false); // 다른 브랜드
+  const ms = seed.find((w) => w.id === 'seed-monkey-shoulder');
+  assert.equal(imageMatches(ms, { product_name: 'Monkey Shoulder Blended Malt', brands: 'William Grant' }), true);
+  assert.equal(frontImageUrl({ selected_images: { front: { display: { fr: 'x.jpg' } } } }), 'x.jpg');
+  const out = attachImages([g12], { images: { [g12.id]: { file: 'img/w/glenfiddich-12.jpg', credit: 'c', license: 'l', product: 'u' } } });
+  assert.equal(out[0].image.src, 'img/w/glenfiddich-12.jpg');
+});
+
+test('위키미디어 공용: 제목 정리, 자유 라이선스만, 브랜드·연수 맞는 세로 사진', () => {
+  assert.equal(commonsTitleText('File:GlenfiddichSpecialReserve12Years.jpg'), 'Glenfiddich Special Reserve 12 Years');
+  assert.equal(freeLicense('CC BY-SA 3.0'), true);
+  assert.equal(freeLicense('CC0'), true);
+  assert.equal(freeLicense('Public domain'), true);
+  assert.equal(freeLicense('CC BY-NC 2.0'), false);
+  assert.equal(freeLicense('Fair use'), false);
+  const g12 = seed.find((w) => w.id === 'seed-glenfiddich-12');
+  const ii = (w, h, lic = 'CC BY-SA 3.0') => ({ mime: 'image/jpeg', width: w, height: h, extmetadata: { LicenseShortName: { value: lic } } });
+  const pages = [
+    { title: 'File:Glenfiddich distillery.jpg', imageinfo: [ii(800, 600)] },
+    { title: 'File:GlenfiddichSpecialReserve12Years.jpg', imageinfo: [ii(422, 1087)] },
+    { title: 'File:Glenfiddich 12 nc.jpg', imageinfo: [ii(300, 900, 'CC BY-NC 2.0')] },
+    { title: 'File:Glenfiddich 15.jpg', imageinfo: [ii(300, 900)] },
+  ];
+  assert.equal(pickCommons(g12, pages).p.title, 'File:GlenfiddichSpecialReserve12Years.jpg');
 });

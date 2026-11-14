@@ -6,7 +6,9 @@ import { TYPE_LABEL } from '../config/flavor.ts';
 import { badgeStates, byCountry, collectionRate } from '../lib/collection.ts';
 import { liquidColor, liquidScore } from '../lib/liquid.ts';
 import { searchWhiskies } from '../lib/overrides.ts';
-import { Glass } from './Glass.tsx';
+import { tiltHandlers, WhiskyArt } from './WhiskyArt.tsx';
+import { findByBarcode } from '../lib/collection.ts';
+import { BarcodeScan } from './BarcodeScan.tsx';
 import { WhiskyRow } from './WhiskyRow.tsx';
 
 interface Props {
@@ -47,6 +49,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
     if (type) list = list.filter((w) => w.type === type);
     return list;
   }, [dex, q, show, country, type, tried, wishlist]);
+  const barcodeHit = useMemo(() => (/^\d{8,14}$/.test(q.trim()) ? findByBarcode([...dex, ...(catalog ?? [])], q.trim()) : undefined), [q, dex, catalog]);
   const catalogHits = useMemo(() => (withCatalog && q && catalog ? searchWhiskies(catalog, q, 40) : []), [withCatalog, q, catalog]);
 
   return (
@@ -54,6 +57,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
       <section className="hero" aria-labelledby="dex-title">
         <h1 id="dex-title">마신 위스키는 제 색으로 남습니다</h1>
         <p className="lede">위스키 {rate.total}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.</p>
+        <div className="band-stage">
         <div
           className="band"
           role="img"
@@ -72,6 +76,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
               title={`${w.nameKo ?? w.name}${tried.has(w.id) ? ' (기록함)' : ''}`}
             />
           ))}
+        </div>
         </div>
         <div className="band-legend">
           <span>볏짚색, 버번 캐스크</span>
@@ -94,15 +99,12 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
           <h2 id="seal-title">배지</h2>
           <p>{seals.filter((s) => s.earned).length}개 획득</p>
         </div>
-        <div className="seals">
+        <div className="seals panel">
           {seals.map(({ badge, count, earned }) => (
             <div key={badge.id} className={`seal${earned ? ' earned' : ''}`}>
-              <svg viewBox="0 0 40 40" aria-hidden="true">
-                <path className="disc" d="M20 2 l4 3.2 5-.6 2.2 4.6 4.6 2.2-.6 5 3.2 4-3.2 4 .6 5-4.6 2.2-2.2 4.6-5-.6-4 3.2-4-3.2-5 .6-2.2-4.6-4.6-2.2.6-5L2 20l3.2-4-.6-5 4.6-2.2L11.4 4.2l5 .6Z" />
-                <text className="mark" x="20" y="25.5" textAnchor="middle">
-                  {badge.name.slice(0, 1)}
-                </text>
-              </svg>
+              <span className="coin" aria-hidden="true">
+                {badge.name.slice(0, 1)}
+              </span>
               <div>
                 <b>{badge.name}</b>
                 <span>
@@ -118,7 +120,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
         <div className="sec-head">
           <h2 id="country-title">나라별 수집</h2>
         </div>
-        <div className="countries">
+        <div className="countries panel">
           {countries.slice(0, 8).map((c) => (
             <div key={c.country} className="country">
               <span>{c.country}</span>
@@ -146,9 +148,16 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
             onChange={(e) => {
               setQ(e.target.value);
               setLimit(PAGE);
+              if (/^\d{8,}$/.test(e.target.value.trim())) onNeedCatalog();
             }}
-            placeholder="이름, 증류소, 향으로 찾기 (예: 맥캘란, 아일라, 바닐라)"
+            placeholder="이름, 증류소, 향, 바코드 숫자로 찾기 (예: 맥캘란, 아일라)"
             aria-label="도감 검색"
+          />
+          <BarcodeScan
+            onCode={(code) => {
+              setQ(code);
+              onNeedCatalog();
+            }}
           />
           <select id="dex-country" value={country} onChange={(e) => setCountry(e.target.value)} aria-label="나라">
             <option value="">모든 나라</option>
@@ -182,19 +191,35 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
           ))}
         </div>
 
-        {filtered.length === 0 ? (
+        {barcodeHit && (
+          <div className="rows" style={{ marginTop: 14 }}>
+            <p className="small muted">바코드 {q.trim()}에 맞는 위스키</p>
+            <WhiskyRow w={barcodeHit} tried={tried.has(barcodeHit.id)} wished={wishlist.includes(barcodeHit.id)} onWish={() => onWish(barcodeHit.id)} onOpen={() => onOpen(barcodeHit.id)} />
+          </div>
+        )}
+        {/^\d{8,14}$/.test(q.trim()) && !barcodeHit && (
+          <p className="muted small" style={{ marginTop: 14 }}>
+            {catalog === null ? '수집 카탈로그까지 찾는 중입니다.' : `바코드 ${q.trim()}에 맞는 위스키가 아직 없습니다.`}
+          </p>
+        )}
+        {filtered.length === 0 && !/^\d{8,14}$/.test(q.trim()) ? (
           <p className="muted" style={{ marginTop: 20 }}>
             조건에 맞는 위스키가 도감에 없습니다. 검색어를 줄이거나 아래 수집 카탈로그를 함께 찾아보세요.
           </p>
-        ) : (
-          <div className="shelf" style={{ marginTop: 8 }}>
-            {filtered.slice(0, limit).map((w) => (
-              <button key={w.id} className={`bottle-slot${tried.has(w.id) ? '' : ' untried'}`} onClick={() => onOpen(w.id)}>
-                <Glass w={w} size={72} filled={tried.has(w.id)} />
-                <span className="nm">{w.nameKo ?? w.name}</span>
-                <span className="sub">{w.country}</span>
-              </button>
-            ))}
+        ) : filtered.length === 0 ? null : (
+          <div className="cabinet" style={{ marginTop: 16 }}>
+            {filtered.slice(0, limit).map((w) => {
+              const on = tried.has(w.id);
+              return (
+                <button key={w.id} className={`slot ${on ? 'tried' : 'untried'}`} onClick={() => onOpen(w.id)} {...tiltHandlers()} aria-label={`${w.nameKo ?? w.name}${on ? ', 마신 위스키' : ''}`}>
+                  <span className="art">
+                    <WhiskyArt w={w} height={140} tried={on} />
+                  </span>
+                  <span className="nm">{w.nameKo ?? w.name}</span>
+                  <span className="sub">{w.country}</span>
+                </button>
+              );
+            })}
           </div>
         )}
         {filtered.length > limit && (

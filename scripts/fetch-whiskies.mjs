@@ -7,6 +7,7 @@
 
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
+import { attachImages } from './lib/images.mjs';
 import { attachDistilleries, isSuspiciousEmpty, mergeCatalog, quality } from './lib/normalize.mjs';
 import { fetchWikidata } from './sources/wikidata.mjs';
 import { fetchOff } from './sources/openfoodfacts.mjs';
@@ -48,7 +49,8 @@ async function main() {
   const off = await run('off', fetchOff, prevCatalog.filter((w) => w.source === 'off'));
   const iowa = await run('iowa', fetchIowa, prevCatalog.filter((w) => w.source === 'iowa'));
 
-  const merged = mergeCatalog(attachDistilleries(seed, distilleries), [...off, ...iowa]);
+  const images = await readJson('data/images.json', { images: {} });
+  const merged = mergeCatalog(attachImages(attachDistilleries(seed, distilleries), images), [...off, ...iowa]);
   const generatedAt = new Date().toISOString();
   const allOk = sources.every((s) => s.ok);
 

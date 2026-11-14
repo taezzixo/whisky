@@ -14,32 +14,34 @@
 - React 18 + TypeScript + Vite. 런타임 의존성은 `react`, `react-dom`뿐입니다. 새 의존성을 추가하기 전에 확인을 받습니다.
 - 맛 축·추천 가중치는 `src/config/flavor.ts` 한 곳에만 둡니다. 가중치를 바꾸면 `SIMILARITY_VERSIONS`에 새 버전을 **추가**하고 기존 버전은 지우지 않습니다.
 - BTI 문항·점수는 `src/config/bti.ts`. 바꾸면 `BTI_VERSION`을 올립니다.
-- 사용자 입력(BTI 답, 시음 기록, 위시리스트, 마셔본 목록)은 서버로 보내지 않습니다. localStorage에만 두고 JSON 내보내기·가져오기로 옮깁니다.
+- 사용자 입력(BTI 답, 시음 기록, 위시리스트, 마셔본 목록, 내 바, 비교함)은 서버로 보내지 않습니다. 바코드 스캔 영상도 기기 안에서만 처리합니다. localStorage에만 두고 JSON 내보내기·가져오기로 옮깁니다.
 - 맛 수치·가격 화면에는 "추정치·참고용"과 출처를 항상 둡니다. 판매·구매 연결 기능은 만들지 않습니다(주류 통신판매 규제).
-- 디자인은 "숙성고": 어두운 오크(기본)·밝은 오크 톱밥(라이트), 황동 강조(`--brass`), 구리 배지(`--copper`), 제목 Hahmlet·본문 IBM Plex Sans KR. 토큰은 `styles.css` 맨 위 `:root`에만 둡니다. 대문자 라벨, "A · B · C" 메타 문자열, 똑같은 카드 반복은 쓰지 않습니다.
+- 디자인 규칙은 `docs/DESIGN_SYSTEM.md`(Figma 연동 포함)를 따릅니다. 방향은 "비뉴 바리끄": 보르도 블랙 바탕, 가넷(`--wine`), 금박(`--gold*`), 유리 패널(`.panel`), 진열 칸 3D 기울기, 마신 위스키는 금색 테두리 + 바깥으로 옅어지는 빛. 토큰은 `styles.css` 맨 위 `:root`(+라이트 두 블록)에만 둡니다. 대문자 라벨, "A · B · C" 메타 문자열, 이모지 아이콘, 모든 블록 카드화는 쓰지 않습니다.
 - 차트 색은 `--series-1`, `--series-2`만 씁니다(dataviz 검증 통과: 다크 #BA841A/#16A398, 라이트 #9A6618/#008C80). 버튼 강조색과 섞지 않습니다.
-- 위스키 그림은 테이스팅 잔 일러스트(`Glass.tsx`)만 씁니다. 잔 속 색은 `lib/liquid.ts`가 캐스크·숙성으로 추정한 "액체 색"이며 화면에 추정임을 표시합니다. 실제 라벨·로고 이미지는 넣지 않습니다.
+- 위스키 그림은 **자유 라이선스 실제 사진**(Open Food Facts CC BY-SA, 위키미디어 공용 CC BY/BY-SA/CC0/PD)을 쓰고, 사진마다 작성자·라이선스를 표시합니다. 쇼핑몰·브랜드 사이트 이미지는 쓰지 않습니다. 사진이 없으면 잔 일러스트(`Glass.tsx`, 추정 액체 색)를 씁니다.
 
 ## 명령
 ```bash
 npm install            # 의존성 설치
 npm run sample         # 시드만으로 public/data 샘플 생성 (네트워크 불필요)
 npm run dev            # 개발 서버
-npm test               # 단위 테스트 (현재 39개, 모두 통과해야 함)
+npm test               # 단위 테스트 (현재 45개, 모두 통과해야 함)
 npm run build          # 타입 검사 + 빌드 + 위스키별 SEO 페이지 생성
-npm run fetch:data     # 수집 (키 불필요. 이 클라우드 세션은 출처 호스트가 막혀 있어 Actions에서 실행)
+npm run fetch:data     # 데이터 수집 (키 불필요)
+npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 공용, 자유 라이선스만)
 ```
 - 프록시 환경에서 수집할 때는 `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt`를 함께 씁니다.
 
 ## 디렉터리
-- `src/App.tsx` — 탭(도감 · 위스키BTI · 맛 지도 · 내 기록), 주소(`?tab=`, `?w=<id>` 상세), 데이터 불러오기
-- `src/components/` — `Dex.tsx`(액체 색 띠·배지·나라별 수집·선반), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록: 기록 기반 취향·일지·위시·내보내기), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
-- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표), `liquid.ts`(액체 색), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록)
+- `src/App.tsx` — 탭(도감 · 위스키BTI · 맛 지도 · 내 기록 · 비교), 주소(`?tab=`, `?w=<id>` 상세), 데이터 불러오기
+- `src/components/` — `Dex.tsx`(액체 색 띠·배지·나라별 수집·선반), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록), `HomeBar.tsx`(내 바: 보유 병·남은 양·산화 안내), `Compare.tsx`(최대 4종 비교), `BarcodeScan.tsx`(카메라 바코드), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `WhiskyArt.tsx`(사진 또는 잔 + 3D 기울기), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
+- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록)
 - `src/config/` — `flavor.ts`(맛 10축·가중치 버전), `bti.ts`(문항·유형 이름)
 - `src/admin/main.tsx` + `admin.html` — 관리 페이지 `/admin.html`(읽기 전용: 출처별 수집 결과·품질·이력)
 - `data/flavor-seed.json` — **큐레이션 시드**(맛 벡터가 있는 도감의 원본, 345종). 추가·수정 기준은 `docs/SEED_GUIDE.md`
-- `scripts/fetch-whiskies.mjs` — 수집 메인. `scripts/sources/`(wikidata · openfoodfacts · iowa · http), `scripts/lib/normalize.mjs`(정규화·병합·Iowa 이름 정리), `scripts/lib/zip.mjs`(Iowa zip 풀기)
+- `scripts/fetch-whiskies.mjs` — 수집 메인. `scripts/sources/`(wikidata · openfoodfacts · iowa · http), `scripts/lib/normalize.mjs`(정규화·병합·Iowa 이름 정리), `scripts/lib/zip.mjs`(Iowa zip 풀기), `scripts/fetch-images.mjs` + `scripts/lib/images.mjs`(실제 사진 찾기·라이선스 확인·브랜드/연수 매칭)
 - `scripts/prerender.mjs` — 위스키별 정적 페이지(`/w/<id>`), 사이트맵, robots
+- `public/img/w/` — 실제 사진, `data/images.json` — 사진 출처·라이선스·못 찾은 기록(30일 뒤 재시도)
 - `public/data/` — `whiskies.json`(도감: 시드 + 바코드·좌표 보강), `catalog.json`(맛 정보 없는 수집 카탈로그), `distilleries.json`, `run-log.json`, `overrides.json`
 
 ## 데이터 규칙

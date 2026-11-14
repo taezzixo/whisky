@@ -61,3 +61,38 @@ test('시음 기록 저장: 추가·수정·삭제·가져오기 병합·잘못�
   assert.deepEqual(p.tastings.map((x) => x.id), ['ok']);
   assert.deepEqual(parseUserData({ wishlist: ['a'] }).tastings, []); // 예전 저장값과 호환
 });
+
+import { findByBarcode, oxidationAdvice } from './collection.ts';
+import { pairingGuide } from './pairing.ts';
+import { toggleCompare, upsertBottle } from './store.ts';
+
+test('페어링: 셰리는 초콜릿, 피트는 훈제, 고도수는 물 몇 방울', () => {
+  assert.ok(pairingGuide(W('macallan-12-sherry-oak')).foods.includes('다크 초콜릿'));
+  assert.ok(pairingGuide(W('laphroaig-10')).foods.includes('훈제 연어'));
+  assert.ok(pairingGuide(W('aberlour-abunadh')).serve.some((s) => s.label === '물 몇 방울'));
+  assert.ok(pairingGuide(W('jim-beam-white')).serve.some((s) => s.label.startsWith('하이볼')));
+  for (const w of all) assert.ok(pairingGuide(w).foods.length >= 2, w.id);
+});
+
+test('산화 안내: 남은 양이 적고 오래 열수록 빨리 마시라고 한다', () => {
+  const base = { id: 'b', whiskyId: 'x', state: 'open' as const };
+  assert.equal(oxidationAdvice({ ...base, fill: 20, openedAt: '2026-01-01' }, '2026-11-14')!.level, 'now');
+  assert.equal(oxidationAdvice({ ...base, fill: 90, openedAt: '2026-10-01' }, '2026-11-14')!.level, 'ok');
+  assert.equal(oxidationAdvice({ ...base, fill: 50, openedAt: '2026-05-01' }, '2026-11-14')!.level, 'soon');
+  assert.equal(oxidationAdvice({ ...base, state: 'sealed', fill: 100 }, '2026-11-14'), null);
+});
+
+test('바코드 찾기: 앞자리 0 차이 무시, 짧은 숫자는 무시', () => {
+  const w = { ...W('glenfiddich-12'), barcode: ['083664990412'] };
+  assert.equal(findByBarcode([w], '83664990412')?.id, w.id);
+  assert.equal(findByBarcode([w], '1234'), undefined);
+});
+
+test('비교함은 최대 4종, 가상 바 추가', () => {
+  let d = emptyData();
+  for (const id of ['a', 'b', 'c', 'd', 'e']) d = toggleCompare(d, id);
+  assert.deepEqual(d.compare, ['a', 'b', 'c', 'd']);
+  assert.deepEqual(toggleCompare(d, 'b').compare, ['a', 'c', 'd']);
+  d = upsertBottle(d, { id: 'c1', whiskyId: 'seed-jameson', state: 'open', fill: 60, openedAt: '2026-11-01' });
+  assert.equal(parseUserData(JSON.parse(JSON.stringify(d))).cabinet.length, 1);
+});

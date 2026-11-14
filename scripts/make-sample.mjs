@@ -4,7 +4,9 @@
 import { readFile, writeFile } from 'node:fs/promises';
 import { existsSync } from 'node:fs';
 
-const seed = JSON.parse(await readFile('data/flavor-seed.json', 'utf8')).whiskies;
+import { attachImages } from './lib/images.mjs';
+const images = existsSync('data/images.json') ? JSON.parse(await readFile('data/images.json', 'utf8')) : null;
+const seed = attachImages(JSON.parse(await readFile('data/flavor-seed.json', 'utf8')).whiskies, images);
 const generatedAt = new Date().toISOString();
 await writeFile('public/data/whiskies.json', JSON.stringify({ generatedAt, sample: true, sources: [{ id: 'seed', ok: true, count: seed.length }], whiskies: seed }));
 if (!existsSync('public/data/catalog.json')) await writeFile('public/data/catalog.json', JSON.stringify({ generatedAt, items: [] }));

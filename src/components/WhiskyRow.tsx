@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react';
 import type { Whisky } from '../types.ts';
 import { CASK_LABEL, TYPE_LABEL } from '../config/flavor.ts';
-import { Glass } from './Glass.tsx';
+import { WhiskyArt } from './WhiskyArt.tsx';
 
 /** "스코틀랜드 스페이사이드, 싱글몰트, 12년, 40%" */
 export function specLine(w: Whisky): string {
@@ -28,8 +28,10 @@ interface Props {
 
 export function WhiskyRow({ w, tried = true, score, why, wished, onWish, onOpen }: Props) {
   return (
-    <article className="wrow">
-      <Glass w={w} size={58} filled={tried} />
+    <article className={`wrow${tried ? '' : ' untried'}`}>
+      <span className="thumb">
+        <WhiskyArt w={w} height={66} tried={tried} />
+      </span>
       <button className="main" onClick={onOpen}>
         <h4>{w.nameKo ?? w.name}</h4>
         {w.nameKo && <span className="en">{w.name}</span>}

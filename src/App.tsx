@@ -3,18 +3,20 @@ import { BtiQuiz, BtiResult } from './components/Bti.tsx';
 import { Dex } from './components/Dex.tsx';
 import { FlavorMap } from './components/FlavorMap.tsx';
 import { Records } from './components/Records.tsx';
+import { Compare } from './components/Compare.tsx';
 import { WhiskyDetail } from './components/WhiskyDetail.tsx';
 import { tasteFromTastings, triedIds } from './lib/collection.ts';
 import { applyOverrides } from './lib/overrides.ts';
-import { loadUserData, mergeUserData, parseUserData, removeTasting, saveUserData, toggle, upsertTasting, type UserData } from './lib/store.ts';
+import { loadUserData, mergeUserData, parseUserData, removeBottle, removeTasting, saveUserData, toggle, toggleCompare, upsertBottle, upsertTasting, type UserData } from './lib/store.ts';
 import type { Overrides, Whisky, WhiskiesFile } from './types.ts';
 
-type Tab = 'dex' | 'bti' | 'map' | 'mine';
+type Tab = 'dex' | 'bti' | 'map' | 'mine' | 'compare';
 const TABS: [Tab, string][] = [
   ['dex', '도감'],
   ['bti', '위스키BTI'],
   ['map', '맛 지도'],
   ['mine', '내 기록'],
+  ['compare', '비교'],
 ];
 const BASE = import.meta.env.BASE_URL;
 
@@ -119,6 +121,7 @@ export default function App() {
             <button key={t} onClick={() => go({ tab: t, id: null })} aria-current={tab === t && !id ? 'page' : undefined}>
               {label}
               {t === 'mine' && user.tastings.length > 0 && <span className="count num">{user.tastings.length}</span>}
+              {t === 'compare' && user.compare.length > 0 && <span className="count num">{user.compare.length}</span>}
             </button>
           ))}
         </nav>
@@ -139,6 +142,17 @@ export default function App() {
               tastings={user.tastings}
               onWish={wish}
               onToggleTried={(wid) => setUser((u) => ({ ...u, tried: toggle(u.tried, wid) }))}
+              inCompare={user.compare.includes(current.id)}
+              compareFull={user.compare.length >= 4}
+              onToggleCompare={(wid) => setUser((u) => toggleCompare(u, wid))}
+              inBar={user.cabinet.some((c) => c.whiskyId === current.id && c.state !== 'empty')}
+              onAddToBar={(wid) =>
+                setUser((u) =>
+                  u.cabinet.some((c) => c.whiskyId === wid && c.state !== 'empty')
+                    ? u
+                    : upsertBottle(u, { id: `b-${Date.now().toString(36)}`, whiskyId: wid, state: 'sealed', fill: 100 }),
+                )
+              }
               onSaveTasting={(t) => setUser((u) => upsertTasting(u, t))}
               onOpen={open}
               onBack={() => (history.length > 1 ? history.back() : go({ id: null }))}
@@ -172,6 +186,14 @@ export default function App() {
           )
         ) : tab === 'map' ? (
           <FlavorMap dex={dex} tried={tried} me={me} onOpen={open} />
+        ) : tab === 'compare' ? (
+          <Compare
+            items={user.compare.map((cid) => byId.get(cid)).filter((w): w is Whisky => !!w)}
+            tried={tried}
+            onRemove={(cid) => setUser((u) => toggleCompare(u, cid))}
+            onOpen={open}
+            onBrowse={() => go({ tab: 'dex' })}
+          />
         ) : (
           <Records
             user={user}
@@ -179,10 +201,20 @@ export default function App() {
             onOpen={open}
             onWish={wish}
             onRemoveTasting={(tid) => setUser((u) => removeTasting(u, tid))}
+            onBottle={(c) => setUser((u) => upsertBottle(u, c))}
+            onRemoveBottle={(bid) => setUser((u) => removeBottle(u, bid))}
             onExport={exportData}
             onImport={importData}
             notice={notice}
           />
+        )}
+        {user.compare.length > 0 && tab !== 'compare' && (
+          <div className="compare-tray panel">
+            <span className="small">비교함 {user.compare.length}/4종</span>
+            <button className="btn" onClick={() => go({ tab: 'compare', id: null })}>
+              나란히 비교하기
+            </button>
+          </div>
         )}
       </main>
 

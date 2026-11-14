@@ -96,3 +96,36 @@ export function tasteFromTastings(tastings: Tasting[], byId: Map<string, Whisky>
 export function mapPoint(f: number[]): { x: number; y: number } {
   return { x: f[2], y: f[1] - (f[4] + f[0]) / 2 };
 }
+
+// ── 나만의 가상 바 (보유 바틀) ──────────────────────────────
+export type BottleState = 'sealed' | 'open' | 'empty';
+export const BOTTLE_STATE_LABEL: Record<BottleState, string> = { sealed: '미개봉', open: '마시는 중', empty: '빈 병' };
+
+export interface CabinetItem {
+  id: string;
+  whiskyId: string;
+  state: BottleState;
+  fill: number; // 남은 양 0~100(%)
+  openedAt?: string; // YYYY-MM-DD
+}
+
+/**
+ * 개봉한 병의 산화 안내. 병 속 공기가 많을수록(남은 양이 적을수록), 오래 열어 둘수록 향이 빨리 빠진다.
+ * 일반적인 경험칙: 절반 이하로 남은 병은 몇 달, 거의 가득한 병은 1~2년.
+ */
+export function oxidationAdvice(item: CabinetItem, today: string): { level: 'ok' | 'soon' | 'now'; text: string } | null {
+  if (item.state !== 'open' || !item.openedAt) return null;
+  const months = (Date.parse(today) - Date.parse(item.openedAt)) / (30.4 * 864e5);
+  const limit = item.fill <= 30 ? 3 : item.fill <= 60 ? 9 : 18; // 남은 양별 권장 기간(개월)
+  if (months >= limit) return { level: 'now', text: `연 지 ${Math.floor(months)}개월, 남은 양 ${item.fill}%. 향이 빠지기 전에 드세요.` };
+  if (months >= limit * 0.7) return { level: 'soon', text: `연 지 ${Math.floor(months)}개월. ${Math.ceil(limit - months)}개월 안에 드시는 걸 권합니다.` };
+  return { level: 'ok', text: `연 지 ${Math.max(0, Math.floor(months))}개월. 아직 괜찮습니다.` };
+}
+
+/** 바코드(8~14자리 숫자)로 위스키 찾기 */
+export function findByBarcode(items: Whisky[], code: string): Whisky | undefined {
+  const c = code.replace(/\D/g, '');
+  if (c.length < 8 || c.length > 14) return undefined;
+  const strip = (x: string) => x.replace(/^0+/, '');
+  return items.find((w) => w.barcode?.some((b) => strip(b) === strip(c)));
+}

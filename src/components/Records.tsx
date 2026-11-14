@@ -5,7 +5,9 @@ import type { Whisky } from '../types.ts';
 import { SERVE_LABEL, tasteFromTastings, type Tasting } from '../lib/collection.ts';
 import type { UserData } from '../lib/store.ts';
 import { Radar } from './Charts.tsx';
-import { Glass } from './Glass.tsx';
+import { WhiskyArt } from './WhiskyArt.tsx';
+import { HomeBar } from './HomeBar.tsx';
+import type { CabinetItem } from '../lib/collection.ts';
 import { Stars } from './Tasting.tsx';
 import { WhiskyRow } from './WhiskyRow.tsx';
 
@@ -15,12 +17,14 @@ interface Props {
   onOpen: (id: string) => void;
   onWish: (id: string) => void;
   onRemoveTasting: (id: string) => void;
+  onBottle: (c: CabinetItem) => void;
+  onRemoveBottle: (id: string) => void;
   onExport: () => void;
   onImport: (f: File) => void;
   notice: string;
 }
 
-export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onExport, onImport, notice }: Props) {
+export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onBottle, onRemoveBottle, onExport, onImport, notice }: Props) {
   const taste = useMemo(() => tasteFromTastings(user.tastings, byId), [user.tastings, byId]);
   const log = useMemo(() => [...user.tastings].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id)), [user.tastings]);
   const avg = log.length ? log.reduce((s, t) => s + t.rating, 0) / log.length : 0;
@@ -34,7 +38,9 @@ export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onExport,
         </p>
       </section>
 
-      <section className="flavor" aria-labelledby="taste-title">
+      <HomeBar items={user.cabinet} byId={byId} onChange={onBottle} onRemove={onRemoveBottle} onOpen={onOpen} />
+
+      <section className="flavor panel" aria-labelledby="taste-title">
         <div>
           <h2 id="taste-title">기록으로 본 내 취향</h2>
           <p className="muted small" style={{ marginTop: 6 }}>
@@ -60,7 +66,7 @@ export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onExport,
               const w = byId.get(t.whiskyId);
               return (
                 <div key={t.id} className="log-item">
-                  {w ? <Glass w={w} size={52} /> : <span />}
+                  <span style={{ height: 64, display: 'grid', placeItems: 'end center' }}>{w ? <WhiskyArt w={w} height={60} /> : null}</span>
                   <div>
                     <button className="link" style={{ textDecoration: 'none', color: 'var(--text)', fontWeight: 600 }} onClick={() => onOpen(t.whiskyId)}>
                       {w ? w.nameKo ?? w.name : '도감에서 사라진 위스키'}
@@ -103,7 +109,7 @@ export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onExport,
         )}
       </section>
 
-      <section aria-labelledby="move-title">
+      <section className="panel" aria-labelledby="move-title">
         <h2 id="move-title">기록 옮기기</h2>
         <p className="muted small" style={{ margin: '6px 0 12px', maxWidth: '60ch' }}>
           기록은 서버로 보내지 않고 이 브라우저에만 저장됩니다. 다른 기기로 옮길 때는 파일로 내보낸 뒤 그 기기에서 가져오세요. 가져오면 기존 기록과 합쳐집니다.

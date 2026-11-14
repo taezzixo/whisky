@@ -7,7 +7,8 @@ import { liquidName } from '../lib/liquid.ts';
 import { findSimilar, type SimilarMode } from '../lib/similar.ts';
 import type { Whisky } from '../types.ts';
 import { FlavorBars, Radar } from './Charts.tsx';
-import { Glass } from './Glass.tsx';
+import { WhiskyArt } from './WhiskyArt.tsx';
+import { pairingGuide } from '../lib/pairing.ts';
 import { TastingForm } from './Tasting.tsx';
 import { caskLine, priceText, WhiskyRow } from './WhiskyRow.tsx';
 import { TYPE_LABEL } from '../config/flavor.ts';
@@ -20,6 +21,11 @@ interface Props {
   tastings: Tasting[];
   onWish: (id: string) => void;
   onToggleTried: (id: string) => void;
+  inCompare: boolean;
+  compareFull: boolean;
+  onToggleCompare: (id: string) => void;
+  inBar: boolean;
+  onAddToBar: (id: string) => void;
   onSaveTasting: (t: Tasting) => void;
   onOpen: (id: string) => void;
   onBack: () => void;
@@ -34,7 +40,7 @@ const MODES: { id: SimilarMode; label: string }[] = [
 
 const SOURCE_LABEL = { seed: '큐레이션 시드', wikidata: 'Wikidata', off: 'Open Food Facts', iowa: '아이오와 주류청', manual: '수동 등록' } as const;
 
-export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onToggleTried, onSaveTasting, onOpen, onBack }: Props) {
+export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onToggleTried, inCompare, compareFull, onToggleCompare, inBar, onAddToBar, onSaveTasting, onOpen, onBack }: Props) {
   const [mode, setMode] = useState<SimilarMode>('similar');
   const [axis, setAxis] = useState<AxisKey>('smoky');
   const [delta, setDelta] = useState(2);
@@ -61,8 +67,16 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
 
       <header className="detail-head">
         <div>
-          <Glass w={w} size={190} filled={isTried} level={0.62} />
-          <p className="liquid-caption">{isTried ? `${liquidName(w)}색, 추정` : '아직 빈 잔'}</p>
+          <div className={`stage${isTried ? ' tried' : ''}`}>
+            <WhiskyArt w={w} height={w.image ? 280 : 230} tried={isTried} eager />
+          </div>
+          {w.image ? (
+            <p className="photo-credit">
+              사진: <a href={w.image.url} target="_blank" rel="noopener noreferrer">{w.image.credit}</a>, {w.image.license}
+            </p>
+          ) : (
+            <p className="liquid-caption">{isTried ? `${liquidName(w)}색, 캐스크·숙성으로 추정` : '아직 빈 잔. 사진은 공개 라이선스 사진이 생기면 바뀝니다'}</p>
+          )}
         </div>
         <div>
           <h1>{name}</h1>
@@ -102,6 +116,12 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
             <button className="btn ghost" onClick={() => onWish(w.id)} aria-pressed={wishlist.includes(w.id)}>
               {wishlist.includes(w.id) ? '위시에 담음' : '위시 담기'}
             </button>
+            <button className="btn ghost" onClick={() => onToggleCompare(w.id)} aria-pressed={inCompare} disabled={!inCompare && compareFull} title={!inCompare && compareFull ? '비교함은 4종까지입니다' : undefined}>
+              {inCompare ? '비교함에 담음' : '비교에 담기'}
+            </button>
+            <button className="btn ghost" onClick={() => onAddToBar(w.id)} aria-pressed={inBar}>
+              {inBar ? '내 바에 있음' : '내 바에 추가'}
+            </button>
             {mine.length === 0 && (
               <button className="btn ghost" onClick={() => onToggleTried(w.id)} aria-pressed={isTried}>
                 {isTried ? '마셔봤어요 표시함' : '별점 없이 마셔봤어요'}
@@ -111,7 +131,11 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
         </div>
       </header>
 
-      {writing && <TastingForm w={w} history={mine} onSave={onSaveTasting} />}
+      {writing && (
+        <div className="panel">
+          <TastingForm w={w} history={mine} onSave={onSaveTasting} />
+        </div>
+      )}
 
       {w.flavor ? (
         <section className="flavor" aria-labelledby="profile-title">
@@ -132,6 +156,8 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
       ) : (
         <p className="muted">이 제품은 수집 카탈로그에서 온 항목이라 아직 맛 정보가 없습니다.</p>
       )}
+
+      {w.flavor && <PairingPanel w={w} />}
 
       {w.flavor && (
         <section aria-labelledby="similar-title">
@@ -201,5 +227,36 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
         </section>
       )}
     </article>
+  );
+}
+
+function PairingPanel({ w }: { w: Whisky }) {
+  const g = pairingGuide(w);
+  return (
+    <section className="panel guide" aria-labelledby="pair-title">
+      <div>
+        <h2 id="pair-title" style={{ fontSize: 'var(--step-2)' }}>
+          어울리는 안주
+        </h2>
+        <p className="muted small" style={{ margin: '4px 0 10px' }}>
+          맛 수치로 고른 추정 가이드입니다.
+        </p>
+        <ul>
+          {g.foods.map((f) => (
+            <li key={f}>{f}</li>
+          ))}
+        </ul>
+      </div>
+      <div>
+        <h3>마시는 법</h3>
+        <ul style={{ marginTop: 8 }}>
+          {g.serve.map((s) => (
+            <li key={s.label}>
+              <b style={{ color: 'var(--text)' }}>{s.label}</b>, {s.why}
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
   );
 }

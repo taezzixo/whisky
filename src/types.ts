@@ -53,6 +53,8 @@ export interface Whisky {
   lat?: number; // 증류소 좌표 (있을 때)
   lng?: number;
   barcode?: string[];
+  /** 실제 사진 (Open Food Facts, CC BY-SA). src 는 사이트 기준 상대 경로 */
+  image?: { src: string; credit: string; license: string; url: string };
   grade: Grade;
   refs?: SourceRef[];
   manual?: boolean;

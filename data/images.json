@@ -1,0 +1,27 @@
+{
+ "images": {
+  "seed-bruichladdich-classic-laddie": {
+   "file": "img/w/bruichladdich-classic-laddie.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/505/580/741/6948/front_de.4.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5055807416948",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-14"
+  }
+ },
+ "misses": {
+  "seed-glenfiddich-18": "2026-11-14",
+  "seed-macallan-12-double-cask": "2026-11-14",
+  "seed-macallan-12-sherry-oak": "2026-11-14",
+  "seed-balvenie-14-caribbean": "2026-11-14",
+  "seed-glenmorangie-original": "2026-11-14",
+  "seed-glenmorangie-lasanta": "2026-11-14",
+  "seed-glendronach-12": "2026-11-14",
+  "seed-glendronach-15": "2026-11-14",
+  "seed-dalmore-12": "2026-11-14",
+  "seed-glenallachie-12": "2026-11-14",
+  "seed-glenfarclas-12": "2026-11-14",
+  "seed-monkey-shoulder": "2026-11-14",
+  "seed-glenkinchie-12": "2026-11-14"
+ }
+}
