@@ -88,7 +88,7 @@ export function Compare({ items, tried, onRemove, onOpen, onBrowse }: Props) {
                   const v = w.flavor?.[i] ?? 0;
                   const top = v > 0 && v === max(i) && items.length > 1;
                   return (
-                    <td key={w.id} className="num" style={top ? { color: 'var(--gold)', fontWeight: 600 } : undefined}>
+                    <td key={w.id} className="num" style={top ? { color: 'var(--accent-ink)', fontWeight: 600 } : undefined}>
                       {w.flavor ? v.toFixed(1) : '-'}
                     </td>
                   );

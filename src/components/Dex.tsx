@@ -216,8 +216,10 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
                   <span className="art">
                     <WhiskyArt w={w} height={140} tried={on} />
                   </span>
-                  <span className="nm">{w.nameKo ?? w.name}</span>
-                  <span className="sub">{w.country}</span>
+                  <span className="meta">
+                    <span className="nm">{w.nameKo ?? w.name}</span>
+                    <span className="sub">{w.country}</span>
+                  </span>
                 </button>
               );
             })}

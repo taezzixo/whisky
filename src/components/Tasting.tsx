@@ -111,7 +111,7 @@ export function TastingForm({ w, history, onSave }: Props) {
       <div className="flex flex-col gap-2" aria-live="polite">
         {help.matched.length > 0 && (
           <p className="m-0 text-sm text-text-2">
-            메모에서 찾은 향: <span className="text-gold-text">{help.matched.join(', ')}</span>
+            메모에서 찾은 향: <span className="text-accent-ink">{help.matched.join(', ')}</span>
           </p>
         )}
         {help.suggested.length > 0 && (

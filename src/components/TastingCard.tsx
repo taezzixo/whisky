@@ -16,9 +16,9 @@ function tokens() {
   const cs = getComputedStyle(document.documentElement);
   const v = (n: string) => cs.getPropertyValue(n).trim();
   return {
-    bg: v('--bg'), raised: v('--raised'), line: v('--line'), text: v('--text'), text2: v('--text-2'), muted: v('--muted'),
-    gold: v('--gold'), goldHi: v('--gold-hi'), goldLo: v('--gold-lo'), wineRgb: v('--wine-rgb'), series: v('--series-1'),
-    display: v('--font-display'), latin: v('--font-latin'), body: v('--font-body'),
+    bg: v('--bg'), surface: v('--surface'), line: v('--line'), lineStrong: v('--line-strong'), text: v('--text'), text2: v('--text-2'), muted: v('--muted'),
+    accent: v('--accent'), tint: v('--tint'), shadowRgb: v('--shadow-rgb'), series: v('--series-1'),
+    display: v('--font-display'), body: v('--font-body'), mono: v('--font-mono'),
   };
 }
 
@@ -116,35 +116,26 @@ export async function drawTastingCard(canvas: HTMLCanvasElement, w: Whisky, tast
   canvas.height = H;
   const ctx = canvas.getContext('2d')!;
   const t = tokens();
-  await Promise.all([document.fonts.load(`700 80px ${t.display}`), document.fonts.load(`500 40px ${t.latin}`), document.fonts.load(`400 34px ${t.body}`)]).catch(() => undefined);
+  await Promise.all([document.fonts.load(`500 80px ${t.display}`), document.fonts.load(`italic 400 40px ${t.display}`), document.fonts.load(`500 24px ${t.mono}`), document.fonts.load(`400 34px ${t.body}`)]).catch(() => undefined);
   const img = w.image ? await loadImage(`${BASE}${w.image.src}`) : null;
 
-  // 바탕: 보르도 블랙 + 위쪽 가넷 빛 + 금박 액자
-  const g = ctx.createLinearGradient(0, 0, 0, H);
-  g.addColorStop(0, t.raised);
-  g.addColorStop(1, t.bg);
-  ctx.fillStyle = g;
+  // 바탕: 종이색 + 오른쪽 위 페리윙클 빛 + 헤어라인 액자
+  ctx.fillStyle = t.surface;
   ctx.fillRect(0, 0, W, H);
-  const glow = ctx.createRadialGradient(W * 0.3, H * 0.2, 0, W * 0.3, H * 0.2, W * 0.8);
-  glow.addColorStop(0, `rgba(${t.wineRgb}, 0.55)`);
-  glow.addColorStop(1, `rgba(${t.wineRgb}, 0)`);
+  const glow = ctx.createRadialGradient(W * 0.85, 0, 0, W * 0.85, 0, W * 0.9);
+  glow.addColorStop(0, t.tint);
+  glow.addColorStop(1, t.surface);
   ctx.fillStyle = glow;
   ctx.fillRect(0, 0, W, H);
-  const frame = ctx.createLinearGradient(0, 0, W, H);
-  frame.addColorStop(0, t.goldHi);
-  frame.addColorStop(0.5, t.gold);
-  frame.addColorStop(1, t.goldLo);
-  ctx.strokeStyle = frame;
-  ctx.lineWidth = 4;
-  ctx.strokeRect(40, 40, W - 80, H - 80);
-  ctx.lineWidth = 1;
-  ctx.strokeRect(54, 54, W - 108, H - 108);
+  ctx.strokeStyle = t.line;
+  ctx.lineWidth = 2;
+  ctx.strokeRect(48, 48, W - 96, H - 96);
 
   const story = format === 'story';
   // 병 (사진이 없으면 추정 액체 색 원)
   const bottleBox = story ? { x: W / 2 - 170, y: 140, w: 340, h: 700 } : { x: 100, y: 130, w: 330, h: 640 };
   ctx.save();
-  ctx.shadowColor = 'rgba(0, 0, 0, 0.6)';
+  ctx.shadowColor = `rgba(${t.shadowRgb}, 0.28)`;
   ctx.shadowBlur = 40;
   ctx.shadowOffsetY = 24;
   if (img) {
@@ -167,20 +158,20 @@ export async function drawTastingCard(canvas: HTMLCanvasElement, w: Whisky, tast
   ctx.textAlign = 'left';
   ctx.textBaseline = 'alphabetic';
   ctx.fillStyle = t.text;
-  ctx.font = `700 ${story ? 84 : 66}px ${t.display}`;
+  ctx.font = `500 ${story ? 84 : 66}px ${t.display}`;
   for (const line of wrap(ctx, w.nameKo ?? w.name, tw, 2)) {
     y += story ? 96 : 76;
     ctx.fillText(line, tx, y);
   }
   ctx.fillStyle = t.muted;
-  ctx.font = `500 ${story ? 40 : 34}px ${t.latin}`;
+  ctx.font = `italic 400 ${story ? 42 : 36}px ${t.display}`;
   y += story ? 60 : 50;
   ctx.fillText(wrap(ctx, w.name, tw, 1)[0] ?? '', tx, y);
 
   y += story ? 90 : 76;
-  drawStars(ctx, tx, y - 18, story ? 30 : 26, tasting.rating, t.gold, t.line);
-  ctx.fillStyle = t.goldHi;
-  ctx.font = `600 ${story ? 56 : 48}px ${t.latin}`;
+  drawStars(ctx, tx, y - 18, story ? 30 : 26, tasting.rating, t.text, t.line);
+  ctx.fillStyle = t.accent;
+  ctx.font = `500 ${story ? 56 : 48}px ${t.display}`;
   ctx.fillText(tasting.rating.toFixed(1), tx + (story ? 30 : 26) * 2.3 * 5 + 20, y);
 
   y += story ? 70 : 58;
@@ -192,7 +183,7 @@ export async function drawTastingCard(canvas: HTMLCanvasElement, w: Whisky, tast
   if (tasting.note) {
     y += story ? 90 : 72;
     ctx.fillStyle = t.text;
-    ctx.font = `600 ${story ? 44 : 36}px ${t.display}`;
+    ctx.font = `500 ${story ? 44 : 36}px ${t.display}`;
     for (const line of wrap(ctx, `“${tasting.note}”`, tw, story ? 4 : 3)) {
       ctx.fillText(line, tx, y);
       y += story ? 62 : 50;
@@ -208,12 +199,17 @@ export async function drawTastingCard(canvas: HTMLCanvasElement, w: Whisky, tast
 
   // 바닥글
   ctx.textAlign = 'left';
-  ctx.fillStyle = t.gold;
-  ctx.font = `700 34px ${t.display}`;
+  ctx.fillStyle = t.text;
+  ctx.font = `600 34px ${t.display}`;
   ctx.fillText('위스키 도감', 96, H - 92);
+  const markW = ctx.measureText('위스키 도감').width;
+  ctx.beginPath();
+  ctx.arc(96 + markW + 10, H - 96, 5, 0, Math.PI * 2);
+  ctx.fillStyle = t.accent;
+  ctx.fill();
   ctx.textAlign = 'right';
   ctx.fillStyle = t.muted;
-  ctx.font = `400 24px ${t.body}`;
+  ctx.font = `400 22px ${t.mono}`;
   ctx.fillText('맛 그래프는 추정치, 참고용', W - 96, H - 94);
 }
 

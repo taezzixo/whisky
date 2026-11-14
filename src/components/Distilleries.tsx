@@ -72,13 +72,13 @@ function DistilleryIndex({ groups, onPick }: { groups: DistilleryGroup[]; onPick
             <ul className="m-0 grid list-none gap-0 p-0 md:grid-cols-2 md:gap-x-8">
               {gs.map((g) => (
                 <li key={g.slug} className="min-w-0 border-0 border-b border-solid border-line">
-                  <AppLink href={`?tab=dist&d=${g.slug}`} onNavigate={() => onPick(g.slug)} className="press flex min-h-tap w-full min-w-0 items-baseline justify-between gap-3 py-3 text-text no-underline transition-colors duration-ui ease-out hover:text-gold-text">
+                  <AppLink href={`?tab=dist&d=${g.slug}`} onNavigate={() => onPick(g.slug)} className="press flex min-h-tap w-full min-w-0 items-baseline justify-between gap-3 py-3 text-text no-underline transition-colors duration-ui ease-out hover:text-accent">
                     <span className="flex min-w-0 flex-col gap-1">
                       <span className="truncate font-display text-lg font-semibold">{g.name}</span>
                       <span className="text-sm text-text-2">{[g.region, g.top.length ? `${g.top.join(', ')} 쪽` : ''].filter(Boolean).join(', ')}</span>
                     </span>
                     <span className="num shrink-0 text-sm text-text-2">
-                      {g.tried > 0 ? <span className="text-gold-text">{g.tried}</span> : 0}/{g.whiskies.length}종
+                      {g.tried > 0 ? <span className="text-accent-ink">{g.tried}</span> : 0}/{g.whiskies.length}종
                     </span>
                   </AppLink>
                 </li>
@@ -127,7 +127,9 @@ function DistilleryPage({ g, tried, wishlist, onBack, onOpen, onWish }: { g: Dis
               <span className="art">
                 <WhiskyArt w={w} height={130} tried={on} />
               </span>
-              <span className="nm">{w.nameKo ?? w.name}</span>
+              <span className="meta">
+                <span className="nm">{w.nameKo ?? w.name}</span>
+              </span>
             </button>
           );
         })}

@@ -1,95 +1,70 @@
 # 위스키 도감 디자인 시스템 규칙 (Figma 연동용)
 
-> Figma MCP로 디자인을 코드로 옮기거나(Design → Code) 코드를 Figma로 보낼 때(Code → Design) 따르는 규칙입니다.
-> 디자인 방향: **"비뉴 바리끄"** — 레드와인 캐스크 위스키에서 가져온 버건디·가넷·금박, 입체(유리 패널·진열 칸·3D 기울기).
-> 참고한 가이드: ui-ux-pro-max 스킬(Liquid Glass 스타일, 고급 다크+골드, 접근성 체크리스트). 2026-11-14 작성.
+> Figma MCP로 디자인을 코드로 옮기거나(Design → Code) 코드를 Figma로 보낼 때 따르는 규칙입니다.
+> **v2 (2026-11-14, 사용자 요청):** 사용자가 준 레퍼런스 캡처의 톤으로 다시 설정. 차가운 종이색 바탕, 남색 잉크, 코발트 하나. 제목은 고대비 세리프(Cormorant Garamond + Noto Serif KR), 라벨은 IBM Plex Mono. 따뜻한 색은 위스키(잔 속 액체 색)와 차트 앰버뿐.
+> v1 "비뉴 바리끄"(보르도 블랙·가넷·금박)는 v2로 대체됐습니다.
+> 기준 아티팩트: claude.ai 디자인 시스템 「위스키 도감」 https://claude.ai/artifact/U8czkA1r39HCPUg5WApU18 (토큰·브랜드북·컴포넌트 19종 미리보기). 값이 다르면 `src/styles.css`가 기준입니다.
 
 ---
 
 ## 1. 토큰 정의
 
-**위치:** `src/styles.css` 맨 위 `:root` 블록 한 곳. 토큰 변환 도구(Style Dictionary 등)는 없고 CSS 사용자 정의 속성을 그대로 씁니다.
+**위치:** `src/styles.css` 맨 위 `:root` 블록 한 곳(페이퍼 = 라이트, 기본). 미드나이트(다크)는 `@media (prefers-color-scheme: dark) :root:not([data-theme='light'])`와 `:root[data-theme='dark'], [data-theme='midnight']` 두 곳에 같은 값을 다시 정의합니다. 한 구역만 어둡게 하려면 그 요소에 `data-theme="midnight"`를 답니다(숫자 띠).
 
-**구조:** 다크가 기본(`:root`)이고, 라이트는 `@media (prefers-color-scheme: light) :root:not([data-theme='dark'])`와 `:root[data-theme='light']` 두 곳에 같은 값을 다시 정의합니다. 컴포넌트는 토큰만 참조하고 색 값을 직접 쓰지 않습니다.
-
-```css
-:root {
-  --bg: #170a0f;        /* 보르도 블랙 — 페이지 바탕 */
-  --surface: #26121b;   /* 입력창·진열 칸 바닥 */
-  --raised: #331722;    /* 떠 있는 면, 툴팁 */
-  --glass: rgba(52, 22, 34, 0.62); /* 유리 패널 (backdrop-filter 와 함께) */
-  --line: #55283a;      /* 경계선 */
-  --line-hi: rgba(255, 224, 190, 0.14); /* 유리 윗선 하이라이트 */
-  --text: #f6eadf; --text-2: #e0cabb; --muted: #b8998d;
-  --gold: #d9b26a; --gold-hi: #f4da9a; --gold-lo: #8c6a2c; --gold-ink: #2a120c; /* 금박 3단 + 금 위 글자 */
-  --gold-rgb: 217, 178, 106;   /* rgba() 빛 번짐용 */
-  --wine: #8e1b33; --wine-hi: #b32a45; --wine-rgb: 142, 27, 51; /* 가넷 */
-  --series-1: #ba841a; --series-2: #16a398; /* 차트 전용 (dataviz 검증 통과) */
-  --font-display: 'Hahmlet', …; --font-latin: 'Cormorant Garamond', …; --font-body: 'IBM Plex Sans KR', …;
-  --step--1 … --step-5;  /* 글자 크기 단계 (비율 1.25, 기준 15px) */
-  --radius: 10px; --radius-sm: 6px;
-}
-```
-
-| 그룹 | 토큰 | 쓰임 | 쓰지 말 곳 |
+| 그룹 | 토큰 (페이퍼 / 미드나이트) | 쓰임 | 쓰지 말 곳 |
 |---|---|---|---|
-| 바탕 | `--bg` `--surface` `--raised` `--glass` | 면의 깊이 순서: bg < surface < glass < raised | 글자색 |
-| 선 | `--line` `--line-hi` | 테두리, 유리 윗선(inset 0 1px 0) | |
-| 글자 | `--text` `--text-2` `--muted` | 본문 / 보조 / 설명 | 큰 면 채우기 |
-| 금 | `--gold*` `--gold-rgb` | 주 버튼, 선택 상태, 마신 위스키 테두리, 배지 획득 | 차트 계열색 |
-| 가넷 | `--wine*` `--wine-rgb` | 배경 빛, 위시 상태, 강조 배경 | 본문 글자 |
-| 차트 | `--series-1` `--series-2` | 레이더·막대·맛 지도의 데이터 표시만 | 버튼·장식 |
+| 면 | `--bg` #f7f9fb / #050816, `--surface` #ffffff / #0b1222, `--sunken` #f1f4f9 / #080d1a, `--glass` | 깊이: sunken(진열 칸·무대) < bg < surface(카드·입력칸). glass는 머리 띠만 | 글자색 |
+| 선 | `--line` #e4e8ef / #1c2740, `--line-strong` #7c879b / #56647f, `--grid`, `--dot` | line은 장식 헤어라인. 테두리가 조작 대상을 알리면 line-strong(3:1 이상) | |
+| 글자 | `--text` #0b1020 / #eef2f9, `--text-2` #4a5468 / #b4bdd0, `--muted` #667085 / #8c97ad | 제목·본문 / 설명 / 보조 정보(모든 바탕 4.5:1 이상) | muted를 accent-soft 위에 |
+| 강조 | `--accent` #2453e0 / #5b8cff, `--accent-hover`, `--accent-soft`, `--accent-ink`, `--on-accent`, `--halo` | 주 버튼, 링크, 켜진 탭, 마신 위스키 테두리, 포커스 링 | 장식, 차트 |
+| 빛 | `--tint` #c9d6f7 / #22356b | 히어로·무대의 옅은 페리윙클 빛과 하프톤 도트 | 글자 바탕 |
+| 차트 | `--series-1` #b86a12 / #bd7f22 (앰버), `--series-2` #1f6fa8 / #4a92d4 (스틸 블루) | 레이더·막대·맛 지도의 데이터만. dataviz 검증 통과 | 버튼·장식 |
+| 경고 | `--warn` #b42318 / #ff8a7a | 산화 안내 등 경고 글자 | |
+| 글꼴 | `--font-display`(Cormorant Garamond, Noto Serif KR) `--font-body`(Inter, IBM Plex Sans KR) `--font-mono`(IBM Plex Mono) | 제목 / 본문 / 라벨·숫자. `--font-outlier`는 mono와 같은 값(Hallmark용 이름) | |
+| 크기 | `--step--2` 0.6875 … `--step-5` 5.25rem | 라벨 11px, 본문 15px, h2 36px, h1 48px | |
+| 여백 | `--space-0` … `--space-32`(4px 기준, 24=96px, 32=128px) | 섹션 사이 space-24, 제목 블록과 내용 space-12 | |
+| 반경 | `--radius-sm` 6, `--radius` 16, `--radius-lg` 24, `--radius-xl` 32, `--radius-pill` | 버튼·입력칸 / 카드 / 사진·무대 / 히어로 판 / 알약 | |
+| 그림자 | `--shadow-card`, `--shadow-lift`, `--shadow-bottle`, `--glow-tried` | 경계는 헤어라인이 맡고, 그림자는 떠 있는 것(툴팁·트레이·hover)과 마신 위스키에만 | 테두리와 겹치기 |
 
-**Figma 변수 매핑:** Figma Variables 컬렉션 `whisky-dex`에 모드 `Dark`(기본)·`Light`를 두고, 이름은 CSS 토큰과 같게(`gold/hi` ↔ `--gold-hi`) 맞춥니다. 디자인에서 새 색이 필요하면 토큰을 먼저 추가하고(`:root` + 라이트 두 블록), 차트 색은 dataviz 검증 스크립트를 통과해야 합니다.
+**Figma 변수 매핑:** Figma Variables 컬렉션 `whisky-dex`에 모드 `Paper`(기본)·`Midnight`를 두고, 이름은 CSS 토큰과 같게(`accent/ink` ↔ `--accent-ink`) 맞춥니다. 새 색이 필요하면 토큰을 먼저 추가하고(`:root` + 미드나이트 두 블록), 차트 색은 dataviz 검증 스크립트를 통과해야 합니다.
 
 ## 2. 컴포넌트
 
-**위치:** `src/components/*.tsx` — React 함수 컴포넌트, 파일 하나에 화면 단위 하나. 스토리북은 없고 화면 확인은 `npm run dev` + 스크린샷으로 합니다. 계산은 `src/lib/*.ts`의 순수 함수(단위 테스트 있음)로 분리하고 컴포넌트는 표시만 합니다.
+**위치:** `src/components/*.tsx` — React 함수 컴포넌트, 파일 하나에 화면 단위 하나. 계산은 `src/lib/*.ts`의 순수 함수(단위 테스트 있음)로 분리하고 컴포넌트는 표시만 합니다.
 
 | 컴포넌트 | 역할 | 주요 CSS 클래스 |
 |---|---|---|
-| `Dex.tsx` | 도감: 색 띠, 배지, 나라별 수집, 진열장 | `.hero` `.band-stage` `.band` `.seals.panel` `.coin` `.cabinet` `.slot` |
-| `WhiskyArt.tsx` | 실제 사진 또는 잔 일러스트 + 3D 기울기 핸들러 | `.photo` / `Glass` |
+| `App.tsx` 머리 띠 | 세리프 워드마크 + 코발트 점, 가운데 알약 탭 묶음 | `.top` `.wordmark` `.nav` |
+| `Dex.tsx` | 도감: 히어로 판의 색 띠, 배지, 나라별 수집, 진열장 | `.hero` `.band` `.seals.panel` `.coin` `.countries` `.cabinet` `.slot` |
+| `WhiskyArt.tsx` | 실제 사진·배경 지운 병·잔 일러스트 + 3D 기울기(최대 6°) | `.bottle` `.photo` / `Glass` |
 | `Glass.tsx` | 사진이 없을 때의 잔 일러스트(추정 액체 색) | `.glass` `.liquid` |
-| `WhiskyRow.tsx` | 목록 한 줄 (사진·이름·스펙·이유·위시) | `.wrow` `.thumb` `.score` `.wish` |
-| `WhiskyDetail.tsx` | 상세: 조명 무대, 정보, 시음 기록, 맛, 페어링, 비슷한 위스키 | `.stage` `.facts` `.flavor` `.guide.panel` `.tabs` |
-| `Tasting.tsx` | 별점·시음 기록 폼 | `.tasting` `.stars` |
-| `Compare.tsx` | 최대 4종 비교 (작은 레이더 + 표) | `.compare-table` `.table-wrap` |
-| `HomeBar.tsx` | 내 바(보유 병·남은 양·산화 안내) | `.bar-shelf` `.bottle-card` `.fill` |
+| `WhiskyRow.tsx` | 목록 한 줄(헤어라인으로만 구분) | `.wrow` `.thumb` `.score` `.wish` `.tag-line` |
+| `WhiskyDetail.tsx` | 상세: 무대, 사실 표, 시음 기록, 맛, 페어링, 비슷한 위스키 | `.stage` `.facts` `.flavor` `.guide.panel` `.tabs` |
+| `Tasting.tsx` | 별점(잉크 한 색)·시음 기록 폼 | `.tasting` `.stars` |
+| `Compare.tsx` | 최대 4종 비교 | `.compare-table` `.table-wrap` `.compare-tray` |
+| `HomeBar.tsx` | 내 바(보유 병·남은 양 2px 선·산화 안내) | `.bar-shelf` `.bottle-card` `.fill` |
 | `FlavorMap.tsx` | 맛 지도 산점도 | `.map` `.map-tip` |
-| `Records.tsx` | 내 기록 화면 | `.log` `.log-item` |
+| `Records.tsx` | 내 기록 | `.log` `.log-item` |
 | `Bti.tsx` | 위스키BTI 문항·결과 | `.quiz.panel` `.choice` `.type-head` |
 | `Charts.tsx` | 레이더(최대 2계열)·10축 막대 | `.radar` `.flavor-bars` |
-| `BarcodeScan.tsx` | 카메라 바코드 스캔(지원 브라우저만) | `.panel` |
-| `Distilleries.tsx` | 증류소 색인(나라별 2열 목록)·증류소 페이지(라인업 진열장 + 대표 맛) | `.cabinet-row` + 테일윈드 |
-| `ValueRanking.tsx` | 체감 가성비 표(`<table>`, 좁은 화면은 가격 열 숨김) | 테일윈드 |
-| `TastingCard.tsx` | 테이스팅 카드 캔버스(1:1·9:16, 색은 CSS 토큰을 읽음) | `.card-canvas` + 테일윈드 |
-| `ui.tsx` | `Button`(variant·size) · `Chip`(pressed) · `Section`(합성) · `AppLink`(화면 안 이동도 `<a href>`) | `.btn` `.chip` `.panel` + 테일윈드 |
+| `Distilleries.tsx` | 증류소 색인·페이지 | `.hero` `.cabinet-row` + 테일윈드 |
+| `TastingCard.tsx` | 테이스팅 카드 캔버스(종이색 + 헤어라인 액자, 색은 CSS 토큰을 읽음) | `.card-canvas` |
+| `ui.tsx` | `Button`(variant·size) · `Chip`(pressed) · `Section`(합성) · `AppLink` | `.btn` `.chip` `.panel` |
 
-**공통 패턴 — 진열 칸(입체 + 마신 위스키 금빛):**
+v2에서 새로 생긴 클래스(디자인 시스템 아티팩트와 같음): `.eyebrow`(h2 위 라벨, h1 위에는 쓰지 않음), `.sec-index`("01 / 06"), `.arrow-link`(48px 원형 화살표), `.stat` `.numeral`(숫자 카드, 올드스타일 숫자 + accent 기호), `.midnight-band`, `.dots`(24px 도트 무늬), `.lead` `.note`.
+
+**서명 — 마신 위스키:** 진열 칸 그림 판과 무대에 `accent` 1px 테두리 + `--glow-tried`(5px 옅은 띠 + 아래로 번지는 푸른 빛). 다른 강조에 쓰지 않습니다. 못 마신 위스키는 사진 흑백·투명 60%, 잔은 점선.
 
 ```tsx
 <button className={`slot ${tried ? 'tried' : 'untried'}`} {...tiltHandlers()}>
   <span className="art"><WhiskyArt w={w} height={140} tried={tried} /></span>
-  <span className="nm">{w.nameKo ?? w.name}</span>
+  <span className="meta"><span className="nm">{w.nameKo ?? w.name}</span><span className="sub">{w.country}</span></span>
 </button>
 ```
 
-```css
-.cabinet { perspective: 1100px; }
-.slot { transform: rotateX(var(--rx)) rotateY(var(--ry)); transform-style: preserve-3d;
-        background: linear-gradient(180deg, var(--niche-top), var(--niche-bottom));
-        box-shadow: inset 0 14px 22px -10px rgba(0,0,0,.55), inset 0 -1px 0 var(--line-hi), …; }
-.slot .art { transform: translateZ(28px); }               /* 병이 칸 앞으로 떠 보임 */
-.slot.tried { border-color: var(--gold); box-shadow:      /* 금색 테두리 + 바깥으로 옅어지는 빛 */
-  0 0 0 1px rgba(var(--gold-rgb), .9), 0 0 0 4px rgba(var(--gold-rgb), .28),
-  0 0 14px 3px rgba(var(--gold-rgb), .42), 0 0 32px 8px rgba(var(--gold-rgb), .2), 0 0 64px 16px rgba(var(--gold-rgb), .08); }
-.untried .photo { filter: grayscale(.92) brightness(.8); opacity: .62; }  /* 아직 못 마신 위스키 */
-```
+**카드:** `.panel`은 흰 면 + 1px `line`, 그림자 없음(Hallmark F24: 헤어라인과 넓은 그림자를 겹치지 않음). 배지·시음 기록·페어링·비교 표처럼 한 덩어리인 곳에만 쓰고, 나머지는 여백과 헤어라인으로 나눕니다.
 
-**공통 패턴 — 유리 패널:** `className="panel"` (반투명 `--glass` + `backdrop-filter: blur(16px)` + 윗선 하이라이트 + 깊은 그림자). 배지, 나라별 수집, 시음 기록, 페어링, 비교 표처럼 "한 덩어리"인 곳에만 씁니다. 모든 블록을 패널로 감싸지 않습니다.
-
-**공통 패턴 — 금박 버튼:** `.btn`(금 그라데이션 + 위 하이라이트 + 아래 그림자), 보조는 `.btn.ghost`(유리). 눌린 상태는 `aria-pressed`로 표현합니다.
+**버튼:** `.btn`은 평평한 코발트(6px 모서리, 그라데이션·큰 그림자 없음), 보조 `.btn.ghost`는 흰 면 + `line-strong` 테두리. 눌린 상태는 `aria-pressed`. 칩이 켜지면 잉크로 뒤집히고(바탕 `text`), 탭이 켜지면 `accent-soft`.
 
 ## 3. 프레임워크·도구
 
@@ -101,7 +76,7 @@
 
 ## 4. 에셋
 
-- **배경을 지운 병(누끼):** `public/img/w/<id>.webp` 42장 — 2026-11-14 사용자가 준 캡처에서 잘라 배경을 지움(출처·라이선스 미확인, 사용자 결정). `data/images.json`에 `cutout: true`, 원본 크기 `w`·`h`. 화면에서는 `.bottle`(병 모양 마스크로 원통 음영 `multiply` + 세로 반사광 `screen` + 바닥 타원 그림자, 진열 칸에서는 포인터를 따라 반사광 이동 `--gx`)으로 볼록하게 그립니다.
+- **배경을 지운 병(누끼):** `public/img/w/<id>.webp` 42장 — 2026-11-14 사용자가 준 캡처에서 잘라 배경을 지움(출처·라이선스 미확인, 사용자 결정). `data/images.json`에 `cutout: true`, 원본 크기 `w`·`h`. 화면에서는 `.bottle`(병 모양 마스크로 원통 음영 `multiply` + 세로 반사광 `screen` + 옅은 바닥 그림자, 진열 칸에서는 포인터를 따라 반사광 이동 `--gx`)으로 볼록하게 그립니다. 놓이는 판은 `sunken`.
 - **위스키 사진(자동 수집):** `public/img/w/<id>.(jpg|png|webp)` — `scripts/fetch-images.mjs`가 수집. 출처는 **자유 라이선스만**:
   1. Open Food Facts 제품 사진(CC BY-SA 3.0) — 바코드·이름으로 찾음
   2. 위키미디어 공용(CC BY / CC BY-SA / CC0 / 퍼블릭 도메인)
@@ -109,26 +84,27 @@
   - 이름·브랜드·숙성 연수가 맞을 때만 씁니다(`imageMatches`). 틀린 사진보다 사진 없음이 낫습니다.
   - 사진이 없으면 `Glass` 잔 일러스트(캐스크·숙성으로 추정한 액체 색)를 그립니다.
 - **최적화:** 400px 썸네일만 저장, `<img loading="lazy" decoding="async">`, 높이 고정으로 레이아웃 흔들림 방지. 캐시는 `public/_headers`(`/assets/*` 1년, `/data/*` 10분).
-- **글꼴:** Google Fonts(Hahmlet, IBM Plex Sans KR, Cormorant Garamond) — `index.html`·`admin.html`의 `<link>`. 대체 글꼴 스택 필수.
+- **글꼴:** Google Fonts(Cormorant Garamond, Noto Serif KR, Inter, IBM Plex Sans KR, IBM Plex Mono) — `index.html`·`admin.html`의 `<link>`. 대체 글꼴 스택 필수.
 - **CDN:** 별도 CDN 없음(Cloudflare가 정적 자산을 서빙).
 - Figma에서 내보내는 이미지는 `public/img/`에 두고, 라이선스가 확인된 것만 커밋합니다.
 
 ## 5. 아이콘
 
-- 아이콘 세트·아이콘 폰트 없음. 필요한 그림은 컴포넌트 안 인라인 SVG(`Glass`의 잔, `Stars`의 별, 배지 동전은 CSS)로 그립니다.
-- **이모지를 아이콘으로 쓰지 않습니다**(ui-ux-pro-max 체크리스트). BTI 보기의 이모지는 금색 원 표시(`.choice .mark`)로 바꿨습니다.
-- 새 아이콘은 `currentColor`를 쓰는 인라인 SVG, 장식이면 `aria-hidden="true"`, 의미가 있으면 `aria-label`.
-- Figma 아이콘 컴포넌트 이름은 `icon/<이름>`(예: `icon/glass`, `icon/star`)으로 맞추고 코드에서는 같은 이름의 컴포넌트로 만듭니다.
+- 아이콘 세트·아이콘 폰트 없음. 1.4px 선의 인라인 SVG(→, ↗, 별, 잔)를 `currentColor`로. 장식이면 `aria-hidden="true"`, 의미가 있으면 `aria-label`.
+- **이모지를 아이콘으로 쓰지 않습니다.** 선택 표시는 10px 원(`.choice .mark`).
+- 워드마크는 로고 파일 없이 "위스키 도감"(세리프 600) + 6px `accent` 점(`.wordmark i`).
+- Figma 아이콘 컴포넌트 이름은 `icon/<이름>`(예: `icon/glass`, `icon/arrow`)으로 맞춥니다.
 
 ## 6. 스타일 방식
 
 - **방법론:** 의미 있는 짧은 클래스(`.slot`, `.panel`, `.wrow`) + 상태 클래스(`.tried`, `.untried`) + ARIA 속성 상태(`[aria-pressed='true']`, `[aria-selected='true']`, `[aria-current='page']`). 선택자 깊이는 2단계 이내.
-- **전역 스타일:** `body`에 배경 빛(가넷·금 radial-gradient), 한국어 줄바꿈 `word-break: keep-all`, `accent-color: var(--gold)`.
-- **입체 규칙:** 깊이 순서는 bg → 진열 칸(안쪽 그림자) → 유리 패널 → 떠 있는 요소(raised·툴팁). 3D 기울기는 마우스 포인터에만 반응하고 최대 8°, `prefers-reduced-motion`이면 끕니다.
-- **움직임:** 사용자 동작에 대한 반응만 150~300ms. 자동 움직임은 첫 화면 색 띠가 차오르는 한 번뿐.
-- **반응형:** 모바일 우선이 아니라 넓은 화면 기준 + `@media (max-width: 720px)` 한 구간. 그리드는 `auto-fill, minmax()`로 자연스럽게 열 수가 줄어듭니다. 좌우 여백은 `max(16px, env(safe-area-inset-*))`, 가로 스크롤 금지(표는 `.table-wrap` 안에서만).
-- **접근성:** 터치 대상 최소 44px, 키보드 포커스 `:focus-visible` 금색 링, 대비 4.5:1, 차트는 표 보기(10축 막대·비교 표) 제공.
-- **쓰지 않는 것:** 대문자 라벨, "A · B · C" 메타 문자열, 모든 블록을 같은 카드로 감싸기, 이모지 아이콘, 차트에 버튼 강조색.
+- **전역:** `body`는 `bg` 단색(배경 그라데이션 없음), 한국어 `word-break: keep-all`, `accent-color: var(--accent)`.
+- **글자:** 제목은 세리프 500, 자간 -0.01~-0.02em. 제목 속 숫자는 라이닝 숫자(`12년`), 통계 숫자만 올드스타일. 라벨·번호·출처·점수는 IBM Plex Mono, **자간 0.02em 이하**(Hallmark 67은 넓은 자간 라벨을 막는 바닥 규칙이라 예외를 둘 수 없음). 영문 대문자 라벨은 쓰지 않습니다.
+- **여백:** 섹션 사이 `space-24`(모바일 `space-16`), 제목 블록과 내용 `space-12`.
+- **움직임:** 사용자 동작에 대한 반응만 140~320ms, 강한 ease-out. 자동 움직임은 첫 화면 색 띠가 차오르는 한 번뿐. `prefers-reduced-motion`이면 끕니다.
+- **반응형:** 넓은 화면 기준 + `@media (max-width: 720px)` 한 구간. 머리 띠 탭은 둘째 줄로 내려가 가로로 넘깁니다. 가로 스크롤 금지(표는 `.table-wrap` 안에서만).
+- **접근성:** 터치 대상 최소 44px, 포커스 2px `accent` 링(입력칸은 `halo` 4px), 대비 4.5:1, 차트는 표 보기 제공, 계열은 색 + 점선으로 구분.
+- **쓰지 않는 것:** 금색·와인색, 그라데이션 버튼, 영문 대문자 라벨, 넓은 자간 라벨, "A · B · C" 메타 문자열, 모든 블록 카드화, 이모지 아이콘, 차트에 강조색.
 
 ## 7. 프로젝트 구조
 
@@ -158,58 +134,45 @@ scripts/                # 수집(fetch-whiskies, fetch-images), prerender
 
 **Code → Design**
 1. figma-generate-design 스킬 로드 → 새 파일이면 `create_new_file` → `create_session` → `search_design_system`.
-2. Figma Variables를 §1 토큰 이름 그대로 만들고(Dark/Light 모드), 컴포넌트는 §2 이름(`Slot`, `Panel`, `WhiskyRow`, `Stage`, `Coin`)으로 만듭니다.
-3. 마신 위스키 금빛 테두리는 Figma에서 Drop shadow 여러 겹(1px 90% → 4px 28% → 14px 42% → 32px 20% → 64px 8%)으로 재현합니다.
+2. Figma Variables를 §1 토큰 이름 그대로 만들고(Paper/Midnight 모드), 컴포넌트는 §2 이름(`Slot`, `Panel`, `WhiskyRow`, `Stage`, `Coin`)으로 만듭니다.
+3. 마신 위스키 코발트 테두리는 Figma에서 Stroke 1px `accent` + Drop shadow 두 겹(spread 5px `accent` 12%, y 18 blur 36 spread -18 `accent` 45%)으로 재현합니다.
 
-## 9. 출시 전 점검표 (ui-ux-pro-max 체크리스트 반영)
+## 9. 출시 전 점검표
 
 - [ ] 이모지 아이콘 없음, 클릭 가능한 요소는 `cursor: pointer`
-- [ ] 마우스 오버·누름 반응 150~300ms
-- [ ] 라이트 모드 글자 대비 4.5:1 이상
+- [ ] 반응 140~320ms, 줄인 움직임 설정이면 꺼짐
+- [ ] 페이퍼·미드나이트 모두 글자 대비 4.5:1 이상
 - [ ] 키보드 포커스 보임
-- [ ] `prefers-reduced-motion`이면 3D 기울기·차오름 꺼짐
 - [ ] 375 / 768 / 1024 / 1440px에서 가로 스크롤 없음
 - [ ] 차트 색은 `--series-*`만, 검증 스크립트 통과
 - [ ] 사진마다 작성자·라이선스 표시
+- [ ] `node .claude/skills/hallmark/scripts/sloplint.mjs src --genre atmospheric --scope app` FAIL 0
 
-## 10. 테일윈드 테마 연동 (2026-11-14)
+## 10. 테일윈드 테마 연동
 
-토큰의 값은 `src/styles.css` `:root`(+라이트 두 블록)에만 있고, `tailwind.config.js`는 그 CSS 변수에 **이름만** 붙입니다. 그래서 라이트·다크 전환은 CSS 변수가 알아서 하고, 테일윈드 클래스는 테마를 몰라도 됩니다. `theme`은 `extend`가 아니라 통째로 바꿔서, 토큰에 없는 색·여백·그림자는 클래스 자체가 만들어지지 않습니다. 기존 전역 스타일과 부딪히지 않게 preflight는 끕니다.
+토큰의 값은 `src/styles.css`에만 있고, `tailwind.config.js`는 그 CSS 변수에 **이름만** 붙입니다. `theme`은 `extend`가 아니라 통째로 바꿔서, 토큰에 없는 색·여백·그림자는 클래스 자체가 없습니다. preflight는 끕니다.
 
 | Figma 변수 (whisky-dex) | CSS 토큰 | 테일윈드 클래스 예 |
 |---|---|---|
-| color/bg, surface, raised, glass | `--bg` `--surface` `--raised` `--glass` | `bg-bg` `bg-surface` `bg-raised` `bg-glass` |
-| color/line, line/hi | `--line` `--line-hi` | `border-line` `border-line-hi` |
+| color/bg, surface, sunken, glass | `--bg` `--surface` `--sunken` `--glass` | `bg-bg` `bg-surface` `bg-sunken` `bg-glass` |
+| color/line, line/strong | `--line` `--line-strong` | `border-line` `border-line-strong` |
 | color/text, text/2, muted | `--text` `--text-2` `--muted` | `text-text` `text-text-2` `text-muted` |
-| color/gold, gold/hi, gold/lo, gold/ink | `--gold*` | `text-gold` `bg-gold` `border-gold-lo` `text-gold-ink` |
-| color/wine, wine/hi | `--wine*` | `bg-wine` `text-wine-hi` |
+| color/accent, hover, soft, ink, on | `--accent*` `--on-accent` | `bg-accent` `hover:bg-accent-hover` `bg-accent-soft` `text-accent-ink` `text-accent-on` |
 | color/series/1·2 (차트 전용) | `--series-1` `--series-2` | `fill-series-1` `stroke-series-2` |
-| type/display, latin, body | `--font-display` `--font-latin` `--font-body` | `font-display` `font-latin` `font-body` |
+| type/display, body, mono | `--font-display` `--font-body` `--font-mono` | `font-display` `font-body` `font-mono` |
 | type/step -1 … 5 | `--step--1` … `--step-5` | `text-sm` `text-base` `text-lg` `text-xl` `text-2xl` `text-3xl` `text-4xl` |
-| space/1 … 16 (4px 기준) | `--space-1` … `--space-16` | `p-4` `gap-2` `mt-6` (1·2·3·4·5·6·8·10·12·16만 존재) |
-| size/tap, measure, container | `--tap` `--measure` `--container` | `min-h-tap` `min-w-tap` `max-w-measure` `max-w-container` |
-| radius/sm, md, pill | `--radius-sm` `--radius` `--radius-pill` | `rounded-sm` `rounded` `rounded-pill` |
-| effect/panel, lift, tried | `--shadow-panel` `--shadow-lift` `--glow-tried` | `shadow-panel` `shadow-lift` `shadow-tried` |
-| motion/ease-out, in-out, spring | `--ease-out` `--ease-in-out` `--ease-spring` | `ease-out` `ease-in-out` `ease-spring` |
-| motion/press, ui, panel | `--dur-press`(140ms) `--dur-ui`(200ms) `--dur-panel`(280ms) | `duration-press` `duration-ui` `duration-panel` |
+| space/1 … 32 (4px 기준) | `--space-1` … `--space-32` | `p-4` `gap-2` `mt-24` (1·2·3·4·5·6·8·10·12·16·24·32만 존재) |
+| size/tap, measure, container | `--tap` `--measure` `--container` | `min-h-tap` `max-w-measure` `max-w-container` |
+| radius/sm, md, lg, xl, pill | `--radius-sm` `--radius` `--radius-lg` `--radius-xl` `--radius-pill` | `rounded-sm` `rounded` `rounded-lg` `rounded-xl` `rounded-pill` |
+| effect/card, lift, tried | `--shadow-card` `--shadow-lift` `--glow-tried` | `shadow-card` `shadow-lift` `shadow-tried` |
+| motion/ease, duration | `--ease-*` `--dur-press`(140) `--dur-ui`(200) `--dur-panel`(320) | `ease-out` `duration-ui` |
+
+v1 → v2 이름 대응: `gold*` → `accent*`(`gold-text` → `accent-ink`), `wine*` 없음, `raised`·`niche-*` → `sunken`, `field-line` → `line-strong`, `font-latin` → `font-mono`, `shadow-panel` → `shadow-card`.
 
 **규칙**
 
-1. **대괄호 임의값 금지.** `p-[13px]`, `bg-[#fff]`, `[mask:…]` 같은 클래스는 쓰지 않습니다. `scripts/lib/tailwind-guard.test.mjs`가 `npm test`에서 막습니다. 필요한 값이 없으면 토큰을 먼저 추가(§1)하고 `tailwind.config.js`에 이름을 붙입니다.
-2. **오토 레이아웃 → 플렉스/그리드 1:1.**
-
-   | Figma 오토 레이아웃 | 테일윈드 |
-   |---|---|
-   | 방향 가로 / 세로 | `flex flex-row` / `flex flex-col` |
-   | 간격(item spacing) 8 | `gap-2` (토큰 단계로 반올림) |
-   | 패딩 16 / 가로 24·세로 12 | `p-4` / `px-6 py-3` |
-   | 정렬 위·가운데·아래 | `items-start` `items-center` `items-end` |
-   | 분배 Packed / Space between | `justify-start` / `justify-between` |
-   | 줄바꿈(Wrap) | `flex-wrap` |
-   | 자식 Fill container / Hug | `flex-1 min-w-0` / `shrink-0` |
-   | 고정 열 수 그리드 | `grid grid-cols-2 md:grid-cols-4` |
-   | 반응형 카드 열 | `grid` + `.auto-grid`(styles.css 의 `repeat(auto-fill, minmax(…))`) |
-
-3. **변형(variant) → 컴포넌트 속성.** Figma 컴포넌트 속성 `Variant=Primary|Ghost`, `Size=Sm|Md`, `State=Tried|Untried`는 리액트 속성 `variant: 'primary' | 'ghost'`, `size: 'sm' | 'md'`, `tried: boolean`으로 옮기고, 속성별 클래스 묶음은 컴포넌트 안의 객체 한 곳(`const VARIANT = { primary: '…', ghost: '…' }`)에 둡니다.
-4. **합성 컴포넌트가 기본.** 여러 부분이 있는 블록은 `<Section>` + `<Section.Head>` + `<Section.Body>`처럼 부모가 틀을, 자식이 부분을 맡게 만듭니다(예: `src/components/ui.tsx`).
-5. 기존 CSS 클래스(`.panel`, `.btn`, `.slot` 등 3D·유리 효과)는 그대로 쓰고, 배치·여백·글자는 테일윈드로 얹습니다. 같은 요소에 같은 속성을 두 방식으로 주지 않습니다.
+1. **대괄호 임의값 금지.** `p-[13px]`, `bg-[#fff]` 같은 클래스는 `scripts/lib/tailwind-guard.test.mjs`가 `npm test`에서 막습니다. 필요한 값이 없으면 토큰을 먼저 추가하고 `tailwind.config.js`에 이름을 붙입니다.
+2. **오토 레이아웃 → 플렉스/그리드 1:1.** 방향 `flex-row`/`flex-col`, 간격 `gap-*`(토큰 단계로 반올림), 패딩 `p-*`, 정렬 `items-*`, 분배 `justify-*`, 줄바꿈 `flex-wrap`, Fill `flex-1 min-w-0`, Hug `shrink-0`, 반응형 카드 열은 `grid` + `.auto-grid`.
+3. **변형(variant) → 컴포넌트 속성.** `Variant=Primary|Ghost`, `Size=Sm|Md`, `State=Tried|Untried` → `variant`, `size`, `tried`. 속성별 클래스 묶음은 컴포넌트 안 객체 한 곳에.
+4. **합성 컴포넌트가 기본.** `<Section>` + `<Section.Head>` + `<Section.Body>`.
+5. 기존 CSS 클래스(`.panel`, `.btn`, `.slot` 등)는 그대로 쓰고, 배치·여백·글자는 테일윈드로 얹습니다. 같은 요소에 같은 속성을 두 방식으로 주지 않습니다.

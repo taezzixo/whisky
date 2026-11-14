@@ -43,8 +43,8 @@ export function tiltHandlers() {
       const r = e.currentTarget.getBoundingClientRect();
       const x = (e.clientX - r.left) / r.width - 0.5;
       const y = (e.clientY - r.top) / r.height - 0.5;
-      e.currentTarget.style.setProperty('--ry', `${(x * 16).toFixed(2)}deg`);
-      e.currentTarget.style.setProperty('--rx', `${(-y * 12).toFixed(2)}deg`);
+      e.currentTarget.style.setProperty('--ry', `${(x * 12).toFixed(2)}deg`);
+      e.currentTarget.style.setProperty('--rx', `${(-y * 9).toFixed(2)}deg`);
       e.currentTarget.style.setProperty('--gx', `${(50 + x * 60).toFixed(1)}%`); // 광택이 포인터를 따라 움직임
     },
     onPointerLeave(e: React.PointerEvent<HTMLElement>) {

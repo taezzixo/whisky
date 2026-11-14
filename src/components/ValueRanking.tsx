@@ -37,7 +37,7 @@ export function ValueRanking({ tastings, byId, onOpen }: { tastings: Tasting[]; 
                   <tr key={r.w.id} className="border-0 border-t border-solid border-line">
                     <td className="num py-2 pr-3 text-muted">{i + 1}</td>
                     <td className="py-2 pr-3">
-                      <AppLink href={`?w=${r.w.id}`} onNavigate={() => onOpen(r.w.id)} className="press flex min-h-tap min-w-0 items-center gap-3 text-text no-underline hover:text-gold-text">
+                      <AppLink href={`?w=${r.w.id}`} onNavigate={() => onOpen(r.w.id)} className="press flex min-h-tap min-w-0 items-center gap-3 text-text no-underline hover:text-accent">
                         <span className="flex w-10 shrink-0 justify-center" aria-hidden="true">
                           <WhiskyArt w={r.w} height={44} />
                         </span>
@@ -49,7 +49,7 @@ export function ValueRanking({ tastings, byId, onOpen }: { tastings: Tasting[]; 
                       {r.count > 1 && <span className="text-muted"> ({r.count}잔)</span>}
                     </td>
                     <td className="num hidden whitespace-nowrap py-2 pr-3 text-right text-text-2 md:table-cell">약 {fmt.format(r.w.price!)}만 원</td>
-                    <td className={`num whitespace-nowrap py-2 text-right font-semibold ${i === 0 ? 'text-gold-text' : 'text-text'}`}>{fmtIndex.format(r.index)}</td>
+                    <td className={`num whitespace-nowrap py-2 text-right font-semibold ${i === 0 ? 'text-accent-ink' : 'text-text'}`}>{fmtIndex.format(r.index)}</td>
                   </tr>
                 ))}
               </tbody>

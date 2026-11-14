@@ -121,6 +121,7 @@ export default function App() {
       <header className="top">
         <button className="wordmark" onClick={() => go({ tab: 'dex', id: null })}>
           위스키 도감
+          <i aria-hidden="true" />
         </button>
         <nav className="nav" aria-label="메인 메뉴">
           {TABS.map(([t, label]) => (
