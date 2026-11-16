@@ -427,6 +427,254 @@
    "w": 136,
    "h": 312,
    "at": "2026-11-14"
+  },
+  "seed-glenfiddich-12": {
+   "file": "img/w/glenfiddich-12.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/400/895/820/1773/front_de.4.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/4008958201773",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-glenlivet-12": {
+   "file": "img/w/glenlivet-12.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/5/58/The_Glenlivet_-_12_yr_Single_Malt.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:The_Glenlivet_-_12_yr_Single_Malt.JPG",
+   "credit": "ChickenFalls, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-glenlivet-15": {
+   "file": "img/w/glenlivet-15.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/e/e1/The_Glenlivet_Single_Malt_Scotch_Whisky_15_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "product": "https://commons.wikimedia.org/wiki/File:The_Glenlivet_Single_Malt_Scotch_Whisky_15_years_old.jpg",
+   "credit": "P. Brundel, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-balvenie-12-doublewood": {
+   "file": "img/w/balvenie-12-doublewood.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Balvenie_Whisky_Doublewood_12_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Balvenie_Whisky_Doublewood_12_years_old.jpg",
+   "credit": "Pbrundel at Dutch Wikipedia, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-aberlour-12": {
+   "file": "img/w/aberlour-12.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/b/b0/Aberlour_12_%285744804646%29.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Aberlour_12_(5744804646).jpg",
+   "credit": "Mike McCune, 위키미디어 공용",
+   "license": "CC BY 2.0",
+   "at": "2026-11-16"
+  },
+  "seed-auchentoshan-american-oak": {
+   "file": "img/w/auchentoshan-american-oak.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/6/67/Auchentoshan_American_OAK.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "product": "https://commons.wikimedia.org/wiki/File:Auchentoshan_American_OAK.jpg",
+   "credit": "Adrenalin658, 위키미디어 공용",
+   "license": "CC BY-SA 4.0",
+   "at": "2026-11-16"
+  },
+  "seed-oban-14": {
+   "file": "img/w/oban-14.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/7/7b/Oban_Single_malt_Whisky_14_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Oban_Single_malt_Whisky_14_years_old.jpg",
+   "credit": "Look Sharp! at Dutch Wikipedia (Original text: P. Brundel), 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-clynelish-14": {
+   "file": "img/w/clynelish-14.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/4/4a/Clynelish_Single_Malt_Scotch_Whisky_14_jaar_oud.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Clynelish_Single_Malt_Scotch_Whisky_14_jaar_oud.jpg",
+   "credit": "Original uploader was P. Brundel at nl.wikipedia, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-highland-park-12": {
+   "file": "img/w/highland-park-12.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/3/35/Highland_Park_Single_Malt_Whisky_12_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Highland_Park_Single_Malt_Whisky_12_years_old.jpg",
+   "credit": "Pbrundel, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-talisker-10": {
+   "file": "img/w/talisker-10.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/1/13/Talisker_Single_Malt_Scotch_Whisky_10_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Talisker_Single_Malt_Scotch_Whisky_10_years_old.jpg",
+   "credit": "P. Brundel, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-laphroaig-10": {
+   "file": "img/w/laphroaig-10.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/501/001/964/0260/front_en.30.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5010019640260",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-laphroaig-quarter-cask": {
+   "file": "img/w/laphroaig-quarter-cask.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/501/001/964/0161/front_en.23.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5010019640161",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-ardbeg-10": {
+   "file": "img/w/ardbeg-10.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/2/24/Ardbeg_Single_Islay_Malt_Scotch_Whisky_10_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:Ardbeg_Single_Islay_Malt_Scotch_Whisky_10_years_old.jpg",
+   "credit": "P. Brundel at nl.wikipedia, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-caol-ila-12": {
+   "file": "img/w/caol-ila-12.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/500/028/101/6283/front_fr.11.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5000281016283",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-bunnahabhain-12": {
+   "file": "img/w/bunnahabhain-12.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/502/970/421/7366/front_en.28.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5029704217366",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-kilchoman-machir-bay": {
+   "file": "img/w/kilchoman-machir-bay.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/506/021/070/0522/front_en.11.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5060210700522",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-johnnie-walker-black-12": {
+   "file": "img/w/johnnie-walker-black-12.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/500/026/702/3625/front_en.13.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5000267023625",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-johnnie-walker-double-black": {
+   "file": "img/w/johnnie-walker-double-black.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/500/026/711/6426/front_fr.8.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5000267116426",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-chivas-regal-12": {
+   "file": "img/w/chivas-regal-12.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/008/043/240/0432/front_en.38.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/0080432400432",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-ballantines-finest": {
+   "file": "img/w/ballantines-finest.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/501/010/611/3127/front_en.38.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5010106113127",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-dewars-white-label": {
+   "file": "img/w/dewars-white-label.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/500/027/700/0906/front_en.15.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5000277000906",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-famous-grouse": {
+   "file": "img/w/famous-grouse.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/501/031/470/0003/front_fr.20.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5010314700003",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-wild-turkey-101": {
+   "file": "img/w/wild-turkey-101.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/072/105/989/7501/front_en.6.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/0721059897501",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-buffalo-trace": {
+   "file": "img/w/buffalo-trace.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/008/024/400/9236/front_en.8.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/0080244009236",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-bulleit-rye": {
+   "file": "img/w/bulleit-rye.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/0/0d/Bulleit_Bourbon_Frontier_Whiskey.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+   "product": "https://commons.wikimedia.org/wiki/File:Bulleit_Bourbon_Frontier_Whiskey.jpg",
+   "credit": "Ethan Prater, 위키미디어 공용",
+   "license": "CC BY 2.0",
+   "at": "2026-11-16"
+  },
+  "seed-jameson": {
+   "file": "img/w/jameson.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/501/100/700/3814/front_en.5.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5011007003814",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-bushmills-original": {
+   "file": "img/w/bushmills-original.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/505/596/680/1104/front_en.3.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5055966801104",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-teeling-small-batch": {
+   "file": "img/w/teeling-small-batch.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/539/152/327/0021/front_fr.3.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/5391523270021",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-hibiki-harmony": {
+   "file": "img/w/hibiki-harmony.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/490/177/727/5652/front_fr.4.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/4901777275652",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-yamazaki-12": {
+   "file": "img/w/yamazaki-12.jpg",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/e/e4/The_Yamazaki_Single_Malt_Whisky_Aged_12_years.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "product": "https://commons.wikimedia.org/wiki/File:The_Yamazaki_Single_Malt_Whisky_Aged_12_years.JPG",
+   "credit": "Look Sharp!, 위키미디어 공용",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
+  },
+  "seed-nikka-from-the-barrel": {
+   "file": "img/w/nikka-from-the-barrel.jpg",
+   "source": "https://images.openfoodfacts.org/images/products/490/423/010/0683/front_fr.3.400.jpg",
+   "product": "https://world.openfoodfacts.org/product/4904230100683",
+   "credit": "Open Food Facts 기여자",
+   "license": "CC BY-SA 3.0",
+   "at": "2026-11-16"
   }
  },
  "misses": {
@@ -442,6 +690,21 @@
   "seed-glenallachie-12": "2026-11-14",
   "seed-glenfarclas-12": "2026-11-14",
   "seed-monkey-shoulder": "2026-11-14",
-  "seed-glenkinchie-12": "2026-11-14"
+  "seed-glenkinchie-12": "2026-11-14",
+  "seed-glenfiddich-15": "2026-11-16",
+  "seed-macallan-18-sherry-oak": "2026-11-16",
+  "seed-lagavulin-8": "2026-11-16",
+  "seed-port-charlotte-10": "2026-11-16",
+  "seed-springbank-10": "2026-11-16",
+  "seed-benromach-10": "2026-11-16",
+  "seed-arran-10": "2026-11-16",
+  "seed-glen-grant-10": "2026-11-16",
+  "seed-ballantines-17": "2026-11-16",
+  "seed-jim-beam-white": "2026-11-16",
+  "seed-woodford-reserve": "2026-11-16",
+  "seed-eagle-rare-10": "2026-11-16",
+  "seed-rittenhouse-rye": "2026-11-16",
+  "seed-redbreast-12": "2026-11-16",
+  "seed-hakushu-dr": "2026-11-16"
  }
 }

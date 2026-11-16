@@ -1,7 +1,7 @@
 {
  "last": {
-  "runAt": "2026-11-14T10:14:20.760Z",
-  "durationSec": 354,
+  "runAt": "2026-11-16T01:14:20.117Z",
+  "durationSec": 512,
   "sources": [
    {
     "id": "wikidata",
@@ -11,10 +11,9 @@
    },
    {
     "id": "off",
-    "ok": false,
-    "count": 393,
-    "error": "HTTP 503 https://world.openfoodfacts.org/api/v2/search?categories_tags_en=whisky&fields=code,product_name,brands,countries_tags,c",
-    "sec": 351
+    "ok": true,
+    "count": 684,
+    "sec": 510
    },
    {
     "id": "iowa",
@@ -25,22 +24,62 @@
   ],
   "quality": {
    "dex": {
-    "total": 345,
+    "total": 376,
     "noFlavor": 0,
     "noAbv": 0,
     "noCountry": 0,
-    "gradeC": 345
+    "gradeC": 376
    },
    "catalog": {
-    "total": 3057,
-    "noFlavor": 3057,
+    "total": 3053,
+    "noFlavor": 3053,
     "noAbv": 364,
     "noCountry": 1,
-    "gradeC": 3057
+    "gradeC": 3053
    }
   }
  },
  "history": [
+  {
+   "runAt": "2026-11-16T01:14:20.117Z",
+   "durationSec": 512,
+   "sources": [
+    {
+     "id": "wikidata",
+     "ok": true,
+     "count": 327,
+     "sec": 1
+    },
+    {
+     "id": "off",
+     "ok": true,
+     "count": 684,
+     "sec": 510
+    },
+    {
+     "id": "iowa",
+     "ok": true,
+     "count": 3173,
+     "sec": 1
+    }
+   ],
+   "quality": {
+    "dex": {
+     "total": 376,
+     "noFlavor": 0,
+     "noAbv": 0,
+     "noCountry": 0,
+     "gradeC": 376
+    },
+    "catalog": {
+     "total": 3053,
+     "noFlavor": 3053,
+     "noAbv": 364,
+     "noCountry": 1,
+     "gradeC": 3053
+    }
+   }
+  },
   {
    "runAt": "2026-11-14T10:14:20.760Z",
    "durationSec": 354,
