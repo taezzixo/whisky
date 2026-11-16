@@ -3,7 +3,7 @@
 새 대화를 시작하면 이 파일을 먼저 읽습니다. 진행 상황과 결정 사항은 Notion 「대시보드 v1.0 / [위스키 도감] (whisky)」 아래 인계 문서에 있습니다(Notion이 연결되지 않았을 때는 `docs/HANDOFF.md`).
 
 ## 한눈에 보기
-- 마신 위스키를 도감에 기록(별점·메모)하고, 위스키BTI로 취향 유형을 찾고, 비슷한 위스키를 추천하는 웹사이트입니다. 도감 376종(맛 정보 있음) + 수집 카탈로그 약 3천 건.
+- 마신 위스키를 도감에 기록(별점·메모)하고, 위스키BTI로 취향 유형을 찾고, 비슷한 위스키를 추천하는 웹사이트입니다. 도감 403종(맛 정보 있음, 국내 판매·면세 제품 포함) + 수집 카탈로그 약 3천 건.
 - 서버와 DB가 없는 정적 사이트입니다. 데이터는 GitHub Actions가 **주 1회** 수집해 저장소의 JSON 파일로 커밋합니다.
 - 배포: Cloudflare Workers(정적 자산). `main`에 푸시하면 자동 빌드·배포됩니다. 설정은 `wrangler.jsonc` (프로젝트 이름 `whisky-dex`).
 - 구성은 청약맵 기본 구성도 v1(`taezzixo/dash_housing` 의 `docs/ARCHITECTURE.md`)을 따릅니다. 달라진 점은 `docs/ARCHITECTURE.md` §0.
@@ -27,7 +27,7 @@
 npm install            # 의존성 설치
 npm run sample         # 시드만으로 public/data 샘플 생성 (네트워크 불필요)
 npm run dev            # 개발 서버
-npm test               # 단위 테스트 (현재 55개, 모두 통과해야 함 — 테일윈드 임의값·클래스 충돌 검사 포함)
+npm test               # 단위 테스트 (현재 60개, 모두 통과해야 함 — 테일윈드 임의값·클래스 충돌 검사 포함)
 npm run build          # 타입 검사 + 빌드 + 위스키별 SEO 페이지 생성
 npm run fetch:data     # 데이터 수집 (키 불필요)
 npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 공용, 자유 라이선스만)
@@ -37,10 +37,10 @@ npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 
 ## 디렉터리
 - `src/App.tsx` — 탭(도감, 위스키BTI, 맛 지도, 증류소, 내 기록, 비교), 주소(`?tab=`, `?w=<id>` 상세, `?tab=dist&d=<증류소>`), 데이터 불러오기
 - `src/components/` — `Dex.tsx`(액체 색 띠·배지·나라별 수집·선반), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록), `HomeBar.tsx`(내 바: 보유 병·남은 양·산화 안내), `Compare.tsx`(최대 4종 비교), `BarcodeScan.tsx`(카메라 바코드), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `WhiskyArt.tsx`(볼록한 병·사진·잔 + 3D 기울기), `Distilleries.tsx`(증류소 색인·페이지), `ValueRanking.tsx`(체감 가성비 표), `TastingCard.tsx`(테이스팅 카드 이미지 1:1·9:16), `ui.tsx`(테일윈드 공통 조각: Button·Chip·Section·AppLink·ThemeSwitch), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
-- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록), `theme.ts`(라이트·다크 고르기, 이 기기에만 저장), `insights.ts`(증류소 묶음·가성비·노트 도우미)
+- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록), `theme.ts`(라이트·다크 고르기, 이 기기에만 저장), `insights.ts`(증류소 묶음·가성비·노트 도우미), `prices.ts`(용량·면세 가격 줄), `overrides.ts`의 `SPELLING`(맥켈란→맥캘란 같은 다른 표기 묶음)
 - `src/config/` — `flavor.ts`(맛 10축·가중치 버전), `bti.ts`(문항·유형 이름)
 - `src/admin/main.tsx` + `admin.html` — 관리 페이지 `/admin.html`(읽기 전용: 출처별 수집 결과·품질·이력)
-- `data/flavor-seed.json` — **큐레이션 시드**(맛 벡터가 있는 도감의 원본, 376종). 추가·수정 기준은 `docs/SEED_GUIDE.md`
+- `data/flavor-seed.json` — **큐레이션 시드**(맛 벡터가 있는 도감의 원본, 403종). 추가·수정 기준은 `docs/SEED_GUIDE.md`
 - `scripts/fetch-whiskies.mjs` — 수집 메인. `scripts/sources/`(wikidata · openfoodfacts · iowa · http), `scripts/lib/normalize.mjs`(정규화·병합·Iowa 이름 정리), `scripts/lib/zip.mjs`(Iowa zip 풀기), `scripts/fetch-images.mjs` + `scripts/lib/images.mjs`(실제 사진 찾기·라이선스 확인·브랜드/연수 매칭)
 - `scripts/prerender.mjs` — 위스키별 정적 페이지(`/w/<id>`), 사이트맵, robots
 - `public/img/w/` — 실제 사진(자유 라이선스 jpg + 사용자 제공 누끼 webp), `data/images.json` — 사진 출처·라이선스·못 찾은 기록(30일 뒤 재시도)

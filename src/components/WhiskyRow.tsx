@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react';
+import { shortPrice } from '../lib/prices.ts';
 import type { Whisky } from '../types.ts';
 import { CASK_LABEL, TYPE_LABEL } from '../config/flavor.ts';
 import { WhiskyArt } from './WhiskyArt.tsx';
@@ -14,7 +15,8 @@ export function caskLine(w: Whisky): string {
   return (w.casks ?? []).map((c) => CASK_LABEL[c]).join(', ');
 }
 
-export const priceText = (w: Whisky) => (w.price ? `약 ${w.price}만 원` : '');
+/** 목록용 한 줄 가격 (700ml 국내가가 없으면 다른 용량이나 면세가) */
+export const priceText = (w: Whisky) => shortPrice(w);
 
 interface Props {
   w: Whisky;
@@ -42,7 +44,7 @@ export function WhiskyRow({ w, tried = true, score, why, wished, onWish, onOpen 
       </button>
       <div className="side">
         {score && <span className="score">{score}</span>}
-        {w.price ? <span className="price">{priceText(w)}</span> : null}
+        {priceText(w) ? <span className="price">{priceText(w)}</span> : null}
         {onWish && (
           <button className="wish" onClick={onWish} aria-pressed={!!wished}>
             {wished ? '위시에 담음' : '위시 담기'}

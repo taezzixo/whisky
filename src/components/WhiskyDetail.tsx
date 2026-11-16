@@ -11,9 +11,10 @@ import { WhiskyArt } from './WhiskyArt.tsx';
 import { pairingGuide } from '../lib/pairing.ts';
 import { TastingForm } from './Tasting.tsx';
 import { TastingCard } from './TastingCard.tsx';
+import { offerLines, sizeLabel } from '../lib/prices.ts';
 import { slugify } from '../lib/insights.ts';
 import { AppLink } from './ui.tsx';
-import { caskLine, priceText, WhiskyRow } from './WhiskyRow.tsx';
+import { caskLine, WhiskyRow } from './WhiskyRow.tsx';
 import { TYPE_LABEL } from '../config/flavor.ts';
 
 interface Props {
@@ -60,6 +61,7 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
   const name = w.nameKo ?? w.name;
   const isTried = tried.has(w.id);
   const mine = tastings.filter((t) => t.whiskyId === w.id);
+  const offers = offerLines(w);
   const latest = [...mine].sort((x, y) => y.date.localeCompare(x.date) || y.id.localeCompare(x.id))[0];
 
   return (
@@ -116,10 +118,22 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
                 <dd>{caskLine(w)}{w.peated ? ', 피트 몰트' : ''}</dd>
               </>
             )}
-            {w.price && (
+            {offers.length > 0 && (
               <>
                 <dt>참고 가격</dt>
-                <dd>{priceText(w)} (700ml, 추정)</dd>
+                <dd>
+                  <ul className="m-0 flex list-none flex-col gap-1 p-0">
+                    {offers.map((o) => (
+                      <li key={`${o.where}-${o.ml}`} className="num">
+                        {o.where === 'dutyfree' ? '면세 ' : ''}
+                        {sizeLabel(o.ml)} {o.text}
+                      </li>
+                    ))}
+                  </ul>
+                  <span className="text-sm text-muted">
+                    추정치, 판매 정보 아님{w.trOnly ? '. 면세점 전용 제품' : ''}
+                  </span>
+                </dd>
               </>
             )}
             <dt>데이터</dt>

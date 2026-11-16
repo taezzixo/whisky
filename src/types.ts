@@ -45,6 +45,12 @@ export interface Whisky {
   peated?: boolean;
   /** 국내 참고 가격 (만원, 700ml 기준, 대략). 판매 정보가 아니다. */
   price?: number;
+  /** 용량·판매처별 참고 가격(추정, 판매 정보 아님). 700ml 국내가는 price 에 있고 여기는 그 밖의 용량·면세가.
+   *  won = 만원(국내), usd = 달러(면세) */
+  prices?: PriceOffer[];
+  /** 면세점에서 살 수 있음 / 면세점 전용(트래블 리테일 한정) */
+  dutyFree?: boolean;
+  trOnly?: boolean;
   /** 하이볼에 잘 어울리는지 */
   highball?: boolean;
   flavor?: FlavorVector;
@@ -78,4 +84,11 @@ export interface Overrides {
   hide?: string[];
   patch?: Record<string, Partial<Whisky>>;
   manual?: Whisky[];
+}
+
+export interface PriceOffer {
+  ml: number;
+  won?: number;
+  usd?: number;
+  where?: 'kr' | 'dutyfree';
 }

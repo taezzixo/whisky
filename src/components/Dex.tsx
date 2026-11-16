@@ -1,6 +1,7 @@
 // 도감 첫 화면: 액체 색 띠(수집 현황) → 배지 → 나라별 진행 → 선반(전체 도감)
 
 import { useMemo, useState } from 'react';
+import { hasDutyFree } from '../lib/prices.ts';
 import type { Whisky } from '../types.ts';
 import { TYPE_LABEL } from '../config/flavor.ts';
 import { badgeStates, byCountry, collectionRate } from '../lib/collection.ts';
@@ -31,6 +32,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const [show, setShow] = useState<Show>('all');
   const [country, setCountry] = useState('');
   const [type, setType] = useState('');
+  const [where, setWhere] = useState<'' | 'dutyfree' | 'tronly'>('');
   const [limit, setLimit] = useState(PAGE);
   const [withCatalog, setWithCatalog] = useState(false);
 
@@ -48,8 +50,10 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
     if (show === 'wish') list = list.filter((w) => wishlist.includes(w.id));
     if (country) list = list.filter((w) => w.country === country);
     if (type) list = list.filter((w) => w.type === type);
+    if (where === 'dutyfree') list = list.filter(hasDutyFree);
+    if (where === 'tronly') list = list.filter((w) => w.trOnly);
     return list;
-  }, [dex, q, show, country, type, tried, wishlist]);
+  }, [dex, q, show, country, type, where, tried, wishlist]);
   const barcodeHit = useMemo(() => (/^\d{8,14}$/.test(q.trim()) ? findByBarcode([...dex, ...(catalog ?? [])], q.trim()) : undefined), [q, dex, catalog]);
   const catalogHits = useMemo(() => (withCatalog && q && catalog ? searchWhiskies(catalog, q, 40) : []), [withCatalog, q, catalog]);
 
@@ -175,6 +179,11 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
                 {v}
               </option>
             ))}
+          </select>
+          <select id="dex-where" value={where} onChange={(e) => setWhere(e.target.value as typeof where)} aria-label="살 수 있는 곳">
+            <option value="">모든 판매처</option>
+            <option value="dutyfree">면세점에서 살 수 있는</option>
+            <option value="tronly">면세점 전용</option>
           </select>
         </div>
         <div className="chips" style={{ marginTop: 10 }}>
