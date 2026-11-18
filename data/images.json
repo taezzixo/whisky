@@ -230,13 +230,14 @@
   },
   "seed-lagavulin-16": {
    "file": "img/w/lagavulin-16.webp",
-   "source": "사용자 제공 캡처(2026-11-14)",
-   "credit": "사용자 제공 이미지",
-   "license": "출처·라이선스 미확인 (사용자 결정으로 사용)",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Lagavulin_Single_Islay_Malt_Whisky_16_years_old.jpg",
+   "product": "https://commons.wikimedia.org/wiki/File:Lagavulin_Single_Islay_Malt_Whisky_16_years_old.jpg",
+   "credit": "Pbrundel (Dutch Wikipedia), 배경 제거",
+   "license": "CC BY-SA 3.0",
    "cutout": true,
-   "w": 108,
-   "h": 344,
-   "at": "2026-11-14"
+   "w": 273,
+   "h": 1000,
+   "at": "2026-11-18"
   },
   "seed-redbreast-21": {
    "file": "img/w/redbreast-21.webp",
