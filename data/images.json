@@ -454,12 +454,15 @@
    "at": "2026-11-16"
   },
   "seed-balvenie-12-doublewood": {
-   "file": "img/w/balvenie-12-doublewood.jpg",
-   "source": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Balvenie_Whisky_Doublewood_12_years_old.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "file": "img/w/balvenie-12-doublewood.webp",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/6/6a/Balvenie_Whisky_Doublewood_12_years_old.jpg",
    "product": "https://commons.wikimedia.org/wiki/File:Balvenie_Whisky_Doublewood_12_years_old.jpg",
-   "credit": "Pbrundel at Dutch Wikipedia, 위키미디어 공용",
+   "credit": "Pbrundel at Dutch Wikipedia, 위키미디어 공용, 배경 제거",
    "license": "CC BY-SA 3.0",
-   "at": "2026-11-16"
+   "cutout": true,
+   "w": 347,
+   "h": 1000,
+   "at": "2026-11-18"
   },
   "seed-aberlour-12": {
    "file": "img/w/aberlour-12.jpg",
@@ -676,6 +679,17 @@
    "credit": "Open Food Facts 기여자",
    "license": "CC BY-SA 3.0",
    "at": "2026-11-16"
+  },
+  "seed-dalwhinnie-15": {
+   "file": "img/w/dalwhinnie-15.webp",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/b/b4/Dalwhinnie_Single_Highland_Malt_15_years_old.jpg",
+   "product": "https://commons.wikimedia.org/wiki/File:Dalwhinnie_Single_Highland_Malt_15_years_old.jpg",
+   "credit": "P. Brundel, 위키미디어 공용, 배경 제거",
+   "license": "CC BY-SA 3.0",
+   "cutout": true,
+   "w": 429,
+   "h": 1000,
+   "at": "2026-11-18"
   }
  },
  "misses": {
