@@ -1,4 +1,4 @@
-// 첫 화면 연출 (Anime.js): 로고 글자가 차례로 떠오르고, 도감 색 띠가 가운데부터 차오른다.
+// 첫 화면 연출 (Anime.js): 로고 글자가 차례로 떠오른다.
 // 방문(탭 세션)마다 한 번만, 움직임 줄이기 설정이면 하지 않는다.
 import { animate } from 'animejs/animation';
 import { stagger } from 'animejs/utils';
@@ -23,12 +23,4 @@ export function playWordmark(el: HTMLElement | null) {
   animate(el.querySelectorAll('.ch'), { opacity: [0, 1], y: ['0.5em', '0em'], delay: stagger(55), duration: 700, ease: 'outExpo' });
   const dot = el.querySelector('i');
   if (dot) animate(dot, { scale: [0, 1], delay: 520, duration: 600, ease: 'outBack(3)' });
-}
-
-export function playBand(el: HTMLElement | null) {
-  if (!el || prefersReducedMotion() || !firstTime('band')) return;
-  const bars = el.querySelectorAll('span');
-  const step = Math.max(1, Math.round(900 / Math.max(1, bars.length / 2)));
-  if (el.classList.contains('mosaic')) animate(bars, { scale: [0, 1], delay: stagger(Math.max(1, Math.round(1100 / bars.length))), duration: 500, ease: 'outBack(1.6)' });
-  else animate(bars, { scaleY: [0, 1], delay: stagger(step, { from: 'center' }), duration: 900, ease: 'outExpo' });
 }

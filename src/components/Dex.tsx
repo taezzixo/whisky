@@ -1,15 +1,13 @@
 // 도감 첫 화면: 액체 색 띠(수집 현황) → 배지 → 나라별 진행 → 선반(전체 도감)
 
-import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import NumberFlow from '@number-flow/react';
-import { playBand } from '../lib/intro.ts';
 import type { ShelfItem } from '../lib/insights.ts';
 import { HomeShelf } from './HomeShelf.tsx';
 import { hasDutyFree } from '../lib/prices.ts';
 import type { Whisky } from '../types.ts';
 import { TYPE_LABEL } from '../config/flavor.ts';
 import { badgeStates, byCountry, collectionRate } from '../lib/collection.ts';
-import { liquidColor, liquidScore } from '../lib/liquid.ts';
 import { searchWhiskies } from '../lib/overrides.ts';
 import { tiltHandlers, WhiskyArt } from './WhiskyArt.tsx';
 import { findByBarcode } from '../lib/collection.ts';
@@ -26,26 +24,13 @@ interface Props {
   onNeedCatalog: () => void;
   onStartBti: () => void;
   hasBti: boolean;
-  /** 첫 화면 선반 시안용: 최근 마신 병, 다음 잔 추천 */
+  /** 첫 화면 내 바 선반: 최근 마신 병, 다음 잔 추천 */
   shelf?: ShelfItem[];
   pick?: { w: Whisky; reason: string } | null;
 }
 
 type Show = 'all' | 'tried' | 'untried' | 'wish';
 const PAGE = 72;
-
-/** 첫 화면 시안: ?hero=mosaic (모자이크 칸) | flat (평평한 띠 + 표시) | 없으면 지금 모양 */
-type Hero = 'bar' | 'mosaic' | 'flat' | 'shelf';
-const heroFromUrl = (): Hero => {
-  const h = new URLSearchParams(location.search).get('hero');
-  return h === 'mosaic' || h === 'flat' || h === 'shelf' ? h : 'bar';
-};
-const HERO_COPY: Record<Hero, { title: string; lede: (n: number) => string }> = {
-  bar: { title: '마신 위스키는 제 색으로 남습니다', lede: (n) => `위스키 ${n}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.` },
-  mosaic: { title: '오늘 마신 한 잔이 도감의 한 칸이 됩니다', lede: (n) => `위스키 ${n}종을 옅은 색부터 짙은 색까지 한 칸씩 놓았습니다. 시음을 기록하면 그 칸이 제 색으로 채워집니다.` },
-  shelf: { title: '마신 위스키가 내 바 선반에 쌓입니다', lede: (n) => `최근에 마신 병이 선반에 놓이고, 지금까지의 기록으로 다음 잔을 골라 드립니다. 도감에는 위스키 ${n}종이 있습니다.` },
-  flat: { title: '마셔 본 만큼 색이 켜집니다', lede: (n) => `위스키 ${n}종을 잔 속 색 순서로 이었습니다. 기록한 위스키 자리에 불이 켜지고 아래에 표시가 남습니다.` },
-};
 
 export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatalog, onStartBti, hasBti, shelf, pick }: Props) {
   const [q, setQ] = useState('');
@@ -60,9 +45,6 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const triedList = useMemo(() => dex.filter((w) => tried.has(w.id)), [dex, tried]);
   const seals = useMemo(() => badgeStates(triedList), [triedList]);
   const countries = useMemo(() => byCountry(dex, tried), [dex, tried]);
-  const bandRef = useRef<HTMLDivElement>(null);
-  const [hero] = useState<Hero>(heroFromUrl);
-  const band = useMemo(() => [...dex].sort((a, b) => liquidScore(a) - liquidScore(b) || a.id.localeCompare(b.id)), [dex]);
 
   const filtered = useMemo(() => {
     // 기본 순서: 병 사진이 있는 위스키를 앞에(진열장이 사진으로 채워 보이게), 그다음 이름순
@@ -79,52 +61,12 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const barcodeHit = useMemo(() => (/^\d{8,14}$/.test(q.trim()) ? findByBarcode([...dex, ...(catalog ?? [])], q.trim()) : undefined), [q, dex, catalog]);
   const catalogHits = useMemo(() => (withCatalog && q && catalog ? searchWhiskies(catalog, q, 40) : []), [withCatalog, q, catalog]);
 
-  useLayoutEffect(() => {
-    if (band.length) playBand(bandRef.current);
-  }, [band.length]);
-
   return (
     <div className="stack">
       <section className="hero" aria-labelledby="dex-title">
-        <h1 id="dex-title">{HERO_COPY[hero].title}</h1>
-        <p className="lede">{HERO_COPY[hero].lede(rate.total)}</p>
-        {hero === 'shelf' ? (
-          <HomeShelf shelf={shelf ?? []} pick={pick ?? null} onOpen={onOpen} />
-        ) : (
-        <>
-        <div className="band-stage">
-        <div
-          ref={bandRef}
-          className={hero === 'mosaic' ? 'mosaic' : hero === 'flat' ? 'band flat' : 'band'}
-          role="img"
-          aria-label={`도감 ${rate.total}종 중 ${rate.done}종 기록. 옅은 색부터 짙은 색 순서.`}
-          onClick={(e) => {
-            const id = (e.target as HTMLElement).dataset.id;
-            if (id) onOpen(id);
-          }}
-        >
-          {band.map((w, i) => (
-            <span
-              key={w.id}
-              data-id={w.id}
-              className={tried.has(w.id) ? 'on' : undefined}
-              style={{ background: liquidColor(w) }}
-              title={`${w.nameKo ?? w.name}${tried.has(w.id) ? ' (기록함)' : ''}`}
-            />
-          ))}
-        </div>
-        {hero === 'flat' && (
-          <div className="band-marks" aria-hidden="true">
-            {band.map((w, i) => (tried.has(w.id) ? <i key={w.id} style={{ left: `${((i + 0.5) / band.length) * 100}%` }} /> : null))}
-          </div>
-        )}
-        </div>
-        <div className="band-legend">
-          <span>볏짚색, 버번 캐스크</span>
-          <span>마호가니, 셰리 캐스크·장기 숙성</span>
-        </div>
-        </>
-        )}
+        <h1 id="dex-title">마신 위스키가 내 바 선반에 쌓입니다</h1>
+        <p className="lede">최근에 마신 병이 선반에 놓이고, 지금까지의 기록으로 다음 잔을 골라 드립니다. 도감에는 위스키 {rate.total}종이 있습니다.</p>
+        <HomeShelf shelf={shelf ?? []} pick={pick ?? null} onOpen={onOpen} />
         <div className="progress-line">
           <p>
             <strong className="num">

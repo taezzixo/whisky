@@ -11,7 +11,7 @@
 - 기획: `docs/PLAN_ORIGINAL.md`(최초 기획서), `docs/PRD.md`(PRD v1.0). 시드 작성·검수 기준: `docs/SEED_GUIDE.md`.
 
 ## 기술 스택과 원칙
-- React 18 + TypeScript + Vite + **테일윈드 CSS 3.4**(개발 의존성, 2026-11-14 사용자 요청). 런타임 의존성은 `react`, `react-dom`뿐입니다. 새 의존성을 추가하기 전에 확인을 받습니다.
+- React 18 + TypeScript + Vite + **테일윈드 CSS 3.4**(개발 의존성, 2026-11-14 사용자 요청). 런타임 의존성은 `react`, `react-dom`과 2026-11-18 사용자 요청으로 넣은 움직임·차트 라이브러리(`animejs` 로고 인트로, `motion` 메뉴·버튼·화면 전환, `@number-flow/react` 숫자, `d3-scale`·`d3-shape` 레이더)입니다. Bklit UI는 npm 패키지가 없어 원본(MIT) 일부를 `src/vendor/bklit/`에 복사했습니다(출처·바꾼 점은 그 폴더 README). 새 의존성을 추가하기 전에 확인을 받습니다.
 - 테일윈드는 `tailwind.config.js`가 `styles.css` 토큰(CSS 변수)에 이름만 붙인 테마만 씁니다. **대괄호 임의값(`p-[13px]`) 금지**(`npm test`가 막음), 오토 레이아웃은 flex/grid, 변형은 컴포넌트 속성, 블록은 합성 컴포넌트(`src/components/ui.tsx`). 기존 CSS 클래스가 테일윈드 유틸리티 이름(`outline`, `ring` 등)과 겹치면 안 됩니다. 규칙은 `docs/DESIGN_SYSTEM.md` §10.
 - 디자인 스킬 5종이 `.claude/skills/`에 있습니다(frontend-design, ui-ux-pro-max, hallmark, emil-design-eng, web-design-guidelines). 화면을 바꾸면 `node .claude/skills/hallmark/scripts/sloplint.mjs src --genre atmospheric --scope app`로 FAIL 0을 확인합니다(예외는 `styles.css` 맨 위 Hallmark 줄에 이유와 함께).
 - 맛 축·추천 가중치는 `src/config/flavor.ts` 한 곳에만 둡니다. 가중치를 바꾸면 `SIMILARITY_VERSIONS`에 새 버전을 **추가**하고 기존 버전은 지우지 않습니다.
@@ -36,8 +36,8 @@ npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 
 
 ## 디렉터리
 - `src/App.tsx` — 탭(도감, 위스키BTI, 맛 지도, 증류소, 내 기록, 비교), 주소(`?tab=`, `?w=<id>` 상세, `?tab=dist&d=<증류소>`), 데이터 불러오기
-- `src/components/` — `Dex.tsx`(액체 색 띠·배지·나라별 수집·선반), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록), `HomeBar.tsx`(내 바: 보유 병·남은 양·산화 안내), `Compare.tsx`(최대 4종 비교), `BarcodeScan.tsx`(카메라 바코드), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `WhiskyArt.tsx`(볼록한 병·사진·잔 + 3D 기울기), `Distilleries.tsx`(증류소 색인·페이지), `ValueRanking.tsx`(체감 가성비 표), `TastingCard.tsx`(테이스팅 카드 이미지 1:1·9:16), `ui.tsx`(테일윈드 공통 조각: Button·Chip·Section·AppLink·ThemeSwitch), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
-- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록), `theme.ts`(라이트·다크 고르기, 이 기기에만 저장), `insights.ts`(증류소 묶음·가성비·노트 도우미), `prices.ts`(용량·면세 가격 줄), `overrides.ts`의 `SPELLING`(맥켈란→맥캘란 같은 다른 표기 묶음)
+- `src/components/` — `Dex.tsx`(첫 화면·배지·나라별 수집·진열장), `HomeShelf.tsx`(첫 화면 내 바 선반·최근 마신 잔·다음 잔 추천), `FlavorRadar.tsx`(Bklit 레이더), `WhiskyDetail.tsx`(상세 + 시음 기록 + 비슷한 위스키 4가지 모드), `Tasting.tsx`(별점·시음 기록 폼), `FlavorMap.tsx`(맛 지도 산점도), `Records.tsx`(내 기록), `HomeBar.tsx`(내 바: 보유 병·남은 양·산화 안내), `Compare.tsx`(최대 4종 비교), `BarcodeScan.tsx`(카메라 바코드), `Bti.tsx`, `WhiskyRow.tsx`(목록 행), `WhiskyArt.tsx`(볼록한 병·사진·잔 + 3D 기울기), `Distilleries.tsx`(증류소 색인·페이지), `ValueRanking.tsx`(체감 가성비 표), `TastingCard.tsx`(테이스팅 카드 이미지 1:1·9:16), `ui.tsx`(테일윈드 공통 조각: Button·Chip·Section·AppLink·ThemeSwitch), `Glass.tsx`(잔 일러스트), `Charts.tsx`(레이더·10축 막대)
+- `src/lib/` — `similar.ts`(유사도·추천 모드), `bti.ts`, `collection.ts`(수집률·배지·기록 기반 취향·맛 지도 좌표·가상 바 산화 안내·바코드 찾기), `liquid.ts`(액체 색), `pairing.ts`(안주·마시는 법 추정 가이드), `overrides.ts`(수동 보정·검색), `store.ts`(localStorage, 시음 기록), `theme.ts`(라이트·다크 고르기, 이 기기에만 저장), `insights.ts`(증류소 묶음·가성비·노트 도우미·최근 선반 `recentShelf`·다음 잔 `nextPick`), `intro.ts`(Anime.js 로고 인트로, 세션당 한 번), `motion-features.ts`(Motion 기능 지연 로드), `prices.ts`(용량·면세 가격 줄), `overrides.ts`의 `SPELLING`(맥켈란→맥캘란 같은 다른 표기 묶음)
 - `src/config/` — `flavor.ts`(맛 10축·가중치 버전), `bti.ts`(문항·유형 이름)
 - `src/admin/main.tsx` + `admin.html` — 관리 페이지 `/admin.html`(읽기 전용: 출처별 수집 결과·품질·이력)
 - `data/flavor-seed.json` — **큐레이션 시드**(맛 벡터가 있는 도감의 원본, 798종). 추가·수정 기준은 `docs/SEED_GUIDE.md`

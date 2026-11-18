@@ -176,3 +176,14 @@ v1 → v2 이름 대응: `gold*` → `accent*`(`gold-text` → `accent-ink`), `w
 3. **변형(variant) → 컴포넌트 속성.** `Variant=Primary|Ghost`, `Size=Sm|Md`, `State=Tried|Untried` → `variant`, `size`, `tried`. 속성별 클래스 묶음은 컴포넌트 안 객체 한 곳에.
 4. **합성 컴포넌트가 기본.** `<Section>` + `<Section.Head>` + `<Section.Body>`.
 5. 기존 CSS 클래스(`.panel`, `.btn`, `.slot` 등)는 그대로 쓰고, 배치·여백·글자는 테일윈드로 얹습니다. 같은 요소에 같은 속성을 두 방식으로 주지 않습니다.
+
+## 12. 움직임·차트 라이브러리 (2026-11-18 사용자 요청)
+
+| 라이브러리 | 쓰는 곳 | 규칙 |
+|---|---|---|
+| Anime.js 4 (`animejs/animation`, `animejs/utils`만) | 로고 글자 인트로 | 세션당 한 번, `prefers-reduced-motion`이면 안 함 (`src/lib/intro.ts`) |
+| Motion 14 (`m` 컴포넌트 + `LazyMotion`, 기능은 `motion-features.ts`로 지연 로드) | 메뉴·테마 선택 알약(`layoutId`), 버튼·칩 누름 스프링(0.96), 화면 전환 페이드 220ms | `MotionConfig reducedMotion="user"`. 새 움직임도 `m.*`로 쓴다(`motion.*` 금지: 번들이 커짐) |
+| Bklit UI (원본 일부 복사, `src/vendor/bklit/`) | 상세 맛 프로필 레이더(10축), 숫자는 `@number-flow/react` | 차트 색은 `--series-1`·`--series-2`만. Bklit 변수(`--chart-*`, `--border`)는 토큰 블록에서 우리 토큰을 가리키게 둔다 |
+
+- 첫 화면은 "내 바 선반"(최근 마신 병 7자리, 빈 자리는 점선) + "최근 마신 잔" 목록 + "다음 잔" 추천 카드입니다. 예전의 798칸 색 띠는 뺐습니다.
+- 첫 화면 스크립트는 gzip 약 113KB(이전 33KB). 대부분 Motion 엔진이라, 더 줄여야 하면 버튼 누름은 CSS로 돌리고 Motion은 메뉴 알약·화면 전환에만 남깁니다.
