@@ -438,12 +438,15 @@
    "at": "2026-11-16"
   },
   "seed-glenlivet-12": {
-   "file": "img/w/glenlivet-12.jpg",
-   "source": "https://upload.wikimedia.org/wikipedia/commons/5/58/The_Glenlivet_-_12_yr_Single_Malt.JPG?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=original",
+   "file": "img/w/glenlivet-12.webp",
+   "source": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/58/The_Glenlivet_-_12_yr_Single_Malt.JPG/1280px-The_Glenlivet_-_12_yr_Single_Malt.JPG",
    "product": "https://commons.wikimedia.org/wiki/File:The_Glenlivet_-_12_yr_Single_Malt.JPG",
-   "credit": "ChickenFalls, 위키미디어 공용",
+   "credit": "ChickenFalls, 위키미디어 공용, 배경 제거",
    "license": "CC BY-SA 3.0",
-   "at": "2026-11-16"
+   "cutout": true,
+   "w": 274,
+   "h": 1000,
+   "at": "2026-11-18"
   },
   "seed-glenlivet-15": {
    "file": "img/w/glenlivet-15.jpg",
