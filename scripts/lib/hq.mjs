@@ -96,7 +96,9 @@ export function hqDownloadUrl(ii) {
  * 배경 제거 결과 품질 검사 (scripts/hq/cutout.py 가 재는 값).
  *  objects   덩어리 수 — 병 1개만
  *  glare     병 안에서 하얗게 날아간 비율(%) — 햇빛·반사광
- *  sheen     병 안에서 밝고 색이 빠진 얼룩 비율(%) — 창문·조명 반사 (2026-11-18 측정: 통과시킨 사진 ≤1.1, 거른 사진 ≥4)
+ *  sheen     병 안에서 밝고 색이 빠진 얼룩 비율(%) — 창문·조명 반사
+ *            (2026-11-18 측정: 눈으로 통과시킨 4장 ≤1.06, 천장 조명이 비친 아벨라워 1.22, 창문 반사 13)
+ *            사용자 기준이 '반사·그을림 없는 사진'이라 엄격하게 둔다: 덜 모이더라도 깔끔한 사진만
  *  srcH      원본에서 병 높이(px) — 선명도
  *  ratio     폭/높이 — 병 모양
  *  edge      병이 사진 가장자리에 닿음 — 잘린 병
@@ -106,8 +108,8 @@ export function hqDownloadUrl(ii) {
 export function hqQuality(m) {
   const why = [];
   if (m.objects !== 1) why.push(`덩어리 ${m.objects}개`);
-  if (m.glare >= 1.5) why.push(`날아간 부분 ${m.glare}%`);
-  if ((m.sheen ?? 0) >= 3) why.push(`반사 얼룩 ${m.sheen}%`);
+  if (m.glare >= 1.0) why.push(`날아간 부분 ${m.glare}%`);
+  if ((m.sheen ?? 0) >= 1.2) why.push(`반사 얼룩 ${m.sheen}%`);
   if (m.srcH < 900) why.push(`병 높이 ${m.srcH}px`);
   if (m.ratio < 0.18 || m.ratio > 0.62) why.push(`비율 ${m.ratio}`);
   if (m.edge) why.push('가장자리에서 잘림');

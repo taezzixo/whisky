@@ -69,6 +69,7 @@ test('hqQuality: 병 1개·반사광·잘림·채움 검사', () => {
   assert.equal(hqQuality({ ...good, glare: 4.2 }).ok, false); // 햇빛에 날아감
   assert.equal(hqQuality({ ...good, glare: 1.8, sheen: 13 }).ok, false); // 창문 반사(아벨라워 사례)
   assert.equal(hqQuality({ ...good, glare: 0.67, sheen: 1.06 }).ok, true); // 달위니 15년 실제 값
+  assert.equal(hqQuality({ ...good, glare: 0.44, sheen: 1.22 }).ok, false); // 천장 조명이 비친 아벨라워 실제 값
   assert.equal(hqQuality({ ...good, edge: true }).ok, false); // 잘린 병
   assert.equal(hqQuality({ ...good, ratio: 0.9 }).ok, false); // 상자 옆 병 등
   assert.equal(hqQuality({ ...good, coverage: 0.95 }).ok, false); // 배경 제거 실패
