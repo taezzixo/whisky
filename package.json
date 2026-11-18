@@ -11,7 +11,8 @@
     "sample": "node scripts/make-sample.mjs",
     "fetch:data": "node scripts/fetch-whiskies.mjs",
     "fetch:images": "node scripts/fetch-images.mjs",
-    "test": "node --experimental-strip-types --test src/lib/*.test.ts scripts/lib/*.test.mjs"
+    "test": "node --experimental-strip-types --test src/lib/*.test.ts scripts/lib/*.test.mjs",
+    "fetch:hq-images": "node scripts/fetch-hq-images.mjs"
   },
   "dependencies": {
     "@number-flow/react": "0.6.2",

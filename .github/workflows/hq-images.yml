@@ -1,0 +1,68 @@
+name: 고화질 병 사진 (하루 10종)
+
+# 2026-11-18 사용자 요청: 하루 일정량(기본 10종)씩 고화질 병 사진을 모아 사이트에 바로 반영한다.
+# 위키미디어 공용의 자유 라이선스 원본만 받아 배경을 지우고(rembg), 품질 검사를 통과한 사진만 커밋한다.
+# main 에 커밋되면 Cloudflare 가 자동 배포한다. Claude 토큰은 쓰지 않는다.
+# 기준·순서: scripts/lib/hq.mjs, 본체: scripts/fetch-hq-images.mjs, 배경 제거: scripts/hq/cutout.py
+
+on:
+  schedule:
+    - cron: '23 17 * * *' # 매일 02:23 KST (17:23 UTC). 정각은 지연이 잦아 피함
+  workflow_dispatch:
+    inputs:
+      count:
+        description: '이번에 추가할 위스키 수'
+        default: '10'
+      ids:
+        description: '이 위스키만 처리 (쉼표로 나눈 id, 예: seed-ardbeg-10). 비우면 순서대로'
+        default: ''
+
+permissions:
+  contents: write
+
+concurrency:
+  group: hq-images # 주간 수집(월 06:17 KST)과 시간이 겹치지 않고, 커밋 전에 pull --rebase 로 맞춘다
+  cancel-in-progress: false
+
+jobs:
+  hq-images:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    env:
+      COLLECTOR_CONTACT: ${{ vars.COLLECTOR_CONTACT }} # 선택: 수집기 연락처. 저장소 Variables에서 설정
+      HQ_DAILY: ${{ inputs.count || '10' }}
+      HQ_ONLY: ${{ inputs.ids || '' }}
+      HQ_MINUTES: '30'
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+          cache: pip
+          cache-dependency-path: scripts/hq/requirements.txt
+      - run: npm ci
+      - run: pip install -r scripts/hq/requirements.txt
+      - name: 배경 제거 모델 캐시 (약 180MB, 처음 한 번만 내려받음)
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.rembg
+            ~/.u2net
+          key: rembg-isnet-general-use-v1
+      - name: 고화질 병 사진 수집
+        id: hq
+        run: node scripts/fetch-hq-images.mjs
+      - run: npm test
+      - name: 커밋 (Cloudflare가 자동 배포)
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A public/img/w data/images.json public/data/whiskies.json
+          git diff --cached --quiet && echo "변경 없음" && exit 0
+          git commit -m "data: 고화질 병 사진 ${{ steps.hq.outputs.added }}종 $(TZ=Asia/Seoul date +%F)"
+          git pull --rebase
+          git push

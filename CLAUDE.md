@@ -21,16 +21,18 @@
 - 디자인 규칙은 `docs/DESIGN_SYSTEM.md`(Figma 연동 포함)를 따릅니다. **v2(2026-11-14 사용자 요청, 레퍼런스 캡처 톤):** 차가운 종이색 바탕(페이퍼), 남색 잉크, 강조는 코발트(`--accent*`) 하나, 제목 Cormorant Garamond + Noto Serif KR, 본문 Inter + IBM Plex Sans KR, 라벨·숫자 IBM Plex Mono(자간 0.02em 이하). 경계는 헤어라인, 섹션 사이 넓은 여백, 다크는 미드나이트. 마신 위스키는 코발트 1px 테두리 + 옅은 띠 + 푸른 빛(`--glow-tried`). 따뜻한 색은 위스키 액체 색과 차트 앰버뿐(금·와인색 금지). 토큰은 `styles.css` 맨 위 `:root`(+미드나이트 두 블록)에만 둡니다. 기준 아티팩트: claude.ai 디자인 시스템 「위스키 도감」. 대문자 라벨, 넓은 자간 라벨, "A · B · C" 메타 문자열, 이모지 아이콘, 모든 블록 카드화는 쓰지 않습니다.
 - 차트 색은 `--series-1`(앰버), `--series-2`(스틸 블루)만 씁니다(dataviz 검증 통과: 페이퍼 #B86A12/#1F6FA8, 미드나이트 #BD7F22/#4A92D4). 버튼 강조색(`--accent`)과 섞지 않습니다.
 - 위스키 그림: 자동 수집은 **자유 라이선스 실제 사진**(Open Food Facts CC BY-SA, 위키미디어 공용 CC BY/BY-SA/CC0/PD)만 받고 사진마다 작성자·라이선스를 표시합니다. 2026-11-14 사용자 결정으로 **사용자가 준 캡처에서 배경을 지운 병 사진 42장**(`data/images.json`의 `cutout: true`, 출처·라이선스 미확인)을 함께 씁니다. 이 사진은 상세 화면에 "사용자 제공 이미지"로 표시하고, 수집기는 이미 사진이 있는 위스키를 건드리지 않습니다. 배경을 지운 병은 볼록한 유리병 효과(`.bottle`: 원통 음영 + 반사광 + 옅은 바닥 그림자). 사진이 없으면 잔 일러스트(`Glass.tsx`, 추정 액체 색)를 씁니다.
+- **고화질 병 사진(2026-11-18 사용자 요청):** 매일 02:23 KST에 Actions(`hq-images.yml`)가 하루 10종씩 위키미디어 공용 자유 라이선스 원본을 찾아 배경을 지우고(rembg isnet, `scripts/hq/cutout.py`), 품질 검사(병 1개·반사광·잘림·해상도, `scripts/lib/hq.mjs`의 `hqQuality`)를 통과한 것만 `main`에 커밋합니다(자동 배포, Claude 토큰 안 씀). 순서는 사용자 제공 캡처 → 배경 있는 사진 → 사진 없음. 결과는 `images.json`의 `hq: true`, 못 찾은 기록은 `hq.misses`(30일 뒤 재시도), 잘못 고른 사진은 `hq.reject`에 위키미디어 파일 제목을 넣어 막습니다. 파이썬 패키지는 Actions에서만 씁니다(`scripts/hq/requirements.txt`).
 
 ## 명령
 ```bash
 npm install            # 의존성 설치
 npm run sample         # 시드만으로 public/data 샘플 생성 (네트워크 불필요)
 npm run dev            # 개발 서버
-npm test               # 단위 테스트 (현재 60개, 모두 통과해야 함 — 테일윈드 임의값·클래스 충돌 검사 포함)
+npm test               # 단위 테스트 (현재 70개, 모두 통과해야 함 — 테일윈드 임의값·클래스 충돌 검사 포함)
 npm run build          # 타입 검사 + 빌드 + 위스키별 SEO 페이지 생성
 npm run fetch:data     # 데이터 수집 (키 불필요)
 npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 공용, 자유 라이선스만)
+npm run fetch:hq-images # 고화질 병 사진(배경 제거) — 파이썬 3.13 + scripts/hq/requirements.txt 필요. HQ_DAILY·HQ_ONLY·HQ_PYTHON
 ```
 - 프록시 환경에서 수집할 때는 `NODE_USE_ENV_PROXY=1 NODE_EXTRA_CA_CERTS=/root/.ccr/ca-bundle.crt`를 함께 씁니다.
 
@@ -41,7 +43,7 @@ npm run fetch:images   # 실제 사진 수집 (Open Food Facts·위키미디어 
 - `src/config/` — `flavor.ts`(맛 10축·가중치 버전), `bti.ts`(문항·유형 이름)
 - `src/admin/main.tsx` + `admin.html` — 관리 페이지 `/admin.html`(읽기 전용: 출처별 수집 결과·품질·이력)
 - `data/flavor-seed.json` — **큐레이션 시드**(맛 벡터가 있는 도감의 원본, 798종). 추가·수정 기준은 `docs/SEED_GUIDE.md`
-- `scripts/fetch-whiskies.mjs` — 수집 메인. `scripts/sources/`(wikidata · openfoodfacts · iowa · http), `scripts/lib/normalize.mjs`(정규화·병합·Iowa 이름 정리), `scripts/lib/zip.mjs`(Iowa zip 풀기), `scripts/fetch-images.mjs` + `scripts/lib/images.mjs`(실제 사진 찾기·라이선스 확인·브랜드/연수 매칭)
+- `scripts/fetch-whiskies.mjs` — 수집 메인. `scripts/sources/`(wikidata · openfoodfacts · iowa · http), `scripts/lib/normalize.mjs`(정규화·병합·Iowa 이름 정리), `scripts/lib/zip.mjs`(Iowa zip 풀기), `scripts/fetch-images.mjs` + `scripts/lib/images.mjs`(실제 사진 찾기·라이선스 확인·브랜드/연수 매칭), `scripts/fetch-hq-images.mjs` + `scripts/lib/hq.mjs` + `scripts/hq/cutout.py`(고화질 병 사진 하루 10종)
 - `scripts/prerender.mjs` — 위스키별 정적 페이지(`/w/<id>`), 사이트맵, robots
 - `public/img/w/` — 실제 사진(자유 라이선스 jpg + 사용자 제공 누끼 webp), `data/images.json` — 사진 출처·라이선스·못 찾은 기록(30일 뒤 재시도)
 - `public/data/` — `whiskies.json`(도감: 시드 + 바코드·좌표 보강), `catalog.json`(맛 정보 없는 수집 카탈로그), `distilleries.json`, `run-log.json`, `overrides.json`

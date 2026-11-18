@@ -232,12 +232,13 @@
    "file": "img/w/lagavulin-16.webp",
    "source": "https://upload.wikimedia.org/wikipedia/commons/a/a0/Lagavulin_Single_Islay_Malt_Whisky_16_years_old.jpg",
    "product": "https://commons.wikimedia.org/wiki/File:Lagavulin_Single_Islay_Malt_Whisky_16_years_old.jpg",
-   "credit": "Pbrundel (Dutch Wikipedia), 배경 제거",
+   "credit": "Pbrundel at Dutch Wikipedia, 위키미디어 공용, 배경 제거",
    "license": "CC BY-SA 3.0",
    "cutout": true,
    "w": 273,
    "h": 1000,
-   "at": "2026-11-18"
+   "at": "2026-11-18",
+   "hq": true
   },
   "seed-redbreast-21": {
    "file": "img/w/redbreast-21.webp",
@@ -446,7 +447,8 @@
    "cutout": true,
    "w": 274,
    "h": 1000,
-   "at": "2026-11-18"
+   "at": "2026-11-18",
+   "hq": true
   },
   "seed-glenlivet-15": {
    "file": "img/w/glenlivet-15.jpg",
@@ -465,7 +467,8 @@
    "cutout": true,
    "w": 347,
    "h": 1000,
-   "at": "2026-11-18"
+   "at": "2026-11-18",
+   "hq": true
   },
   "seed-aberlour-12": {
    "file": "img/w/aberlour-12.jpg",
@@ -692,7 +695,8 @@
    "cutout": true,
    "w": 429,
    "h": 1000,
-   "at": "2026-11-18"
+   "at": "2026-11-18",
+   "hq": true
   }
  },
  "misses": {
@@ -724,5 +728,14 @@
   "seed-rittenhouse-rye": "2026-11-16",
   "seed-redbreast-12": "2026-11-16",
   "seed-hakushu-dr": "2026-11-16"
+ },
+ "hq": {
+  "misses": {
+   "seed-ardbeg-uigeadail": "2026-11-18",
+   "seed-glendronach-18": "2026-11-18",
+   "seed-glenmorangie-18": "2026-11-18",
+   "seed-highland-park-18": "2026-11-18"
+  },
+  "reject": []
  }
 }
