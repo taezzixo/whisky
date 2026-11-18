@@ -3,6 +3,8 @@
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 import NumberFlow from '@number-flow/react';
 import { playBand } from '../lib/intro.ts';
+import type { ShelfItem } from '../lib/insights.ts';
+import { HomeShelf } from './HomeShelf.tsx';
 import { hasDutyFree } from '../lib/prices.ts';
 import type { Whisky } from '../types.ts';
 import { TYPE_LABEL } from '../config/flavor.ts';
@@ -24,24 +26,28 @@ interface Props {
   onNeedCatalog: () => void;
   onStartBti: () => void;
   hasBti: boolean;
+  /** 첫 화면 선반 시안용: 최근 마신 병, 다음 잔 추천 */
+  shelf?: ShelfItem[];
+  pick?: { w: Whisky; reason: string } | null;
 }
 
 type Show = 'all' | 'tried' | 'untried' | 'wish';
 const PAGE = 72;
 
 /** 첫 화면 시안: ?hero=mosaic (모자이크 칸) | flat (평평한 띠 + 표시) | 없으면 지금 모양 */
-type Hero = 'bar' | 'mosaic' | 'flat';
+type Hero = 'bar' | 'mosaic' | 'flat' | 'shelf';
 const heroFromUrl = (): Hero => {
   const h = new URLSearchParams(location.search).get('hero');
-  return h === 'mosaic' || h === 'flat' ? h : 'bar';
+  return h === 'mosaic' || h === 'flat' || h === 'shelf' ? h : 'bar';
 };
 const HERO_COPY: Record<Hero, { title: string; lede: (n: number) => string }> = {
   bar: { title: '마신 위스키는 제 색으로 남습니다', lede: (n) => `위스키 ${n}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.` },
   mosaic: { title: '오늘 마신 한 잔이 도감의 한 칸이 됩니다', lede: (n) => `위스키 ${n}종을 옅은 색부터 짙은 색까지 한 칸씩 놓았습니다. 시음을 기록하면 그 칸이 제 색으로 채워집니다.` },
+  shelf: { title: '마신 위스키가 내 바 선반에 쌓입니다', lede: (n) => `최근에 마신 병이 선반에 놓이고, 지금까지의 기록으로 다음 잔을 골라 드립니다. 도감에는 위스키 ${n}종이 있습니다.` },
   flat: { title: '마셔 본 만큼 색이 켜집니다', lede: (n) => `위스키 ${n}종을 잔 속 색 순서로 이었습니다. 기록한 위스키 자리에 불이 켜지고 아래에 표시가 남습니다.` },
 };
 
-export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatalog, onStartBti, hasBti }: Props) {
+export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatalog, onStartBti, hasBti, shelf, pick }: Props) {
   const [q, setQ] = useState('');
   const [show, setShow] = useState<Show>('all');
   const [country, setCountry] = useState('');
@@ -82,6 +88,10 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
       <section className="hero" aria-labelledby="dex-title">
         <h1 id="dex-title">{HERO_COPY[hero].title}</h1>
         <p className="lede">{HERO_COPY[hero].lede(rate.total)}</p>
+        {hero === 'shelf' ? (
+          <HomeShelf shelf={shelf ?? []} pick={pick ?? null} onOpen={onOpen} />
+        ) : (
+        <>
         <div className="band-stage">
         <div
           ref={bandRef}
@@ -113,6 +123,8 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
           <span>볏짚색, 버번 캐스크</span>
           <span>마호가니, 셰리 캐스크·장기 숙성</span>
         </div>
+        </>
+        )}
         <div className="progress-line">
           <p>
             <strong className="num">

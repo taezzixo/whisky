@@ -9,7 +9,7 @@ import { FlavorMap } from './components/FlavorMap.tsx';
 import { Records } from './components/Records.tsx';
 import { Compare } from './components/Compare.tsx';
 import { Distilleries } from './components/Distilleries.tsx';
-import { groupByDistillery } from './lib/insights.ts';
+import { groupByDistillery, nextPick, recentShelf } from './lib/insights.ts';
 import { WhiskyDetail } from './components/WhiskyDetail.tsx';
 import { tasteFromTastings, triedIds } from './lib/collection.ts';
 import { applyOverrides } from './lib/overrides.ts';
@@ -93,7 +93,9 @@ export default function App() {
   const current = id ? byId.get(id) : undefined;
   const distilleries = useMemo(() => groupByDistillery(dex, tried), [dex, tried]);
   const recordTaste = useMemo(() => tasteFromTastings(user.tastings, byId), [user.tastings, byId]);
+  const shelf = useMemo(() => recentShelf(user.tastings, byId), [user.tastings, byId]);
   const me = recordTaste ? { taste: recordTaste, label: '내 기록' } : user.bti ? { taste: user.bti.taste, label: '내 BTI' } : null;
+  const pick = useMemo(() => nextPick(me?.taste ?? null, dex, tried), [me, dex, tried]);
 
   const go = (next: { tab?: Tab; id?: string | null; d?: string | null }) => {
     const t = next.tab ?? tab;
@@ -210,6 +212,8 @@ export default function App() {
             onNeedCatalog={() => setWantCatalog(true)}
             onStartBti={() => go({ tab: 'bti' })}
             hasBti={!!user.bti}
+            shelf={shelf}
+            pick={pick}
           />
         ) : tab === 'bti' ? (
           user.bti && !retry ? (

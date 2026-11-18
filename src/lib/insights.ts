@@ -5,6 +5,7 @@
 import { AXES, type AxisKey } from '../config/flavor.ts';
 import type { Whisky } from '../types.ts';
 import type { Tasting } from './collection.ts';
+import { tasteFit } from './similar.ts';
 
 /* ── 증류소 ── */
 
@@ -167,4 +168,48 @@ export function appendTag(note: string, tag: string): string {
   if (note.includes(tag)) return note;
   const base = note.trimEnd();
   return base ? `${base}${/[,.]$/.test(base) ? ' ' : ', '}${tag}` : tag;
+}
+
+/* ── 첫 화면: 내 바 선반 · 최근 잔 · 다음 잔 ── */
+
+export interface ShelfItem {
+  w: Whisky;
+  date: string; // 가장 최근 시음일
+  rating: number; // 그날 별점
+  count: number; // 이 위스키 기록 수
+}
+
+/** 최근에 마신 순서로 위스키를 한 번씩만 (선반·리본용) */
+export function recentShelf(tastings: Tasting[], byId: Map<string, Whisky>, n = 8): ShelfItem[] {
+  const sorted = [...tastings].sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+  const seen = new Map<string, ShelfItem>();
+  for (const t of sorted) {
+    const w = byId.get(t.whiskyId);
+    if (!w) continue;
+    const s = seen.get(w.id);
+    if (s) s.count++;
+    else seen.set(w.id, { w, date: t.date, rating: t.rating, count: 1 });
+  }
+  return [...seen.values()].slice(0, n);
+}
+
+/** 다음 잔: 아직 안 마신 위스키 가운데 내 취향에 가장 가까운 한 병. 취향이 없으면 입문용 기본값 */
+export function nextPick(taste: number[] | null, dex: Whisky[], tried: Set<string>, fallbackId = 'seed-glenfiddich-12'): { w: Whisky; reason: string } | null {
+  if (!taste) {
+    const w = dex.find((x) => x.id === fallbackId && !tried.has(x.id)) ?? dex.find((x) => !tried.has(x.id) && x.flavor);
+    return w ? { w, reason: '처음 한 병으로 많이 고르는 위스키' } : null;
+  }
+  // 예산: 마신 병들의 참고 가격 중앙값의 1.5배(최소 15만 원). 이보다 비싼 병은 후보에서 뺀다
+  const paid = dex.filter((w) => tried.has(w.id) && w.price).map((w) => w.price!).sort((x, y) => x - y);
+  const budget = paid.length ? Math.max(15, paid[Math.floor(paid.length / 2)] * 1.5) : Infinity;
+  let best: Whisky | null = null;
+  let bestScore = -1;
+  for (const w of dex) {
+    if (tried.has(w.id) || !w.flavor || (w.price ?? 0) > budget) continue;
+    const s = tasteFit(taste, w) + (w.price ? 0.01 : 0); // 같은 점수면 참고 가격이 있는 병을 앞에
+    if (s > bestScore) [best, bestScore] = [w, s];
+  }
+  if (!best) return null;
+  const top = topAxes(taste, 2);
+  return { w: best, reason: top.length ? `지금까지 마신 잔의 ${top.join(', ')} 쪽과 가장 가까움` : '지금까지의 기록과 가장 가까움' };
 }

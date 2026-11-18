@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { appendTag, averageFlavor, groupByDistillery, noteSuggestions, slugify, topAxes, valueRanking } from './insights.ts';
+import { appendTag, averageFlavor, groupByDistillery, nextPick, noteSuggestions, recentShelf, slugify, topAxes, valueRanking } from './insights.ts';
 import type { Tasting } from './collection.ts';
 import type { Whisky } from '../types.ts';
 
@@ -57,4 +57,32 @@ test('appendTag: 쉼표로 덧붙이고 중복은 넣지 않는다', () => {
   assert.equal(appendTag('', '꿀'), '꿀');
   assert.equal(appendTag('달다', '꿀'), '달다, 꿀');
   assert.equal(appendTag('달다, 꿀', '꿀'), '달다, 꿀');
+});
+
+test('최근 선반: 최근 순, 같은 위스키는 한 번만(기록 수 합침)', () => {
+  const ts: Tasting[] = [
+    { id: 'a', whiskyId: 'seed-lagavulin-16', rating: 4, date: '2026-11-01' },
+    { id: 'b', whiskyId: 'seed-glenfiddich-12', rating: 3, date: '2026-11-05' },
+    { id: 'c', whiskyId: 'seed-lagavulin-16', rating: 5, date: '2026-11-07' },
+  ];
+  const s = recentShelf(ts, byId);
+  assert.deepEqual(s.map((x) => x.w.id), ['seed-lagavulin-16', 'seed-glenfiddich-12']);
+  assert.equal(s[0].count, 2);
+  assert.equal(s[0].rating, 5);
+});
+
+test('다음 잔: 안 마신 위스키 중 취향에 가장 가까운 병, 취향 없으면 입문 병', () => {
+  const smoky = byId.get('seed-lagavulin-16')!.flavor!;
+  const pick = nextPick(smoky, all, new Set(['seed-lagavulin-16']))!;
+  assert.notEqual(pick.w.id, 'seed-lagavulin-16');
+  assert.ok(pick.w.peated, `${pick.w.id} 는 피트여야 함`);
+  assert.match(pick.reason, /스모키/);
+  assert.equal(nextPick(null, all, new Set())!.w.id, 'seed-glenfiddich-12');
+});
+
+test('다음 잔: 마신 병들의 가격대를 크게 넘는 병은 고르지 않는다', () => {
+  const tried = new Set(['seed-lagavulin-16', 'seed-laphroaig-10', 'seed-ardbeg-10']);
+  const taste = byId.get('seed-lagavulin-16')!.flavor!;
+  const pick = nextPick(taste, all, tried)!;
+  assert.ok((pick.w.price ?? 0) <= 27, `${pick.w.id} ${pick.w.price}만 원`);
 });
