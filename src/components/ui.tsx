@@ -3,6 +3,10 @@
 //  - 여러 부분이 있는 블록은 합성 컴포넌트(Section + Section.Head + Section.Body)
 //  - 대괄호 임의값 없이 테마 토큰 클래스만
 import type { AnchorHTMLAttributes, ButtonHTMLAttributes, MouseEvent, ReactNode } from 'react';
+import { m, type HTMLMotionProps } from 'motion/react';
+
+/** 누름 반응: 살짝 작아졌다가 스프링으로 돌아온다 (emil-design-eng: 0.95~0.98) */
+const PRESS = { whileTap: { scale: 0.96 }, transition: { type: 'spring', stiffness: 600, damping: 30 } } as const;
 
 /* ── Button: Figma "Button" Variant=Primary|Ghost, Size=Sm|Md ── */
 const BUTTON_VARIANT = {
@@ -17,12 +21,12 @@ const BUTTON_SIZE = {
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & { variant?: keyof typeof BUTTON_VARIANT; size?: keyof typeof BUTTON_SIZE };
 
 export function Button({ variant = 'primary', size = 'md', className = '', type = 'button', ...rest }: ButtonProps) {
-  return <button type={type} className={`${BUTTON_VARIANT[variant]} ${BUTTON_SIZE[size]} press ${className}`} {...rest} />;
+  return <m.button type={type} className={`${BUTTON_VARIANT[variant]} ${BUTTON_SIZE[size]} ${className}`} {...PRESS} {...(rest as HTMLMotionProps<'button'>)} />;
 }
 
 /* ── Chip: Figma "Chip" State=Off|On → pressed ── */
 export function Chip({ pressed, className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { pressed?: boolean }) {
-  return <button type="button" className={`chip press ${className}`} aria-pressed={pressed} {...rest} />;
+  return <m.button type="button" className={`chip ${className}`} aria-pressed={pressed} {...PRESS} {...(rest as HTMLMotionProps<'button'>)} />;
 }
 
 /* ── Section: 합성 컴포넌트 ── */
@@ -73,10 +77,12 @@ export function ThemeSwitch({ value, onChange }: { value: 'light' | 'dark'; onCh
   return (
     <div className="theme-switch" role="group" aria-label="화면 테마">
       <button type="button" aria-pressed={value === 'light'} aria-label="라이트 모드" onClick={() => onChange('light')}>
+        {value === 'light' && <m.span layoutId="theme-pill" className="switch-pill" transition={{ type: 'spring', stiffness: 520, damping: 40 }} />}
         {SUN}
         <span className="label">라이트</span>
       </button>
       <button type="button" aria-pressed={value === 'dark'} aria-label="다크 모드" onClick={() => onChange('dark')}>
+        {value === 'dark' && <m.span layoutId="theme-pill" className="switch-pill" transition={{ type: 'spring', stiffness: 520, damping: 40 }} />}
         {MOON}
         <span className="label">다크</span>
       </button>

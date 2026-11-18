@@ -1,4 +1,8 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { AnimatePresence, LazyMotion, MotionConfig, m } from 'motion/react';
+
+const loadMotionFeatures = () => import('./lib/motion-features.ts').then((r) => r.default);
+import { playWordmark } from './lib/intro.ts';
 import { BtiQuiz, BtiResult } from './components/Bti.tsx';
 import { Dex } from './components/Dex.tsx';
 import { FlavorMap } from './components/FlavorMap.tsx';
@@ -128,16 +132,26 @@ export default function App() {
     }
   };
 
+  const wordmark = useRef<HTMLButtonElement>(null);
+  useLayoutEffect(() => playWordmark(wordmark.current), []);
+
   return (
+    <MotionConfig reducedMotion="user">
+    <LazyMotion features={loadMotionFeatures}>
     <div className="app">
       <header className="top">
-        <button className="wordmark" onClick={() => go({ tab: 'dex', id: null })}>
-          위스키 도감
+        <button ref={wordmark} className="wordmark" onClick={() => go({ tab: 'dex', id: null })} aria-label="위스키 도감 처음으로">
+          {[...'위스키 도감'].map((c, i) => (
+            <span key={i} className="ch" aria-hidden="true">
+              {c === ' ' ? '\u00a0' : c}
+            </span>
+          ))}
           <i aria-hidden="true" />
         </button>
         <nav className="nav" aria-label="메인 메뉴">
           {TABS.map(([t, label]) => (
             <button key={t} onClick={() => go({ tab: t, id: null })} aria-current={tab === t && !id ? 'page' : undefined}>
+              {tab === t && !id && <m.span layoutId="nav-pill" className="nav-pill" transition={{ type: 'spring', stiffness: 520, damping: 40 }} />}
               {label}
               {t === 'mine' && user.tastings.length > 0 && <span className="count num">{user.tastings.length}</span>}
               {t === 'compare' && user.compare.length > 0 && <span className="count num">{user.compare.length}</span>}
@@ -153,6 +167,8 @@ export default function App() {
         {error && <p className="notice">도감 데이터를 불러오지 못했습니다. 잠시 뒤 새로고침해 주세요.</p>}
         {file?.sample && <p className="sample-flag">샘플 데이터로 표시하고 있습니다.</p>}
 
+        <AnimatePresence mode="wait" initial={false}>
+          <m.div key={`${tab}|${id ?? ''}|${d ?? ''}`} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -6 }} transition={{ duration: 0.22, ease: [0.23, 1, 0.32, 1] }}>
         {id ? (
           current ? (
             <WhiskyDetail
@@ -241,6 +257,8 @@ export default function App() {
             </button>
           </div>
         )}
+          </m.div>
+        </AnimatePresence>
       </main>
 
       <footer className="foot">
@@ -251,5 +269,7 @@ export default function App() {
         </p>
       </footer>
     </div>
+    </LazyMotion>
+    </MotionConfig>
   );
 }

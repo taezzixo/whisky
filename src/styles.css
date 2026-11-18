@@ -74,6 +74,13 @@
   --radius-lg: 24px;
   --radius-xl: 32px;
   --radius-pill: 999px;
+  /* Bklit UI 차트 변수 → 위스키 도감 토큰 */
+  --chart-background: var(--surface);
+  --chart-foreground: var(--text);
+  --chart-foreground-muted: var(--muted);
+  --chart-label: var(--muted);
+  --chart-grid: var(--grid);
+  --border: var(--line);
   --tap: 44px;
   --measure: 64ch;
   --container: 1200px;
@@ -107,6 +114,13 @@
     --on-accent: #050816;
     --halo: rgba(91, 140, 255, 0.22);
     --tint: #22356b;
+    /* Bklit UI 차트 변수 → 위스키 도감 토큰 */
+    --chart-background: var(--surface);
+    --chart-foreground: var(--text);
+    --chart-foreground-muted: var(--muted);
+    --chart-label: var(--muted);
+    --chart-grid: var(--grid);
+    --border: var(--line);
     --series-1: #bd7f22;
     --series-2: #4a92d4;
     --warn: #ff8a7a;
@@ -140,6 +154,13 @@
   --on-accent: #050816;
   --halo: rgba(91, 140, 255, 0.22);
   --tint: #22356b;
+  /* Bklit UI 차트 변수 → 위스키 도감 토큰 */
+  --chart-background: var(--surface);
+  --chart-foreground: var(--text);
+  --chart-foreground-muted: var(--muted);
+  --chart-label: var(--muted);
+  --chart-grid: var(--grid);
+  --border: var(--line);
   --series-1: #bd7f22;
   --series-2: #4a92d4;
   --warn: #ff8a7a;
@@ -203,11 +224,15 @@ p { margin: 0; }
   border-bottom: 1px solid var(--line);
 }
 .wordmark { white-space: nowrap; justify-self: start; display: inline-flex; align-items: baseline; gap: 2px; background: none; border: 0; padding: 0; min-height: var(--tap); font: 600 1.375rem / 1 var(--font-display); color: var(--text); letter-spacing: -0.01em; }
+.wordmark .ch { display: inline-block; }
 .wordmark i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); align-self: center; transform: translateY(4px); }
 .nav { display: flex; gap: 2px; padding: var(--space-1); border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); }
 .nav button { white-space: nowrap; background: none; border: 0; padding: 0 var(--space-4); min-height: 36px; border-radius: var(--radius-pill); font: 500 0.75rem / 1 var(--font-mono); letter-spacing: 0.02em; color: var(--text-2); transition: color var(--dur-ui) ease, background-color var(--dur-ui) var(--ease-out); }
 .nav button:hover { color: var(--text); }
-.nav button[aria-current='page'] { background: var(--accent-soft); color: var(--accent-ink); }
+.nav button { position: relative; isolation: isolate; }
+.nav button[aria-current='page'] { color: var(--accent-ink); }
+/* 선택 표시 알약: Motion layoutId 로 메뉴 사이를 미끄러진다 */
+.nav-pill, .switch-pill { position: absolute; inset: 0; z-index: -1; border-radius: var(--radius-pill); background: var(--accent-soft); }
 .nav .count { margin-left: var(--space-1); color: var(--muted); }
 .top .end { justify-self: end; display: flex; align-items: center; gap: var(--space-4); }
 
@@ -215,7 +240,8 @@ p { margin: 0; }
 .theme-switch { display: inline-flex; gap: 2px; padding: var(--space-1); border: 1px solid var(--line); border-radius: var(--radius-pill); background: var(--surface); }
 .theme-switch button { display: inline-flex; align-items: center; gap: 6px; min-height: 36px; padding: 0 var(--space-3); border: 0; border-radius: var(--radius-pill); background: none; color: var(--text-2); font: 500 0.75rem / 1 var(--font-mono); letter-spacing: 0.02em; white-space: nowrap; transition: background-color var(--dur-ui) var(--ease-out), color var(--dur-ui) ease; }
 .theme-switch button:hover { color: var(--text); }
-.theme-switch button[aria-pressed='true'] { background: var(--accent-soft); color: var(--accent-ink); }
+.theme-switch button { position: relative; isolation: isolate; }
+.theme-switch button[aria-pressed='true'] { color: var(--accent-ink); }
 .theme-switch svg { width: 15px; height: 15px; flex: none; }
 
 /* ── 버튼 ── */
@@ -432,11 +458,10 @@ label.field > input, label.field > select, label.field > textarea { width: 100%;
 .hero::after { content: ''; position: absolute; inset: 0; background-image: radial-gradient(var(--dot) 1px, transparent 1.2px); background-size: 8px 8px; -webkit-mask: radial-gradient(45% 70% at 85% 0%, var(--mask-ink), transparent 75%); mask: radial-gradient(45% 70% at 85% 0%, var(--mask-ink), transparent 75%); pointer-events: none; }
 .hero > * { position: relative; z-index: 1; }
 .hero h1 { max-width: 16em; }
-.band { display: flex; align-items: flex-end; gap: 1px; height: 120px; border-bottom: 1px solid var(--text); }
-.band span { flex: 1 1 0; min-width: 1px; height: 36%; opacity: 0.5; border-radius: 2px 2px 0 0; transform-origin: bottom; animation: pour 1.1s var(--ease-out) both; transition: opacity var(--dur-ui) var(--ease-out); cursor: pointer; }
+.band { display: flex; align-items: flex-end; gap: 0; overflow: hidden; height: 120px; border-bottom: 1px solid var(--text); }
+.band span { flex: 1 1 0; min-width: 0; height: 36%; opacity: 0.5; border-radius: 2px 2px 0 0; transform-origin: bottom; transition: opacity var(--dur-ui) var(--ease-out); cursor: pointer; }
 .band span.on { height: 100%; opacity: 1; }
 .band span:hover { opacity: 1; }
-@keyframes pour { from { transform: scaleY(0); } to { transform: scaleY(1); } }
 .band-legend { display: flex; justify-content: space-between; font: 400 var(--step--2) / 1.4 var(--font-mono); letter-spacing: 0.02em; color: var(--muted); }
 
 /* ── 바닥 ── */
@@ -581,3 +606,10 @@ main:has(.compare-tray) { padding-bottom: 88px; }
   .wrow .thumb { width: 52px; height: 68px; }
   .wrow .side { grid-column: 2; justify-items: start; grid-auto-flow: column; justify-content: start; }
 }
+
+/* 맛 프로필 레이더 (Bklit UI) */
+.flavor-radar { display: grid; gap: var(--space-3); justify-items: center; max-width: 360px; }
+.flavor-radar text { font-family: var(--font-mono); fill: var(--text-2); }
+.legend-swatch { width: 10px; height: 10px; border-radius: 2px; }
+.legend-swatch.s1 { background: var(--series-1); }
+.legend-swatch.s2 { background: var(--series-2); }

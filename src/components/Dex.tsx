@@ -1,6 +1,8 @@
 // 도감 첫 화면: 액체 색 띠(수집 현황) → 배지 → 나라별 진행 → 선반(전체 도감)
 
-import { useMemo, useState } from 'react';
+import { useLayoutEffect, useMemo, useRef, useState } from 'react';
+import NumberFlow from '@number-flow/react';
+import { playBand } from '../lib/intro.ts';
 import { hasDutyFree } from '../lib/prices.ts';
 import type { Whisky } from '../types.ts';
 import { TYPE_LABEL } from '../config/flavor.ts';
@@ -40,6 +42,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const triedList = useMemo(() => dex.filter((w) => tried.has(w.id)), [dex, tried]);
   const seals = useMemo(() => badgeStates(triedList), [triedList]);
   const countries = useMemo(() => byCountry(dex, tried), [dex, tried]);
+  const bandRef = useRef<HTMLDivElement>(null);
   const band = useMemo(() => [...dex].sort((a, b) => liquidScore(a) - liquidScore(b) || a.id.localeCompare(b.id)), [dex]);
 
   const filtered = useMemo(() => {
@@ -57,6 +60,10 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const barcodeHit = useMemo(() => (/^\d{8,14}$/.test(q.trim()) ? findByBarcode([...dex, ...(catalog ?? [])], q.trim()) : undefined), [q, dex, catalog]);
   const catalogHits = useMemo(() => (withCatalog && q && catalog ? searchWhiskies(catalog, q, 40) : []), [withCatalog, q, catalog]);
 
+  useLayoutEffect(() => {
+    if (band.length) playBand(bandRef.current);
+  }, [band.length]);
+
   return (
     <div className="stack">
       <section className="hero" aria-labelledby="dex-title">
@@ -64,6 +71,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
         <p className="lede">위스키 {rate.total}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.</p>
         <div className="band-stage">
         <div
+          ref={bandRef}
           className="band"
           role="img"
           aria-label={`도감 ${rate.total}종 중 ${rate.done}종 기록. 옅은 색부터 짙은 색 순서.`}
@@ -77,7 +85,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
               key={w.id}
               data-id={w.id}
               className={tried.has(w.id) ? 'on' : undefined}
-              style={{ background: liquidColor(w), animationDelay: `${Math.min(i * 3, 900)}ms` }}
+              style={{ background: liquidColor(w) }}
               title={`${w.nameKo ?? w.name}${tried.has(w.id) ? ' (기록함)' : ''}`}
             />
           ))}
@@ -89,7 +97,10 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
         </div>
         <div className="progress-line">
           <p>
-            <strong className="num">{rate.done}</strong> / {rate.total}종 기록, 수집률 {rate.pct.toFixed(1)}%
+            <strong className="num">
+              <NumberFlow value={rate.done} />
+            </strong>{' '}
+            / <NumberFlow value={rate.total} />종 기록, 수집률 <NumberFlow value={rate.pct} format={{ maximumFractionDigits: 1 }} suffix="%" />
           </p>
           {!hasBti && (
             <button className="link" onClick={onStartBti}>

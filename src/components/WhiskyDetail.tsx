@@ -6,7 +6,8 @@ import type { Tasting } from '../lib/collection.ts';
 import { liquidName } from '../lib/liquid.ts';
 import { findSimilar, type SimilarMode } from '../lib/similar.ts';
 import type { Whisky } from '../types.ts';
-import { FlavorBars, Radar } from './Charts.tsx';
+import { FlavorBars } from './Charts.tsx';
+import { FlavorRadar } from './FlavorRadar.tsx';
 import { WhiskyArt } from './WhiskyArt.tsx';
 import { pairingGuide } from '../lib/pairing.ts';
 import { TastingForm } from './Tasting.tsx';
@@ -178,7 +179,7 @@ export function WhiskyDetail({ w, all, wishlist, tried, tastings, onWish, onTogg
             <p className="muted small" style={{ margin: '6px 0 10px' }}>
               0~5 추정치입니다. 아래 비슷한 위스키를 골라 겹쳐 볼 수 있습니다.
             </p>
-            <Radar series={[{ label: name, values: w.flavor }, ...(cmp?.flavor ? [{ label: cmp.nameKo ?? cmp.name, values: cmp.flavor }] : [])]} />
+            <FlavorRadar series={[{ label: name, values: w.flavor }, ...(cmp?.flavor ? [{ label: cmp.nameKo ?? cmp.name, values: cmp.flavor }] : [])]} />
             {cmp && (
               <button className="link small" onClick={() => setCompare(null)}>
                 비교 끄기

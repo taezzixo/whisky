@@ -1,6 +1,7 @@
 // 내 기록: 기록 기반 취향 레이더, 시음 일지, 위시리스트, 내보내기·가져오기
 
 import { useMemo } from 'react';
+import NumberFlow from '@number-flow/react';
 import type { Whisky } from '../types.ts';
 import { SERVE_LABEL, tasteFromTastings, type Tasting } from '../lib/collection.ts';
 import type { UserData } from '../lib/store.ts';
@@ -35,7 +36,13 @@ export function Records({ user, byId, onOpen, onWish, onRemoveTasting, onBottle,
       <section className="hero">
         <h1>내 기록</h1>
         <p className="lede">
-          {log.length ? `${log.length}잔을 기록했고, 평균 별점은 ${avg.toFixed(1)}점입니다.` : '아직 기록한 잔이 없습니다. 위스키를 열어 "시음 기록하기"를 눌러 첫 잔을 남겨 보세요.'}
+          {log.length ? (
+            <>
+              <NumberFlow value={log.length} />잔을 기록했고, 평균 별점은 <NumberFlow value={avg} format={{ minimumFractionDigits: 1, maximumFractionDigits: 1 }} />점입니다.
+            </>
+          ) : (
+            '아직 기록한 잔이 없습니다. 위스키를 열어 "시음 기록하기"를 눌러 첫 잔을 남겨 보세요.'
+          )}
         </p>
       </section>
 
