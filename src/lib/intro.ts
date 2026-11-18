@@ -29,5 +29,6 @@ export function playBand(el: HTMLElement | null) {
   if (!el || prefersReducedMotion() || !firstTime('band')) return;
   const bars = el.querySelectorAll('span');
   const step = Math.max(1, Math.round(900 / Math.max(1, bars.length / 2)));
-  animate(bars, { scaleY: [0, 1], delay: stagger(step, { from: 'center' }), duration: 900, ease: 'outExpo' });
+  if (el.classList.contains('mosaic')) animate(bars, { scale: [0, 1], delay: stagger(Math.max(1, Math.round(1100 / bars.length))), duration: 500, ease: 'outBack(1.6)' });
+  else animate(bars, { scaleY: [0, 1], delay: stagger(step, { from: 'center' }), duration: 900, ease: 'outExpo' });
 }

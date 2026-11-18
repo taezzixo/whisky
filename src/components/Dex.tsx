@@ -29,6 +29,18 @@ interface Props {
 type Show = 'all' | 'tried' | 'untried' | 'wish';
 const PAGE = 72;
 
+/** 첫 화면 시안: ?hero=mosaic (모자이크 칸) | flat (평평한 띠 + 표시) | 없으면 지금 모양 */
+type Hero = 'bar' | 'mosaic' | 'flat';
+const heroFromUrl = (): Hero => {
+  const h = new URLSearchParams(location.search).get('hero');
+  return h === 'mosaic' || h === 'flat' ? h : 'bar';
+};
+const HERO_COPY: Record<Hero, { title: string; lede: (n: number) => string }> = {
+  bar: { title: '마신 위스키는 제 색으로 남습니다', lede: (n) => `위스키 ${n}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.` },
+  mosaic: { title: '오늘 마신 한 잔이 도감의 한 칸이 됩니다', lede: (n) => `위스키 ${n}종을 옅은 색부터 짙은 색까지 한 칸씩 놓았습니다. 시음을 기록하면 그 칸이 제 색으로 채워집니다.` },
+  flat: { title: '마셔 본 만큼 색이 켜집니다', lede: (n) => `위스키 ${n}종을 잔 속 색 순서로 이었습니다. 기록한 위스키 자리에 불이 켜지고 아래에 표시가 남습니다.` },
+};
+
 export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatalog, onStartBti, hasBti }: Props) {
   const [q, setQ] = useState('');
   const [show, setShow] = useState<Show>('all');
@@ -43,6 +55,7 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   const seals = useMemo(() => badgeStates(triedList), [triedList]);
   const countries = useMemo(() => byCountry(dex, tried), [dex, tried]);
   const bandRef = useRef<HTMLDivElement>(null);
+  const [hero] = useState<Hero>(heroFromUrl);
   const band = useMemo(() => [...dex].sort((a, b) => liquidScore(a) - liquidScore(b) || a.id.localeCompare(b.id)), [dex]);
 
   const filtered = useMemo(() => {
@@ -67,12 +80,12 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
   return (
     <div className="stack">
       <section className="hero" aria-labelledby="dex-title">
-        <h1 id="dex-title">마신 위스키는 제 색으로 남습니다</h1>
-        <p className="lede">위스키 {rate.total}종을 잔 속 색으로 늘어놓았습니다. 한 잔을 기록할 때마다 그 색에 불이 들어옵니다.</p>
+        <h1 id="dex-title">{HERO_COPY[hero].title}</h1>
+        <p className="lede">{HERO_COPY[hero].lede(rate.total)}</p>
         <div className="band-stage">
         <div
           ref={bandRef}
-          className="band"
+          className={hero === 'mosaic' ? 'mosaic' : hero === 'flat' ? 'band flat' : 'band'}
           role="img"
           aria-label={`도감 ${rate.total}종 중 ${rate.done}종 기록. 옅은 색부터 짙은 색 순서.`}
           onClick={(e) => {
@@ -90,6 +103,11 @@ export function Dex({ dex, catalog, tried, wishlist, onOpen, onWish, onNeedCatal
             />
           ))}
         </div>
+        {hero === 'flat' && (
+          <div className="band-marks" aria-hidden="true">
+            {band.map((w, i) => (tried.has(w.id) ? <i key={w.id} style={{ left: `${((i + 0.5) / band.length) * 100}%` }} /> : null))}
+          </div>
+        )}
         </div>
         <div className="band-legend">
           <span>볏짚색, 버번 캐스크</span>
